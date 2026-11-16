@@ -1,0 +1,17 @@
+# dữ liệu chạy thử, mỗi người tự sinh khi test
+data/
+
+# file biên dịch
+*.class
+out/
+bin/
+build/
+
+# cấu hình IDE riêng của từng người
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+nbproject/
