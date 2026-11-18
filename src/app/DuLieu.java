@@ -1,8 +1,11 @@
 package app;
 
+import danhsach.DSCTHopDong;
+import danhsach.DSCTKhachO;
 import danhsach.DSCTPhieuNhap;
 import danhsach.DSCTSuDungDV;
 import danhsach.DSDichVu;
+import danhsach.DSHDThuePhong;
 import danhsach.DSHangHoa;
 import danhsach.DSHoaDon;
 import danhsach.DSNhaCC;
@@ -11,6 +14,10 @@ import danhsach.DSPhieuNhap;
 
 // giữ 1 bản duy nhất của mỗi danh sách, module nào thêm danh sách thì khai báo ở đây và gọi docFile() trong docTatCa()
 public final class DuLieu {
+    // ----- module 2: Thuê phòng -----
+    public static final DSHDThuePhong dsHDThuePhong = new DSHDThuePhong();
+    public static final DSCTHopDong dsCTHopDong = new DSCTHopDong();
+    public static final DSCTKhachO dsCTKhachO = new DSCTKhachO();
 
     // ----- module 4: Nhân sự, Kho & Thống kê -----
     public static final DSNhanVien dsNhanVien = new DSNhanVien();
@@ -28,6 +35,11 @@ public final class DuLieu {
     }
 
     public static void docTatCa() {
+        // ----- module 2 -----
+        dsHDThuePhong.docFile();
+        dsCTHopDong.docFile();
+        dsCTKhachO.docFile();
+
         // ----- module 4 -----
         dsNhanVien.docFile();
         dsNhaCC.docFile();
