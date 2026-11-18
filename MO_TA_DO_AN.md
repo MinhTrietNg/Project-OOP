@@ -15,12 +15,12 @@ Nghiệp vụ:
 
 Chương trình chia thành 4 module:
 
-| Module | Lớp đối tượng | Menu |
-|---|---|---|
-| Phòng & Khách hàng | `Nguoi`, `KhachHang`, `Phong`, `PhongThuong`, `PhongDeluxe`, `PhongSuite` | `MenuPhong`, `MenuKhachHang` |
-| Thuê phòng | `HDThuePhong`, `CTHopDong`, `CTKhachO` | `MenuThuePhong` |
-| Dịch vụ & Thanh toán | `DichVu`, `CTSuDungDV`, `HoaDon` | `MenuDichVu`, `MenuHoaDon` |
-| Nhân sự, Kho & Thống kê | `NhanVien`, `NhaCC`, `HangHoa`, `PhieuNhap`, `CTPhieuNhap` | `MenuNhanVien`, `MenuKho`, `MenuThongKe` |
+| Module | Lớp đối tượng | Danh sách | Menu |
+|---|---|---|---|
+| Phòng & Khách hàng | `Nguoi`, `KhachHang`, `Phong`, `PhongThuong`, `PhongDeluxe`, `PhongSuite` | `DSPhong`, `DSKhachHang` | `MenuPhong`, `MenuKhachHang` |
+| Thuê phòng | `HDThuePhong`, `CTHopDong`, `CTKhachO` | `DSHDThuePhong`, `DSCTHopDong`, `DSCTKhachO` | `MenuThuePhong` |
+| Dịch vụ & Thanh toán | `DichVu`, `CTSuDungDV`, `HoaDon` | `DSDichVu`, `DSCTSuDungDV`, `DSHoaDon` | `MenuDichVu`, `MenuHoaDon` |
+| Nhân sự, Kho & Thống kê | `NhanVien`, `NhaCC`, `HangHoa`, `PhieuNhap`, `CTPhieuNhap` | `DSNhanVien`, `DSNhaCC`, `DSHangHoa`, `DSPhieuNhap`, `DSCTPhieuNhap` | `MenuNhanVien`, `MenuKho`, `MenuThongKe` |
 
 ## 2. Quy ước chung
 
@@ -35,10 +35,10 @@ Chương trình chia thành 4 module:
 
 ```text
 src/
-  app/        Main.java (menu chính)
-  core/       lớp dùng chung cho mọi module (nhập liệu, đọc/ghi file, danh sách)
-  model/      19 lớp đối tượng (mục 3, 4)
-  danhsach/   lớp danh sách DSxxx, ví dụ DSPhong, DSCTHopDong
+  app/        Main.java (menu chính), DuLieu.java (giữ các danh sách dùng chung)
+  core/       NhapLieu.java (nhập có kiểm tra), DinhDang.java (ngày, tiền, dòng file)
+  model/      19 lớp đối tượng (mục 2.8, 3, 4)
+  danhsach/   13 lớp danh sách DSxxx, mỗi lớp quản lý một mảng (mục 2.9)
   menu/       MenuPhong, MenuKhachHang, MenuThuePhong, MenuDichVu,
               MenuHoaDon, MenuNhanVien, MenuKho, MenuThongKe
 data/         13 file .txt (mục 5)
@@ -53,7 +53,7 @@ data/         13 file .txt (mục 5)
 
 ### 2.4 Mã đối tượng
 
-Mã do chương trình **tự sinh**, người dùng không nhập. Mã gồm tiền tố cộng số thứ tự 3 chữ số; số mới bằng số lớn nhất đang có cộng 1.
+Mã do chương trình **tự sinh** bằng hàm `sinhMa()` của danh sách, người dùng không nhập. Mã gồm tiền tố cộng số thứ tự 3 chữ số; số mới bằng số lớn nhất đang có cộng 1 (không dùng `n + 1`, vì xóa giữa chừng sẽ sinh ra mã trùng).
 
 | Lớp | Tiền tố | Ví dụ |
 |---|---|---|
@@ -109,7 +109,258 @@ Menu chính:
 - Mỗi mục mở một menu con, lặp cho tới khi người dùng chọn `0. Quay lại`.
 - Mỗi menu danh mục (phòng, khách hàng, nhân viên, dịch vụ, hàng hóa, nhà cung cấp) có tối thiểu: thêm, sửa, xóa, tìm theo mã, xem tất cả.
 - Nhập sai (gõ chữ vào ô số, ngày không hợp lệ…) thì báo lỗi và hỏi lại, không làm chương trình dừng.
-- Sau mỗi thao tác thêm/sửa/xóa, ghi lại ngay các file vừa thay đổi.
+- Menu gọi các hàm **không tham số** của danh sách, ví dụ `DuLieu.dsKhachHang.them()`.
+- Sau mỗi thao tác thêm/sửa/xóa, menu gọi `ghiFile()` của các danh sách vừa thay đổi.
+
+### 2.8 Cách viết lớp đối tượng (`model/`)
+
+Mỗi lớp có:
+
+- Thuộc tính `private` như mục 4.
+- 3 constructor: **không tham số**, **đầy đủ tham số**, **sao chép** (nhận một đối tượng cùng lớp và chép từng thuộc tính).
+- Getter/setter.
+- `nhap()`: nhập các trường người dùng gõ vào, dùng hàm của `core.NhapLieu` (không tự tạo `Scanner`). Không nhập mã (danh sách tự sinh), không nhập mã liên kết (`maKH`, `maP`…) và trường tính toán (`thanhTien`…); các trường này gán bằng setter.
+- `xuat()`: in thông tin ra màn hình.
+- `toLine()`: trả về một dòng file theo mục 5, viết bằng `DinhDang.dong(...)`.
+
+Lớp con gọi `super(...)`, `super.nhap()`, `super.xuat()`, `super.toLine()` rồi thêm phần riêng. `Nguoi` và `Phong` là lớp abstract; `Phong` có thêm phương thức abstract `getLoaiPhong()`. Ví dụ:
+
+```java
+// Phong
+public String toLine() {
+    return DinhDang.dong(getLoaiPhong(), maP, tenP, donGia, soNguoiToiDa, slGiuong, tinhTrang);
+}
+
+// PhongDeluxe
+public String toLine() {
+    return super.toLine() + DinhDang.PHAN_CACH + DinhDang.dong(view, banCong, loaiNoiThat);
+}
+```
+
+### 2.9 Cách viết lớp danh sách (`danhsach/`)
+
+Mỗi danh sách tự quản lý **một mảng** `ds` và biến đếm `n`. Mảng luôn có đúng `n` phần tử: thêm thì nới mảng ra 1 bằng `Arrays.copyOf(ds, n + 1)`, xóa thì dời các phần tử phía sau lên rồi thu mảng lại 1.
+
+Mỗi chức năng có **cặp hàm cùng tên**: hàm không tham số nhập dữ liệu từ bàn phím rồi gọi hàm có tham số. Hàm có tham số dùng được ở module khác; hàm `timTheoMa(ma)` **chỉ trả về, không in**.
+
+Các hàm bắt buộc:
+
+| Hàm | Danh sách có mã (`DSPhong`, `DSHoaDon`…) | Danh sách chi tiết (`DSCTHopDong`…) |
+|---|---|---|
+| `getDs()`, `getN()` | ✓ | ✓ |
+| `them()`, `them(x)` | ✓ | chỉ `them(x)` |
+| `timTheoMa()`, `timTheoMa(ma)` | ✓ | thay bằng các hàm `layTheo...` ở mục 6.6 |
+| `sua()`, `sua(ma)` | ✓ danh mục; chứng từ sửa theo mục 6 | |
+| `xoa()`, `xoa(ma)` | chỉ danh mục (mục 6.5) | |
+| `xuat()`, `docFile()`, `ghiFile()` | ✓ | ✓ |
+| `sinhMa()` | ✓ | |
+
+Mẫu đầy đủ (`DSKhachHang`):
+
+```java
+package danhsach;
+
+import core.DinhDang;
+import core.NhapLieu;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import model.KhachHang;
+
+public class DSKhachHang {
+    private static final String FILE = "data/khachhang.txt";
+    private KhachHang[] ds = new KhachHang[0];
+    private int n = 0;
+
+    public KhachHang[] getDs() {
+        return ds;
+    }
+
+    public int getN() {
+        return n;
+    }
+
+    // Thêm (không tham số): nhập từ bàn phím, tự sinh mã
+    public void them() {
+        KhachHang kh = new KhachHang();
+        kh.nhap();
+        kh.setMaKH(sinhMa());
+        them(kh);
+        System.out.println("Đã thêm khách hàng " + kh.getMaKH());
+    }
+
+    // Thêm (có tham số)
+    public void them(KhachHang kh) {
+        ds = Arrays.copyOf(ds, n + 1);
+        ds[n++] = new KhachHang(kh);
+    }
+
+    // Tìm theo mã (không tham số): nhập mã rồi in kết quả
+    public void timTheoMa() {
+        String ma = NhapLieu.nhapChuoi("Nhập mã khách hàng cần tìm");
+        KhachHang kh = timTheoMa(ma);
+        if (kh == null) {
+            System.out.println("Không tìm thấy khách hàng có mã: " + ma);
+        } else {
+            kh.xuat();
+        }
+    }
+
+    // Tìm theo mã (có tham số): chỉ trả về, không in, không thấy thì trả null
+    public KhachHang timTheoMa(String ma) {
+        for (int i = 0; i < n; i++) {
+            if (ds[i].getMaKH().equalsIgnoreCase(ma)) {
+                return ds[i];
+            }
+        }
+        return null;
+    }
+
+    // Sửa (không tham số)
+    public void sua() {
+        String ma = NhapLieu.nhapChuoi("Nhập mã khách hàng cần sửa");
+        sua(ma);
+    }
+
+    // Sửa (có tham số): nhập lại thông tin, giữ nguyên mã
+    public void sua(String ma) {
+        KhachHang kh = timTheoMa(ma);
+        if (kh == null) {
+            System.out.println("Không tìm thấy khách hàng có mã: " + ma);
+            return;
+        }
+        kh.nhap();
+        System.out.println("Đã cập nhật khách hàng " + kh.getMaKH());
+    }
+
+    // Xóa (không tham số)
+    public void xoa() {
+        String ma = NhapLieu.nhapChuoi("Nhập mã khách hàng cần xóa");
+        xoa(ma);
+    }
+
+    // Xóa (có tham số): dời các phần tử phía sau lên rồi thu mảng lại 1
+    public void xoa(String ma) {
+        for (int i = 0; i < n; i++) {
+            if (ds[i].getMaKH().equalsIgnoreCase(ma)) {
+                for (int j = i; j < n - 1; j++) {
+                    ds[j] = ds[j + 1];
+                }
+                ds = Arrays.copyOf(ds, n - 1);
+                n--;
+                System.out.println("Đã xóa khách hàng có mã: " + ma);
+                return;
+            }
+        }
+        System.out.println("Không tìm thấy khách hàng có mã: " + ma);
+    }
+
+    public void xuat() {
+        if (n == 0) {
+            System.out.println("Danh sách trống.");
+            return;
+        }
+        for (int i = 0; i < n; i++) {
+            ds[i].xuat();
+        }
+    }
+
+    // mã mới = số lớn nhất đang có + 1
+    public String sinhMa() {
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int so = Integer.parseInt(ds[i].getMaKH().substring(2));
+            if (so > max) {
+                max = so;
+            }
+        }
+        return String.format("KH%03d", max + 1);
+    }
+
+    public void docFile() {
+        ds = new KhachHang[0];
+        n = 0;
+        File f = new File(FILE);
+        if (!f.exists()) {
+            return;
+        }
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                String[] t = DinhDang.tach(line);
+                them(new KhachHang(t[0], t[1], t[2], t[3]));
+            }
+        } catch (IOException e) {
+            System.out.println("Lỗi đọc file " + FILE);
+        }
+    }
+
+    public void ghiFile() {
+        new File(FILE).getParentFile().mkdirs();
+        try (BufferedWriter bw = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(FILE), StandardCharsets.UTF_8))) {
+            for (int i = 0; i < n; i++) {
+                bw.write(ds[i].toLine());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Lỗi ghi file " + FILE);
+        }
+    }
+}
+```
+
+Với lớp có lớp con (`DSPhong`):
+
+- `them()` hỏi loại phòng trước, tạo đúng lớp con rồi mới gọi `nhap()`.
+- `them(Phong p)` chép bằng constructor sao chép của đúng lớp con:
+
+  ```java
+  ds = Arrays.copyOf(ds, n + 1);
+  if (p instanceof PhongDeluxe) {
+      ds[n++] = new PhongDeluxe((PhongDeluxe) p);
+  } else if (p instanceof PhongSuite) {
+      ds[n++] = new PhongSuite((PhongSuite) p);
+  } else {
+      ds[n++] = new PhongThuong((PhongThuong) p);
+  }
+  ```
+
+- `docFile()` đọc trường đầu (`t[0]` là `THUONG` / `DELUXE` / `SUITE`) để biết tạo lớp con nào.
+
+Hàm trả về nhiều kết quả (mục 6.6) trả về **mảng**, gom kết quả bằng `Arrays.copyOf`:
+
+```java
+public Phong[] dsPhongTrong() {
+    Phong[] kq = new Phong[0];
+    int dem = 0;
+    for (int i = 0; i < n; i++) {
+        if (ds[i].getTinhTrang().equals(Phong.TRONG)) {
+            kq = Arrays.copyOf(kq, dem + 1);
+            kq[dem++] = ds[i];
+        }
+    }
+    return kq;
+}
+```
+
+Mỗi danh sách được tạo **đúng một lần** trong `app/DuLieu.java` và đọc file trong `DuLieu.docTatCa()`. Module khác dùng `DuLieu.dsKhachHang`, không tự `new DSKhachHang()`:
+
+```java
+public static final DSKhachHang dsKhachHang = new DSKhachHang();   // khai báo trong DuLieu
+dsKhachHang.docFile();                                             // thêm vào docTatCa()
+```
 
 ## 3. Sơ đồ lớp đối tượng
 
@@ -256,7 +507,7 @@ classDiagram
     HangHoa "1" -- "0..*" CTPhieuNhap
 ```
 
-Sơ đồ chỉ ghi thuộc tính và phương thức đặc trưng. Getter/setter, constructor, `nhap()`, `xuat()` lớp nào cũng có nên không vẽ lại.
+Sơ đồ chỉ ghi thuộc tính và phương thức đặc trưng. Getter/setter, constructor, `nhap()`, `xuat()`, `toLine()` lớp nào cũng có (mục 2.8) nên không vẽ lại.
 
 ### Cách đọc sơ đồ
 
@@ -493,16 +744,16 @@ Ví dụ:
 
 ```text
 phong.txt
-THUONG|P001|101|300000.0|2|1|TRONG
-DELUXE|P002|201|600000.0|2|1|DA_THUE|Biển|true|Gỗ sồi
-SUITE|P003|301|1200000.0|4|2|TRONG|true|2
+THUONG|P001|101|300000|2|1|TRONG
+DELUXE|P002|201|600000|2|1|DA_THUE|Biển|true|Gỗ sồi
+SUITE|P003|301|1200000|4|2|TRONG|true|2
 
 dichvu.txt
-DV001|Nước suối|15000.0|HH001
-DV002|Giặt ủi|50000.0|
+DV001|Nước suối|15000|HH001
+DV002|Giặt ủi|50000|
 
 hdthuephong.txt
-HDTP001|KH001|NV001|16/11/2026|500000.0|16/11/2026|18/11/2026
+HDTP001|KH001|NV001|16/11/2026|500000|16/11/2026|18/11/2026
 ```
 
 ## 6. Nghiệp vụ và ràng buộc
@@ -559,22 +810,31 @@ Thống kê (tối thiểu):
 ### 6.5 Xóa
 
 - Không xóa chứng từ và chi tiết: `HDThuePhong`, `CTHopDong`, `CTKhachO`, `CTSuDungDV`, `HoaDon`, `PhieuNhap`, `CTPhieuNhap`.
-- Danh mục (phòng, khách hàng, nhân viên, dịch vụ, hàng hóa, nhà cung cấp) chỉ xóa được khi **chưa được tham chiếu** ở đâu. Ví dụ: xóa phòng thì kiểm tra không có `CTHopDong` nào có `maP` đó.
+- Danh mục (phòng, khách hàng, nhân viên, dịch vụ, hàng hóa, nhà cung cấp) chỉ xóa được khi **chưa được tham chiếu** ở đâu. Kiểm tra trong `xoa(ma)` bằng cách duyệt mảng của danh sách liên quan qua `DuLieu`. Ví dụ xóa phòng:
+
+```java
+for (CTHopDong ct : DuLieu.dsCTHopDong.getDs()) {
+    if (ct.getMaP().equalsIgnoreCase(ma)) {
+        System.out.println("Phòng đã có trong hợp đồng, không xóa được.");
+        return;
+    }
+}
+```
 
 ### 6.6 Hàm giao tiếp giữa các module
 
-Ngoài tìm theo mã, các danh sách cung cấp thêm:
+Ngoài các hàm bắt buộc ở mục 2.9, các danh sách cung cấp thêm:
 
 | Hàm | Trả về | Dùng để |
 |---|---|---|
-| `DSPhong.dsPhongTrong()` | `ArrayList<Phong>` | Liệt kê phòng `TRONG` khi lập hợp đồng |
+| `DSPhong.dsPhongTrong()` | `Phong[]` | Liệt kê phòng `TRONG` khi lập hợp đồng |
 | `DSPhong.capNhatTinhTrang(String maP, String tinhTrang)` | `void` | Đổi tình trạng phòng và ghi file |
 | `DSKhachHang.timTheoSdt(String sdt)` | `KhachHang` | Tìm khách khi lập hợp đồng; không thấy thì `null` |
-| `DSCTHopDong.layTheoHopDong(String maHDong)` | `ArrayList<CTHopDong>` | Lấy các phòng của hợp đồng (tính hóa đơn, trả phòng) |
-| `DSCTKhachO.layTheoPhong(String maHDong, String maP)` | `ArrayList<CTKhachO>` | Lấy khách ở một phòng trong hợp đồng |
-| `DSCTSuDungDV.layTheoHopDong(String maHDong)` | `ArrayList<CTSuDungDV>` | Lấy dịch vụ đã dùng của hợp đồng |
+| `DSCTHopDong.layTheoHopDong(String maHDong)` | `CTHopDong[]` | Lấy các phòng của hợp đồng (tính hóa đơn, trả phòng) |
+| `DSCTKhachO.layTheoPhong(String maHDong, String maP)` | `CTKhachO[]` | Lấy khách ở một phòng trong hợp đồng |
+| `DSCTSuDungDV.layTheoHopDong(String maHDong)` | `CTSuDungDV[]` | Lấy dịch vụ đã dùng của hợp đồng |
 | `DSHoaDon.timTheoHopDong(String maHDong)` | `HoaDon` | Kiểm tra hợp đồng đã có hóa đơn chưa; chưa thì `null` |
-| `DSCTPhieuNhap.layTheoPhieu(String maPN)` | `ArrayList<CTPhieuNhap>` | Lấy các mặt hàng của phiếu nhập |
+| `DSCTPhieuNhap.layTheoPhieu(String maPN)` | `CTPhieuNhap[]` | Lấy các mặt hàng của phiếu nhập |
 | `DSHangHoa.truKho(String maH, int sl)` | `boolean` | Trừ kho khi dùng dịch vụ; `false` nếu không đủ hàng (không trừ) |
 | `DSHangHoa.congKho(String maH, int sl)` | `void` | Cộng kho khi nhập hàng |
 
@@ -585,7 +845,7 @@ Các giá trị dưới đây không lưu thành thuộc tính mà được tín
 | Giá trị | Cách tính |
 |---|---|
 | Số ngày thuê của hợp đồng | `HDThuePhong.soNgayThue()` |
-| Số phòng của hợp đồng | Số phần tử của `DSCTHopDong.layTheoHopDong(maHDong)` |
+| Số phòng của hợp đồng | `DSCTHopDong.layTheoHopDong(maHDong).length` |
 | Khách đứng tên hóa đơn | `HoaDon.maHDong` → `HDThuePhong.maKH` |
 | Số còn phải trả | `HoaDon.tongCong` − `HDThuePhong.tienCoc` |
 | Doanh thu theo phòng | Tổng `CTHopDong.thanhTien` của phòng đó, chỉ tính hợp đồng đã có hóa đơn `DA_TT` |
