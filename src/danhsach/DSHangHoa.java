@@ -278,6 +278,10 @@ public class DSHangHoa {
                 }
                 try {
                     String[] t = DinhDang.tach(line);
+                    // mã sai dạng sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
+                    if (!t[0].matches("HH\\d+")) {
+                        throw new IllegalArgumentException();
+                    }
                     them(new HangHoa(t[0], t[1], Double.parseDouble(t[2]), Integer.parseInt(t[3])));
                 } catch (RuntimeException e) {
                     System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + line);

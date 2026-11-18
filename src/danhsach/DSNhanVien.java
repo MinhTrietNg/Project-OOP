@@ -295,6 +295,10 @@ public class DSNhanVien {
                 }
                 try {
                     String[] t = DinhDang.tach(line);
+                    // mã sai dạng (vd "NVabc") sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
+                    if (!t[0].matches("NV\\d+")) {
+                        throw new IllegalArgumentException();
+                    }
                     them(new NhanVien(t[0], t[1], t[2], t[3], Double.parseDouble(t[4])));
                 } catch (RuntimeException e) {
                     System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + line);

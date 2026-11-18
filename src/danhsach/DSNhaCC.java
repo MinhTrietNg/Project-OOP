@@ -187,6 +187,10 @@ public class DSNhaCC {
                 }
                 try {
                     String[] t = DinhDang.tach(line);
+                    // mã sai dạng sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
+                    if (!t[0].matches("NCC\\d+")) {
+                        throw new IllegalArgumentException();
+                    }
                     them(new NhaCC(t[0], t[1], t[2], t[3]));
                 } catch (RuntimeException e) {
                     System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + line);

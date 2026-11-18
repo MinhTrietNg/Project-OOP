@@ -328,6 +328,10 @@ public class DSPhieuNhap {
                 }
                 try {
                     String[] t = DinhDang.tach(line);
+                    // mã sai dạng sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
+                    if (!t[0].matches("PN\\d+")) {
+                        throw new IllegalArgumentException();
+                    }
                     them(new PhieuNhap(t[0], t[1], t[2], DinhDang.docNgay(t[3]),
                             Double.parseDouble(t[4])));
                 } catch (RuntimeException e) {

@@ -84,7 +84,8 @@ public class CTPhieuNhap implements DoiTuong {
     // chỉ nhập số lượng và giá; maPN, maH do DSPhieuNhap gán, thanhTien tự tính
     @Override
     public void nhap() {
-        sl = NhapLieu.nhapSoNguyen("Số lượng nhập", 1, Integer.MAX_VALUE);
+        // chặn trên để slTon (kiểu int) cộng dồn không bị tràn số thành số âm
+        sl = NhapLieu.nhapSoNguyen("Số lượng nhập", 1, 100000);
         donGiaNhap = NhapLieu.nhapSoThuc("Đơn giá nhập", 1);
         tinhThanhTien();
     }
