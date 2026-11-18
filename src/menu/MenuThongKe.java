@@ -52,18 +52,14 @@ public class MenuThongKe {
         int nam = NhapLieu.nhapSoNguyen("Năm", 2000, 2100);
         int thang = NhapLieu.nhapSoNguyen("Tháng (0 = cả năm)", 0, 12);
         double tong = 0;
-        int soHoaDon = 0;
         for (HoaDon hd : DuLieu.dsHoaDon.getDs()) {
             LocalDate d = hd.getNgayLapHD();
             boolean dungKy = d.getYear() == nam && (thang == 0 || d.getMonthValue() == thang);
             if (dungKy && hd.getTrangThai().equals(HoaDon.DA_TT)) {
                 tong += hd.getTongCong();
-                soHoaDon++;
             }
         }
-        String ky = (thang == 0) ? "năm " + nam : "tháng " + thang + "/" + nam;
-        System.out.println("Doanh thu " + ky + ": " + DinhDang.tien(tong)
-                + " (" + soHoaDon + " hóa đơn đã thanh toán)");
+        System.out.println("Doanh thu: " + DinhDang.tien(tong));
         */
     }
 
@@ -72,7 +68,6 @@ public class MenuThongKe {
         System.out.println("Cần module Phòng (Phong), sẽ bật khi ghép code.");
         /*
         String[] cacLoai = {"THUONG", "DELUXE", "SUITE"};
-        System.out.printf("%-8s %8s %8s %8s%n", "Loại", "Trống", "Đã thuê", "Tổng");
         for (String loai : cacLoai) {
             int trong = 0;
             int daThue = 0;
@@ -85,7 +80,7 @@ public class MenuThongKe {
                     }
                 }
             }
-            System.out.printf("%-8s %8d %8d %8d%n", loai, trong, daThue, trong + daThue);
+            System.out.println(loai + ": " + trong + " trống, " + daThue + " đã thuê");
         }
         */
     }
@@ -95,23 +90,18 @@ public class MenuThongKe {
     private static void doanhThuTheoPhong() {
         System.out.println("Cần module Phòng, Thuê phòng và Hóa đơn, sẽ bật khi ghép code.");
         /*
-        System.out.printf("%-6s %-6s %18s%n", "Mã P", "Số P", "Doanh thu");
-        double tongTatCa = 0;
         for (Phong p : DuLieu.dsPhong.getDs()) {
             double tong = 0;
             for (CTHopDong ct : DuLieu.dsCTHopDong.getDs()) {
-                if (!ct.getMaP().equalsIgnoreCase(p.getMaP())) {
-                    continue;
-                }
-                HoaDon hd = DuLieu.dsHoaDon.timTheoHopDong(ct.getMaHDong());
-                if (hd != null && hd.getTrangThai().equals(HoaDon.DA_TT)) {
-                    tong += ct.getThanhTien();
+                if (ct.getMaP().equalsIgnoreCase(p.getMaP())) {
+                    HoaDon hd = DuLieu.dsHoaDon.timTheoHopDong(ct.getMaHDong());
+                    if (hd != null && hd.getTrangThai().equals(HoaDon.DA_TT)) {
+                        tong += ct.getThanhTien();
+                    }
                 }
             }
-            System.out.printf("%-6s %-6s %18s%n", p.getMaP(), p.getTenP(), DinhDang.tien(tong));
-            tongTatCa += tong;
+            System.out.println("Phòng " + p.getTenP() + ": " + DinhDang.tien(tong));
         }
-        System.out.println("Tổng doanh thu tiền phòng: " + DinhDang.tien(tongTatCa));
         */
     }
 }

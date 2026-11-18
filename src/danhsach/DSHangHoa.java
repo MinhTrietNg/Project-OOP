@@ -3,16 +3,8 @@ package danhsach;
 import app.DuLieu;
 import core.DinhDang;
 import core.NhapLieu;
+import core.TepTin;
 import core.TimKiem;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import model.CTPhieuNhap;
 import model.HangHoa;
@@ -33,18 +25,19 @@ public class DSHangHoa {
 
     // ================= CÁC HÀM BẮT BUỘC (gói 50%) =================
 
-    // hàng mới luôn có slTon = 0 (constructor không tham số đã gán), chỉ tăng khi lập phiếu nhập
+    // hàng mới có slTon = 0 (constructor không tham số đã gán), chỉ tăng khi lập phiếu nhập
     public void them() {
         HangHoa hh = new HangHoa();
         hh.nhap();
         hh.setMaH(sinhMa());
         them(hh);
-        System.out.println("Đã thêm hàng hóa " + hh.getMaH() + " (tồn kho = 0, hãy lập phiếu nhập)");
+        System.out.println("Đã thêm hàng " + hh.getMaH() + " (tồn kho = 0, hãy lập phiếu nhập)");
     }
 
     public void them(HangHoa hh) {
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n++] = new HangHoa(hh);
+        ds[n] = new HangHoa(hh);
+        n++;
     }
 
     public void timTheoMa() {
@@ -53,7 +46,6 @@ public class DSHangHoa {
         if (hh == null) {
             System.out.println("Không tìm thấy hàng có mã: " + ma);
         } else {
-            HangHoa.inTieuDe();
             hh.xuat();
         }
     }
@@ -67,12 +59,12 @@ public class DSHangHoa {
         return null;
     }
 
-    // sửa tên và giá; số lượng tồn không sửa tay được
     public void sua() {
         String ma = NhapLieu.nhapChuoi("Nhập mã hàng cần sửa");
         sua(ma);
     }
 
+    // sửa tên và giá; slTon không sửa tay được (nhap() không hỏi slTon)
     public void sua(String ma) {
         HangHoa hh = timTheoMa(ma);
         if (hh == null) {
@@ -80,7 +72,7 @@ public class DSHangHoa {
             return;
         }
         hh.nhap();
-        System.out.println("Đã cập nhật hàng " + hh.getMaH());
+        System.out.println("Đã cập nhật hàng " + ma);
     }
 
     public void xoa() {
@@ -125,15 +117,13 @@ public class DSHangHoa {
     public void xuat(HangHoa[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
-            return;
         }
-        HangHoa.inTieuDe();
         for (HangHoa hh : mang) {
             hh.xuat();
         }
     }
 
-    // "HH005" -> substring(2) = "005" -> 5
+    // "HH005".substring(2) = "005" -> 5
     public String sinhMa() {
         int max = 0;
         for (int i = 0; i < n; i++) {
@@ -147,7 +137,7 @@ public class DSHangHoa {
 
     public HangHoa chon() {
         while (true) {
-            String ma = NhapLieu.nhapChuoi("Nhập mã hàng (0 để dừng)");
+            String ma = NhapLieu.nhapChuoi("Nhập mã hàng (0 để thoát)");
             if (ma.equals("0")) {
                 return null;
             }
@@ -159,7 +149,7 @@ public class DSHangHoa {
         }
     }
 
-    // ---------- 2 hàm giao tiếp với module khác (mục 6.6) ----------
+    // ---------- 2 hàm cho module khác gọi (mục 6.6) ----------
 
     // module Dịch vụ gọi khi khách dùng dịch vụ có tiêu hao hàng
     // không đủ hàng thì KHÔNG trừ và trả false để bên kia báo lỗi
@@ -189,51 +179,42 @@ public class DSHangHoa {
 
     public HangHoa[] timTheoTen(String tuKhoa) {
         HangHoa[] kq = new HangHoa[0];
-        int dem = 0;
         for (int i = 0; i < n; i++) {
             if (TimKiem.chua(ds[i].getTenH(), tuKhoa)) {
-                kq = Arrays.copyOf(kq, dem + 1);
-                kq[dem++] = ds[i];
-            }
-        }
-        return kq;
-    }
-
-    // hàng có tồn kho <= ngưỡng, cần nhập thêm
-    public HangHoa[] dsSapHet(int nguong) {
-        HangHoa[] kq = new HangHoa[0];
-        int dem = 0;
-        for (int i = 0; i < n; i++) {
-            if (ds[i].getSlTon() <= nguong) {
-                kq = Arrays.copyOf(kq, dem + 1);
-                kq[dem++] = ds[i];
+                kq = Arrays.copyOf(kq, kq.length + 1);
+                kq[kq.length - 1] = ds[i];
             }
         }
         return kq;
     }
 
     public void xuatSapHet() {
-        int nguong = NhapLieu.nhapSoNguyen("Ngưỡng cảnh báo (tồn <= ngưỡng)", 0, Integer.MAX_VALUE);
+        int nguong = NhapLieu.nhapSoNguyen("Ngưỡng cảnh báo (tồn <= ngưỡng)", 0, 100000);
         HangHoa[] kq = dsSapHet(nguong);
-        if (kq.length == 0) {
-            System.out.println("Không có hàng nào sắp hết.");
-            return;
-        }
         System.out.println("Có " + kq.length + " mặt hàng cần nhập thêm:");
         xuat(kq);
     }
 
-    // tổng tiền hàng đang nằm trong kho
-    public double tongGiaTriTon() {
-        double tong = 0;
+    // hàng có tồn kho <= ngưỡng
+    public HangHoa[] dsSapHet(int nguong) {
+        HangHoa[] kq = new HangHoa[0];
         for (int i = 0; i < n; i++) {
-            tong += ds[i].giaTriTon();
+            if (ds[i].getSlTon() <= nguong) {
+                kq = Arrays.copyOf(kq, kq.length + 1);
+                kq[kq.length - 1] = ds[i];
+            }
         }
-        return tong;
+        return kq;
     }
 
-    // sắp xếp nổi bọt (bubble sort) trên bản sao: tồn ít nhất lên đầu để dễ thấy hàng cần nhập
-    // mỗi lượt đẩy phần tử tồn nhiều nhất còn lại xuống cuối
+    // báo cáo tồn kho (mục 6.4): tồn ít nhất in trước + tổng giá trị
+    public void xuatTonKho() {
+        xuat(sapXepTheoTonTang());
+        System.out.println("Tổng giá trị hàng trong kho: " + DinhDang.tien(tongGiaTriTon()));
+    }
+
+    // sắp xếp nổi bọt trên BẢN SAO: người trước tồn nhiều hơn thì đổi chỗ
+    // (giống hệt DSNhanVien.sapXepTheoLuongGiam, chỉ khác điều kiện so sánh)
     public HangHoa[] sapXepTheoTonTang() {
         HangHoa[] kq = Arrays.copyOf(ds, n);
         for (int i = 0; i < n - 1; i++) {
@@ -248,60 +229,37 @@ public class DSHangHoa {
         return kq;
     }
 
-    // báo cáo tồn kho (mục 6.4): danh sách theo tồn tăng dần + tổng giá trị
-    public void xuatTonKho() {
-        xuat(sapXepTheoTonTang());
-        int tongSl = 0;
+    public double tongGiaTriTon() {
+        double tong = 0;
         for (int i = 0; i < n; i++) {
-            tongSl += ds[i].getSlTon();
+            tong += ds[i].giaTriTon();
         }
-        System.out.println("Số mặt hàng     : " + n);
-        System.out.println("Tổng số lượng   : " + tongSl);
-        System.out.println("Tổng giá trị tồn: " + DinhDang.tien(tongGiaTriTon()));
+        return tong;
     }
 
     // ================= ĐỌC / GHI FILE =================
 
+    // hanghoa.txt: maH|tenH|donGia|slTon
     public void docFile() {
         ds = new HangHoa[0];
         n = 0;
-        File f = new File(FILE);
-        if (!f.exists()) {
-            return;
-        }
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    continue;
+        for (String[] t : TepTin.doc(FILE)) {
+            try {
+                if (!t[0].matches("HH\\d+")) {
+                    throw new IllegalArgumentException();
                 }
-                try {
-                    String[] t = DinhDang.tach(line);
-                    // mã sai dạng sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
-                    if (!t[0].matches("HH\\d+")) {
-                        throw new IllegalArgumentException();
-                    }
-                    them(new HangHoa(t[0], t[1], Double.parseDouble(t[2]), Integer.parseInt(t[3])));
-                } catch (RuntimeException e) {
-                    System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + line);
-                }
+                them(new HangHoa(t[0], t[1], Double.parseDouble(t[2]), Integer.parseInt(t[3])));
+            } catch (RuntimeException e) {
+                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
             }
-        } catch (IOException e) {
-            System.out.println("Lỗi đọc file " + FILE);
         }
     }
 
     public void ghiFile() {
-        new File(FILE).getParentFile().mkdirs();
-        try (BufferedWriter bw = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(FILE), StandardCharsets.UTF_8))) {
-            for (int i = 0; i < n; i++) {
-                bw.write(ds[i].toLine());
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Lỗi ghi file " + FILE);
+        String[] cacDong = new String[n];
+        for (int i = 0; i < n; i++) {
+            cacDong[i] = ds[i].toLine();
         }
+        TepTin.ghi(FILE, cacDong);
     }
 }

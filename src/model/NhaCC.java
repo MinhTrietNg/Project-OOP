@@ -72,13 +72,10 @@ public class NhaCC implements DoiTuong {
         sdt = NhapLieu.nhapSdt("Số điện thoại");
     }
 
-    public static void inTieuDe() {
-        System.out.printf("%-7s %-32s %-28s %-11s%n", "Mã NCC", "Tên nhà cung cấp", "Địa chỉ", "SĐT");
-    }
-
+    // vd: NCC001 | Công ty ABC | 12 Lê Lợi | 0281234567
     @Override
     public void xuat() {
-        System.out.printf("%-7s %-32s %-28s %-11s%n", maNCC, tenNCC, diaChi, sdt);
+        System.out.println(maNCC + " | " + tenNCC + " | " + diaChi + " | " + sdt);
     }
 
     // nhacc.txt: maNCC|tenNCC|diaChi|sdt

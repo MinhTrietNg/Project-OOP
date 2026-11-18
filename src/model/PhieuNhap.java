@@ -92,14 +92,11 @@ public class PhieuNhap implements DoiTuong {
         ngayNhap = LocalDate.now();
     }
 
-    public static void inTieuDe() {
-        System.out.printf("%-6s %-11s %-7s %-6s %17s%n", "Mã PN", "Ngày nhập", "Mã NCC", "Mã NV", "Tổng tiền");
-    }
-
+    // vd: PN001 | 18/11/2026 | NCC001 | NV002 | 1.210.000 đ
     @Override
     public void xuat() {
-        System.out.printf("%-6s %-11s %-7s %-6s %17s%n",
-                maPN, DinhDang.ngay(ngayNhap), maNCC, maNV, DinhDang.tien(tongTien));
+        System.out.println(maPN + " | " + DinhDang.ngay(ngayNhap) + " | " + maNCC + " | " + maNV
+                + " | " + DinhDang.tien(tongTien));
     }
 
     // phieunhap.txt: maPN|maNCC|maNV|ngayNhap|tongTien

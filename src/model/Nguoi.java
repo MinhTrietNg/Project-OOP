@@ -47,9 +47,9 @@ public abstract class Nguoi implements DoiTuong {
         sdt = NhapLieu.nhapSdt("Số điện thoại");
     }
 
-    // in 2 cột họ tên, sđt trên cùng 1 dòng, lớp con in tiếp phần riêng rồi xuống dòng
+    // in họ tên, sđt (chưa xuống dòng), lớp con in tiếp phần riêng rồi mới xuống dòng
     @Override
     public void xuat() {
-        System.out.printf("%-24s %-11s ", hoTen, sdt);
+        System.out.print(hoTen + " | " + sdt + " | ");
     }
 }

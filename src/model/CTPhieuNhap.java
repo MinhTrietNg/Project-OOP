@@ -90,14 +90,11 @@ public class CTPhieuNhap implements DoiTuong {
         tinhThanhTien();
     }
 
-    public static void inTieuDe() {
-        System.out.printf("%-6s %-6s %6s %15s %17s%n", "Mã PN", "Mã H", "SL", "Đơn giá nhập", "Thành tiền");
-    }
-
+    // vd: PN001 | HH001 | 100 x 4.500 đ = 450.000 đ
     @Override
     public void xuat() {
-        System.out.printf("%-6s %-6s %6d %15s %17s%n",
-                maPN, maH, sl, DinhDang.tien(donGiaNhap), DinhDang.tien(thanhTien));
+        System.out.println(maPN + " | " + maH + " | " + sl + " x " + DinhDang.tien(donGiaNhap)
+                + " = " + DinhDang.tien(thanhTien));
     }
 
     // ctphieunhap.txt: maPN|maH|sl|donGiaNhap|thanhTien

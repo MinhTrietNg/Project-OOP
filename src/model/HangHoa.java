@@ -77,14 +77,10 @@ public class HangHoa implements DoiTuong {
         donGia = NhapLieu.nhapSoThuc("Đơn giá nhập", 0);
     }
 
-    public static void inTieuDe() {
-        System.out.printf("%-6s %-24s %15s %8s %17s%n", "Mã", "Tên hàng", "Đơn giá", "Tồn", "Giá trị tồn");
-    }
-
+    // vd: HH001 | Nước suối | giá nhập 4.500 đ | tồn 100
     @Override
     public void xuat() {
-        System.out.printf("%-6s %-24s %15s %8d %17s%n",
-                maH, tenH, DinhDang.tien(donGia), slTon, DinhDang.tien(giaTriTon()));
+        System.out.println(maH + " | " + tenH + " | giá nhập " + DinhDang.tien(donGia) + " | tồn " + slTon);
     }
 
     // hanghoa.txt: maH|tenH|donGia|slTon

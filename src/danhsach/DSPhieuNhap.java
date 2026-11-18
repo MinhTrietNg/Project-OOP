@@ -3,15 +3,7 @@ package danhsach;
 import app.DuLieu;
 import core.DinhDang;
 import core.NhapLieu;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import core.TepTin;
 import java.time.LocalDate;
 import java.util.Arrays;
 import model.CTPhieuNhap;
@@ -36,17 +28,16 @@ public class DSPhieuNhap {
     }
 
     // ================= LẬP PHIẾU NHẬP (nghiệp vụ mục 6.4) =================
+    //   B1. them()        : chọn nhà cung cấp, nhân viên; tạo đầu phiếu
+    //   B2. nhapCacDong() : nhập từng mặt hàng vào MẢNG TẠM, chưa đụng tới kho
+    //   B3. luuPhieu()    : cộng kho, cập nhật giá nhập, lưu chi tiết và phiếu
+    // Hủy ở B1 hoặc B2 thì chưa có gì bị lưu, nên kho không bị cộng sai.
+    // Menu gọi xong thì ghi 3 file: phiếu nhập, chi tiết phiếu nhập, hàng hóa.
 
-    // Các bước:
-    //   B1. chọn nhà cung cấp, nhân viên lập; ngày nhập = hôm nay
-    //   B2. nhập từng mặt hàng vào 1 MẢNG TẠM (chưa đụng tới kho)
-    //   B3. xong hết mới lưu: cộng kho, cập nhật giá nhập, thêm chi tiết, tính tổng tiền
-    // Nhờ mảng tạm nên người dùng hủy giữa chừng thì kho không bị cộng sai.
-    // Sau khi gọi hàm này, menu ghi file: dsPhieuNhap, dsCTPhieuNhap, dsHangHoa.
     public void them() {
         if (DuLieu.dsNhaCC.getN() == 0 || DuLieu.dsNhanVien.getN() == 0
                 || DuLieu.dsHangHoa.getN() == 0) {
-            System.out.println("Cần có ít nhất 1 nhà cung cấp, 1 nhân viên và 1 hàng hóa trước khi nhập hàng.");
+            System.out.println("Cần có nhà cung cấp, nhân viên và hàng hóa trước khi nhập hàng.");
             return;
         }
 
@@ -70,51 +61,43 @@ public class DSPhieuNhap {
         pn.setMaNV(nv.getMaNV());
 
         // ----- B2 -----
-        CTPhieuNhap[] cacDong = new CTPhieuNhap[0];
-        DuLieu.dsHangHoa.xuat();
-        while (true) {
-            HangHoa hh = DuLieu.dsHangHoa.chon();
-            if (hh == null) {
-                break;                   // gõ 0: thôi chọn hàng
-            }
-            if (daCoTrongPhieu(cacDong, hh.getMaH())) {
-                System.out.println("  Hàng " + hh.getMaH() + " đã có trong phiếu, chọn hàng khác.");
-                continue;
-            }
-            System.out.println("  " + hh.getTenH() + " | tồn: " + hh.getSlTon()
-                    + " | giá nhập lần trước: " + DinhDang.tien(hh.getDonGia()));
-            CTPhieuNhap ct = new CTPhieuNhap();
-            ct.nhap();                   // sl, đơn giá nhập, tự tính thành tiền
-            ct.setMaPN(pn.getMaPN());
-            ct.setMaH(hh.getMaH());
-            cacDong = Arrays.copyOf(cacDong, cacDong.length + 1);
-            cacDong[cacDong.length - 1] = ct;
-
-            if (!NhapLieu.nhapCoKhong("Nhập thêm mặt hàng khác")) {
-                break;
-            }
-        }
+        CTPhieuNhap[] cacDong = nhapCacDong(pn.getMaPN());
         if (cacDong.length == 0) {
             System.out.println("Phiếu phải có ít nhất 1 mặt hàng. Đã hủy lập phiếu.");
             return;
         }
 
         // ----- B3 -----
-        for (CTPhieuNhap ct : cacDong) {
-            DuLieu.dsHangHoa.congKho(ct.getMaH(), ct.getSl());
-            DuLieu.dsHangHoa.timTheoMa(ct.getMaH()).setDonGia(ct.getDonGiaNhap());
-            DuLieu.dsCTPhieuNhap.them(ct);
-        }
-        pn.tinhTongTien(cacDong);
-        them(pn);
-
+        luuPhieu(pn, cacDong);
         System.out.println("Đã lập phiếu nhập " + pn.getMaPN() + ":");
         xuatChiTiet(pn.getMaPN());
     }
 
-    public void them(PhieuNhap pn) {
-        ds = Arrays.copyOf(ds, n + 1);
-        ds[n++] = new PhieuNhap(pn);
+    // B2: hỏi từng mặt hàng tới khi người dùng gõ 0 hoặc trả lời "k"
+    private CTPhieuNhap[] nhapCacDong(String maPN) {
+        CTPhieuNhap[] cacDong = new CTPhieuNhap[0];
+        DuLieu.dsHangHoa.xuat();
+        while (true) {
+            HangHoa hh = DuLieu.dsHangHoa.chon();
+            if (hh == null) {
+                return cacDong;
+            }
+            if (daCoTrongPhieu(cacDong, hh.getMaH())) {
+                System.out.println("  Hàng " + hh.getMaH() + " đã có trong phiếu, chọn hàng khác.");
+                continue;
+            }
+            System.out.println("  " + hh.getTenH() + " - giá nhập lần trước: " + DinhDang.tien(hh.getDonGia()));
+            CTPhieuNhap ct = new CTPhieuNhap();
+            ct.nhap();                   // sl, đơn giá nhập, tự tính thành tiền
+            ct.setMaPN(maPN);
+            ct.setMaH(hh.getMaH());
+            cacDong = Arrays.copyOf(cacDong, cacDong.length + 1);
+            cacDong[cacDong.length - 1] = ct;
+
+            if (!NhapLieu.nhapCoKhong("Nhập thêm mặt hàng khác")) {
+                return cacDong;
+            }
+        }
     }
 
     // 1 phiếu không được có 2 dòng cùng 1 mặt hàng
@@ -127,9 +110,26 @@ public class DSPhieuNhap {
         return false;
     }
 
+    // B3: tới đây dữ liệu đã đầy đủ, mới thật sự thay đổi kho
+    private void luuPhieu(PhieuNhap pn, CTPhieuNhap[] cacDong) {
+        for (CTPhieuNhap ct : cacDong) {
+            DuLieu.dsHangHoa.congKho(ct.getMaH(), ct.getSl());
+            DuLieu.dsHangHoa.timTheoMa(ct.getMaH()).setDonGia(ct.getDonGiaNhap());
+            DuLieu.dsCTPhieuNhap.them(ct);
+        }
+        pn.tinhTongTien(cacDong);
+        them(pn);
+    }
+
+    public void them(PhieuNhap pn) {
+        ds = Arrays.copyOf(ds, n + 1);
+        ds[n] = new PhieuNhap(pn);
+        n++;
+    }
+
     // ================= CÁC HÀM BẮT BUỘC KHÁC (gói 50%) =================
 
-    // tìm theo mã thì in luôn chi tiết phiếu cho tiện
+    // tìm theo mã thì in luôn chi tiết phiếu
     public void timTheoMa() {
         String ma = NhapLieu.nhapChuoi("Nhập mã phiếu nhập");
         xuatChiTiet(ma);
@@ -151,15 +151,13 @@ public class DSPhieuNhap {
     public void xuat(PhieuNhap[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
-            return;
         }
-        PhieuNhap.inTieuDe();
         for (PhieuNhap pn : mang) {
             pn.xuat();
         }
     }
 
-    // in 1 phiếu đầy đủ: đầu phiếu (có tên NCC, tên NV) + bảng các mặt hàng
+    // in 1 phiếu đầy đủ: đầu phiếu (kèm tên NCC, tên NV) + từng mặt hàng
     public void xuatChiTiet(String maPN) {
         PhieuNhap pn = timTheoMa(maPN);
         if (pn == null) {
@@ -168,26 +166,23 @@ public class DSPhieuNhap {
         }
         NhaCC ncc = DuLieu.dsNhaCC.timTheoMa(pn.getMaNCC());
         NhanVien nv = DuLieu.dsNhanVien.timTheoMa(pn.getMaNV());
-        String tenNCC = (ncc == null) ? "(không rõ)" : ncc.getTenNCC();
-        String tenNV = (nv == null) ? "(không rõ)" : nv.getHoTen();
-
-        System.out.println("----------- PHIẾU NHẬP " + pn.getMaPN() + " -----------");
+        System.out.println("----- PHIẾU NHẬP " + pn.getMaPN() + " -----");
         System.out.println("Ngày nhập   : " + DinhDang.ngay(pn.getNgayNhap()));
-        System.out.println("Nhà cung cấp: " + pn.getMaNCC() + " - " + tenNCC);
-        System.out.println("Nhân viên   : " + pn.getMaNV() + " - " + tenNV);
-        System.out.printf("%-4s %-6s %-22s %6s %15s %17s%n",
-                "STT", "Mã H", "Tên hàng", "SL", "Đơn giá nhập", "Thành tiền");
+        System.out.println("Nhà cung cấp: " + (ncc == null ? pn.getMaNCC() : ncc.getTenNCC()));
+        System.out.println("Nhân viên   : " + (nv == null ? pn.getMaNV() : nv.getHoTen()));
+
         CTPhieuNhap[] cacDong = DuLieu.dsCTPhieuNhap.layTheoPhieu(pn.getMaPN());
         for (int i = 0; i < cacDong.length; i++) {
             CTPhieuNhap ct = cacDong[i];
             HangHoa hh = DuLieu.dsHangHoa.timTheoMa(ct.getMaH());
-            String tenH = (hh == null) ? "(không rõ)" : hh.getTenH();
-            System.out.printf("%-4d %-6s %-22s %6d %15s %17s%n", i + 1, ct.getMaH(), tenH,
-                    ct.getSl(), DinhDang.tien(ct.getDonGiaNhap()), DinhDang.tien(ct.getThanhTien()));
+            String tenH = (hh == null) ? ct.getMaH() : hh.getTenH();
+            System.out.println((i + 1) + ". " + tenH + ": " + ct.getSl() + " x "
+                    + DinhDang.tien(ct.getDonGiaNhap()) + " = " + DinhDang.tien(ct.getThanhTien()));
         }
-        System.out.println("TỔNG TIỀN   : " + DinhDang.tien(pn.getTongTien()));
+        System.out.println("Tổng tiền   : " + DinhDang.tien(pn.getTongTien()));
     }
 
+    // "PN012".substring(2) = "012" -> 12
     public String sinhMa() {
         int max = 0;
         for (int i = 0; i < n; i++) {
@@ -210,22 +205,17 @@ public class DSPhieuNhap {
         }
         PhieuNhap[] kq = locTheoKhoangNgay(tu, den);
         xuat(kq);
-        double tong = 0;
-        for (PhieuNhap pn : kq) {
-            tong += pn.getTongTien();
-        }
-        System.out.println("Số phiếu: " + kq.length + " | Tổng tiền nhập: " + DinhDang.tien(tong));
+        System.out.println("Có " + kq.length + " phiếu");
     }
 
-    // tu <= ngayNhap <= den  (viết là: không trước tu và không sau den)
+    // tu <= ngayNhap <= den   (tức là: KHÔNG trước tu và KHÔNG sau den)
     public PhieuNhap[] locTheoKhoangNgay(LocalDate tu, LocalDate den) {
         PhieuNhap[] kq = new PhieuNhap[0];
-        int dem = 0;
         for (int i = 0; i < n; i++) {
             LocalDate d = ds[i].getNgayNhap();
             if (!d.isBefore(tu) && !d.isAfter(den)) {
-                kq = Arrays.copyOf(kq, dem + 1);
-                kq[dem++] = ds[i];
+                kq = Arrays.copyOf(kq, kq.length + 1);
+                kq[kq.length - 1] = ds[i];
             }
         }
         return kq;
@@ -243,30 +233,21 @@ public class DSPhieuNhap {
         return tong;
     }
 
-    // chi phí nhập hàng 12 tháng của 1 năm
+    // 3 thống kê dưới cùng 1 khuôn: vòng ngoài duyệt nhóm, vòng trong cộng dồn phiếu thuộc nhóm đó
+
     public void thongKeTheoThang() {
         int nam = NhapLieu.nhapSoNguyen("Năm", 2000, 2100);
-        System.out.printf("%-6s %18s%n", "Tháng", "Tiền nhập hàng");
         double tongNam = 0;
         for (int thang = 1; thang <= 12; thang++) {
             double tien = tongTienNhap(thang, nam);
-            System.out.printf("%-6d %18s%n", thang, DinhDang.tien(tien));
+            System.out.println("Tháng " + thang + ": " + DinhDang.tien(tien));
             tongNam += tien;
         }
         System.out.println("Cả năm " + nam + ": " + DinhDang.tien(tongNam));
     }
 
-    // mỗi nhà cung cấp: số phiếu, tổng tiền; cuối cùng chỉ ra nhà cung cấp nhập nhiều tiền nhất
     public void thongKeTheoNhaCC() {
-        NhaCC[] dsNCC = DuLieu.dsNhaCC.getDs();
-        if (dsNCC.length == 0) {
-            System.out.println("Chưa có nhà cung cấp.");
-            return;
-        }
-        System.out.printf("%-7s %-32s %8s %18s%n", "Mã NCC", "Tên nhà cung cấp", "Số phiếu", "Tổng tiền");
-        NhaCC nhieuNhat = null;
-        double tienNhieuNhat = 0;
-        for (NhaCC ncc : dsNCC) {
+        for (NhaCC ncc : DuLieu.dsNhaCC.getDs()) {
             int soPhieu = 0;
             double tong = 0;
             for (int i = 0; i < n; i++) {
@@ -275,28 +256,12 @@ public class DSPhieuNhap {
                     tong += ds[i].getTongTien();
                 }
             }
-            System.out.printf("%-7s %-32s %8d %18s%n",
-                    ncc.getMaNCC(), ncc.getTenNCC(), soPhieu, DinhDang.tien(tong));
-            if (tong > tienNhieuNhat) {
-                tienNhieuNhat = tong;
-                nhieuNhat = ncc;
-            }
-        }
-        if (nhieuNhat != null) {
-            System.out.println("Nhập nhiều nhất từ: " + nhieuNhat.getTenNCC()
-                    + " (" + DinhDang.tien(tienNhieuNhat) + ")");
+            System.out.println(ncc.getTenNCC() + ": " + soPhieu + " phiếu, " + DinhDang.tien(tong));
         }
     }
 
-    // mỗi nhân viên đã lập bao nhiêu phiếu nhập, tổng tiền bao nhiêu
     public void thongKeTheoNhanVien() {
-        NhanVien[] dsNV = DuLieu.dsNhanVien.getDs();
-        if (dsNV.length == 0) {
-            System.out.println("Chưa có nhân viên.");
-            return;
-        }
-        System.out.printf("%-6s %-24s %8s %18s%n", "Mã NV", "Họ tên", "Số phiếu", "Tổng tiền");
-        for (NhanVien nv : dsNV) {
+        for (NhanVien nv : DuLieu.dsNhanVien.getDs()) {
             int soPhieu = 0;
             double tong = 0;
             for (int i = 0; i < n; i++) {
@@ -305,54 +270,33 @@ public class DSPhieuNhap {
                     tong += ds[i].getTongTien();
                 }
             }
-            System.out.printf("%-6s %-24s %8d %18s%n",
-                    nv.getMaNV(), nv.getHoTen(), soPhieu, DinhDang.tien(tong));
+            System.out.println(nv.getHoTen() + ": " + soPhieu + " phiếu, " + DinhDang.tien(tong));
         }
     }
 
     // ================= ĐỌC / GHI FILE =================
 
+    // phieunhap.txt: maPN|maNCC|maNV|ngayNhap|tongTien
     public void docFile() {
         ds = new PhieuNhap[0];
         n = 0;
-        File f = new File(FILE);
-        if (!f.exists()) {
-            return;
-        }
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    continue;
+        for (String[] t : TepTin.doc(FILE)) {
+            try {
+                if (!t[0].matches("PN\\d+")) {
+                    throw new IllegalArgumentException();
                 }
-                try {
-                    String[] t = DinhDang.tach(line);
-                    // mã sai dạng sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
-                    if (!t[0].matches("PN\\d+")) {
-                        throw new IllegalArgumentException();
-                    }
-                    them(new PhieuNhap(t[0], t[1], t[2], DinhDang.docNgay(t[3]),
-                            Double.parseDouble(t[4])));
-                } catch (RuntimeException e) {
-                    System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + line);
-                }
+                them(new PhieuNhap(t[0], t[1], t[2], DinhDang.docNgay(t[3]), Double.parseDouble(t[4])));
+            } catch (RuntimeException e) {
+                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
             }
-        } catch (IOException e) {
-            System.out.println("Lỗi đọc file " + FILE);
         }
     }
 
     public void ghiFile() {
-        new File(FILE).getParentFile().mkdirs();
-        try (BufferedWriter bw = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(FILE), StandardCharsets.UTF_8))) {
-            for (int i = 0; i < n; i++) {
-                bw.write(ds[i].toLine());
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Lỗi ghi file " + FILE);
+        String[] cacDong = new String[n];
+        for (int i = 0; i < n; i++) {
+            cacDong[i] = ds[i].toLine();
         }
+        TepTin.ghi(FILE, cacDong);
     }
 }

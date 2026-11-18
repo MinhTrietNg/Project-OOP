@@ -6,8 +6,8 @@ import core.NhapLieu;
 // nhân viên: người lập hợp đồng, hóa đơn, phiếu nhập
 public class NhanVien extends Nguoi {
 
-    // cho chọn chức vụ có sẵn để thống kê theo chức vụ không bị lệch kiểu "le tan" / "Lễ tân"
-    public static final String[] CAC_CHUC_VU = {"Lễ tân", "Quản lý", "Thủ kho", "Phục vụ"};
+    // chỉ cho chọn trong danh sách này để thống kê theo chức vụ không bị lệch kiểu "le tan" / "Lễ tân"
+    public static final String[] CAC_CHUC_VU = {"Lễ tân", "Quản lý", "Thủ kho", "Phục vụ", "Bảo vệ"};
 
     private String maNV;
     private String chucVu;
@@ -62,26 +62,20 @@ public class NhanVien extends Nguoi {
     @Override
     public void nhap() {
         super.nhap();
-        int chon = NhapLieu.chonMenu("CHỨC VỤ", "Khác (tự gõ)", CAC_CHUC_VU);
-        if (chon == 0) {
-            chucVu = NhapLieu.nhapChuoi("Chức vụ");
-        } else {
-            chucVu = CAC_CHUC_VU[chon - 1];
+        for (int i = 0; i < CAC_CHUC_VU.length; i++) {
+            System.out.println("  " + (i + 1) + ". " + CAC_CHUC_VU[i]);
         }
+        int chon = NhapLieu.nhapSoNguyen("Chọn chức vụ", 1, CAC_CHUC_VU.length);
+        chucVu = CAC_CHUC_VU[chon - 1];
         luongCB = NhapLieu.nhapSoThuc("Lương cơ bản", 0);
     }
 
-    // in tiêu đề bảng 1 lần trước khi in các dòng xuat()
-    public static void inTieuDe() {
-        System.out.printf("%-6s %-24s %-11s %-12s %15s%n",
-                "Mã NV", "Họ tên", "SĐT", "Chức vụ", "Lương CB");
-    }
-
+    // vd: NV001 | Nguyễn Văn An | 0901234567 | Lễ tân | 8.000.000 đ
     @Override
     public void xuat() {
-        System.out.printf("%-6s ", maNV);
+        System.out.print(maNV + " | ");
         super.xuat();
-        System.out.printf("%-12s %15s%n", chucVu, DinhDang.tien(luongCB));
+        System.out.println(chucVu + " | " + DinhDang.tien(luongCB));
     }
 
     // nhanvien.txt: maNV|hoTen|sdt|chucVu|luongCB

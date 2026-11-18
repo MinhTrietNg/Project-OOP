@@ -1,18 +1,9 @@
 package danhsach;
 
 import app.DuLieu;
-import core.DinhDang;
 import core.NhapLieu;
+import core.TepTin;
 import core.TimKiem;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import model.NhaCC;
 import model.PhieuNhap;
@@ -43,7 +34,8 @@ public class DSNhaCC {
 
     public void them(NhaCC ncc) {
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n++] = new NhaCC(ncc);
+        ds[n] = new NhaCC(ncc);
+        n++;
     }
 
     public void timTheoMa() {
@@ -52,7 +44,6 @@ public class DSNhaCC {
         if (ncc == null) {
             System.out.println("Không tìm thấy nhà cung cấp có mã: " + ma);
         } else {
-            NhaCC.inTieuDe();
             ncc.xuat();
         }
     }
@@ -78,7 +69,7 @@ public class DSNhaCC {
             return;
         }
         ncc.nhap();
-        System.out.println("Đã cập nhật nhà cung cấp " + ncc.getMaNCC());
+        System.out.println("Đã cập nhật nhà cung cấp " + ma);
     }
 
     public void xoa() {
@@ -115,15 +106,13 @@ public class DSNhaCC {
     public void xuat(NhaCC[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
-            return;
         }
-        NhaCC.inTieuDe();
         for (NhaCC ncc : mang) {
             ncc.xuat();
         }
     }
 
-    // "NCC012" -> substring(3) = "012" -> 12
+    // "NCC012".substring(3) = "012" -> 12
     public String sinhMa() {
         int max = 0;
         for (int i = 0; i < n; i++) {
@@ -135,10 +124,9 @@ public class DSNhaCC {
         return String.format("NCC%03d", max + 1);
     }
 
-    // hỏi mã tới khi đúng, gõ 0 thì trả null (hủy)
     public NhaCC chon() {
         while (true) {
-            String ma = NhapLieu.nhapChuoi("Nhập mã nhà cung cấp (0 để hủy)");
+            String ma = NhapLieu.nhapChuoi("Nhập mã nhà cung cấp (0 để thoát)");
             if (ma.equals("0")) {
                 return null;
             }
@@ -159,11 +147,10 @@ public class DSNhaCC {
 
     public NhaCC[] timTheoTen(String tuKhoa) {
         NhaCC[] kq = new NhaCC[0];
-        int dem = 0;
         for (int i = 0; i < n; i++) {
             if (TimKiem.chua(ds[i].getTenNCC(), tuKhoa)) {
-                kq = Arrays.copyOf(kq, dem + 1);
-                kq[dem++] = ds[i];
+                kq = Arrays.copyOf(kq, kq.length + 1);
+                kq[kq.length - 1] = ds[i];
             }
         }
         return kq;
@@ -171,46 +158,27 @@ public class DSNhaCC {
 
     // ================= ĐỌC / GHI FILE =================
 
+    // nhacc.txt: maNCC|tenNCC|diaChi|sdt
     public void docFile() {
         ds = new NhaCC[0];
         n = 0;
-        File f = new File(FILE);
-        if (!f.exists()) {
-            return;
-        }
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    continue;
+        for (String[] t : TepTin.doc(FILE)) {
+            try {
+                if (!t[0].matches("NCC\\d+")) {
+                    throw new IllegalArgumentException();
                 }
-                try {
-                    String[] t = DinhDang.tach(line);
-                    // mã sai dạng sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
-                    if (!t[0].matches("NCC\\d+")) {
-                        throw new IllegalArgumentException();
-                    }
-                    them(new NhaCC(t[0], t[1], t[2], t[3]));
-                } catch (RuntimeException e) {
-                    System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + line);
-                }
+                them(new NhaCC(t[0], t[1], t[2], t[3]));
+            } catch (RuntimeException e) {
+                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
             }
-        } catch (IOException e) {
-            System.out.println("Lỗi đọc file " + FILE);
         }
     }
 
     public void ghiFile() {
-        new File(FILE).getParentFile().mkdirs();
-        try (BufferedWriter bw = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(FILE), StandardCharsets.UTF_8))) {
-            for (int i = 0; i < n; i++) {
-                bw.write(ds[i].toLine());
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Lỗi ghi file " + FILE);
+        String[] cacDong = new String[n];
+        for (int i = 0; i < n; i++) {
+            cacDong[i] = ds[i].toLine();
         }
+        TepTin.ghi(FILE, cacDong);
     }
 }

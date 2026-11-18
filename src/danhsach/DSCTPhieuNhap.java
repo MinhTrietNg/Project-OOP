@@ -1,15 +1,6 @@
 package danhsach;
 
-import core.DinhDang;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import core.TepTin;
 import java.util.Arrays;
 import model.CTPhieuNhap;
 
@@ -31,17 +22,17 @@ public class DSCTPhieuNhap {
     // chỉ có bản có tham số: chi tiết được tạo bên trong DSPhieuNhap.them()
     public void them(CTPhieuNhap ct) {
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n++] = new CTPhieuNhap(ct);
+        ds[n] = new CTPhieuNhap(ct);
+        n++;
     }
 
     // lấy các mặt hàng của 1 phiếu (mục 6.6)
     public CTPhieuNhap[] layTheoPhieu(String maPN) {
         CTPhieuNhap[] kq = new CTPhieuNhap[0];
-        int dem = 0;
         for (int i = 0; i < n; i++) {
             if (ds[i].getMaPN().equalsIgnoreCase(maPN)) {
-                kq = Arrays.copyOf(kq, dem + 1);
-                kq[dem++] = ds[i];
+                kq = Arrays.copyOf(kq, kq.length + 1);
+                kq[kq.length - 1] = ds[i];
             }
         }
         return kq;
@@ -50,51 +41,31 @@ public class DSCTPhieuNhap {
     public void xuat() {
         if (n == 0) {
             System.out.println("Danh sách trống.");
-            return;
         }
-        CTPhieuNhap.inTieuDe();
         for (int i = 0; i < n; i++) {
             ds[i].xuat();
         }
     }
 
+    // ctphieunhap.txt: maPN|maH|sl|donGiaNhap|thanhTien
     public void docFile() {
         ds = new CTPhieuNhap[0];
         n = 0;
-        File f = new File(FILE);
-        if (!f.exists()) {
-            return;
-        }
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
-                try {
-                    String[] t = DinhDang.tach(line);
-                    them(new CTPhieuNhap(t[0], t[1], Integer.parseInt(t[2]),
-                            Double.parseDouble(t[3]), Double.parseDouble(t[4])));
-                } catch (RuntimeException e) {
-                    System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + line);
-                }
+        for (String[] t : TepTin.doc(FILE)) {
+            try {
+                them(new CTPhieuNhap(t[0], t[1], Integer.parseInt(t[2]),
+                        Double.parseDouble(t[3]), Double.parseDouble(t[4])));
+            } catch (RuntimeException e) {
+                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
             }
-        } catch (IOException e) {
-            System.out.println("Lỗi đọc file " + FILE);
         }
     }
 
     public void ghiFile() {
-        new File(FILE).getParentFile().mkdirs();
-        try (BufferedWriter bw = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(FILE), StandardCharsets.UTF_8))) {
-            for (int i = 0; i < n; i++) {
-                bw.write(ds[i].toLine());
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Lỗi ghi file " + FILE);
+        String[] cacDong = new String[n];
+        for (int i = 0; i < n; i++) {
+            cacDong[i] = ds[i].toLine();
         }
+        TepTin.ghi(FILE, cacDong);
     }
 }
