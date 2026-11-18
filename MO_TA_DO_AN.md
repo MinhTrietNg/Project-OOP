@@ -36,7 +36,7 @@ Chương trình chia thành 4 module:
 ```text
 src/
   app/        Main.java (menu chính), DuLieu.java (giữ các danh sách dùng chung)
-  core/       NhapLieu.java (nhập có kiểm tra), DinhDang.java (ngày, tiền, dòng file)
+  core/       NhapLieu.java (nhập có kiểm tra), DinhDang.java (ngày, tiền, dòng file), DoiTuong.java
   model/      19 lớp đối tượng (mục 2.8, 3, 4)
   danhsach/   13 lớp danh sách DSxxx, mỗi lớp quản lý một mảng (mục 2.9)
   menu/       MenuPhong, MenuKhachHang, MenuThuePhong, MenuDichVu,
