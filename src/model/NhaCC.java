@@ -1,0 +1,89 @@
+package model;
+
+import core.DinhDang;
+import core.DoiTuong;
+import core.NhapLieu;
+
+// nhà cung cấp hàng hóa cho kho
+public class NhaCC implements DoiTuong {
+
+    private String maNCC;
+    private String tenNCC;
+    private String diaChi;
+    private String sdt;
+
+    public NhaCC() {
+        this.maNCC = "";
+        this.tenNCC = "";
+        this.diaChi = "";
+        this.sdt = "";
+    }
+
+    public NhaCC(String maNCC, String tenNCC, String diaChi, String sdt) {
+        this.maNCC = maNCC;
+        this.tenNCC = tenNCC;
+        this.diaChi = diaChi;
+        this.sdt = sdt;
+    }
+
+    public NhaCC(NhaCC khac) {
+        this.maNCC = khac.maNCC;
+        this.tenNCC = khac.tenNCC;
+        this.diaChi = khac.diaChi;
+        this.sdt = khac.sdt;
+    }
+
+    public String getMaNCC() {
+        return maNCC;
+    }
+
+    public void setMaNCC(String maNCC) {
+        this.maNCC = maNCC;
+    }
+
+    public String getTenNCC() {
+        return tenNCC;
+    }
+
+    public void setTenNCC(String tenNCC) {
+        this.tenNCC = tenNCC;
+    }
+
+    public String getDiaChi() {
+        return diaChi;
+    }
+
+    public void setDiaChi(String diaChi) {
+        this.diaChi = diaChi;
+    }
+
+    public String getSdt() {
+        return sdt;
+    }
+
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
+    }
+
+    @Override
+    public void nhap() {
+        tenNCC = NhapLieu.nhapChuoi("Tên nhà cung cấp");
+        diaChi = NhapLieu.nhapChuoi("Địa chỉ");
+        sdt = NhapLieu.nhapSdt("Số điện thoại");
+    }
+
+    public static void inTieuDe() {
+        System.out.printf("%-7s %-32s %-28s %-11s%n", "Mã NCC", "Tên nhà cung cấp", "Địa chỉ", "SĐT");
+    }
+
+    @Override
+    public void xuat() {
+        System.out.printf("%-7s %-32s %-28s %-11s%n", maNCC, tenNCC, diaChi, sdt);
+    }
+
+    // nhacc.txt: maNCC|tenNCC|diaChi|sdt
+    @Override
+    public String toLine() {
+        return DinhDang.dong(maNCC, tenNCC, diaChi, sdt);
+    }
+}
