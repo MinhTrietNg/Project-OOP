@@ -1,7 +1,10 @@
 package app;
 
 import danhsach.DSCTPhieuNhap;
+import danhsach.DSCTSuDungDV;
+import danhsach.DSDichVu;
 import danhsach.DSHangHoa;
+import danhsach.DSHoaDon;
 import danhsach.DSNhaCC;
 import danhsach.DSNhanVien;
 import danhsach.DSPhieuNhap;
@@ -16,6 +19,11 @@ public final class DuLieu {
     public static final DSPhieuNhap dsPhieuNhap = new DSPhieuNhap();
     public static final DSCTPhieuNhap dsCTPhieuNhap = new DSCTPhieuNhap();
 
+    // ----- module 3: Dịch vụ & Thanh toán -----
+    public static final DSDichVu dsDichVu = new DSDichVu();
+    public static final DSCTSuDungDV dsCTSuDungDV = new DSCTSuDungDV();
+    public static final DSHoaDon dsHoaDon = new DSHoaDon();
+
     private DuLieu() {
     }
 
@@ -26,5 +34,9 @@ public final class DuLieu {
         dsHangHoa.docFile();
         dsPhieuNhap.docFile();
         dsCTPhieuNhap.docFile();
+        // ----- module 3 -----
+        dsDichVu.docFile();
+        dsCTSuDungDV.docFile();
+        dsHoaDon.docFile();
     }
 }

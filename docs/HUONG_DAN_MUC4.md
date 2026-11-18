@@ -193,10 +193,10 @@ Thử nhanh: menu 6 thêm 2 nhân viên → 7 › 1 thêm nhà cung cấp → 7 
 
 1. **`Nguoi`**: dùng bản của module 1, xóa bản tạm. Bản đó phải có `getHoTen()`, `getSdt()`, `setHoTen()`, `setSdt()`, constructor `(hoTen, sdt)` và constructor sao chép. `NhanVien.xuat()` gọi `super.xuat()` để in `hoTen | sdt | ` **chưa xuống dòng**; nếu bản của module 1 in kiểu khác thì cần thống nhất.
 2. **`DuLieu.java`**: giữ 5 dòng khai báo + 5 dòng `docFile()` của module 4, thêm của các bạn vào.
-3. **`DSNhanVien.xoa(ma)`**: bỏ comment 2 vòng kiểm tra `HDThuePhong`, `HoaDon` và thêm 2 `import`.
-4. **`DSHangHoa.xoa(ma)`**: bỏ comment vòng kiểm tra `DichVu` và thêm `import model.DichVu`.
-5. **`MenuThongKe`**: bỏ comment 5 dòng `import`; trong 3 hàm `doanhThuTheoThangNam`, `tinhTrangPhongTheoLoai`, `doanhThuTheoPhong` xóa dòng `println` tạm và bỏ comment khối `/* ... */`.
-6. Module Dịch vụ gọi `DuLieu.dsHangHoa.truKho(maH, sl)` khi ghi dịch vụ, rồi `DuLieu.dsHangHoa.ghiFile()`.
+3. **`DSNhanVien.xoa(ma)`**: vòng kiểm tra `HoaDon` **đã bật khi ghép module 3**; còn vòng `HDThuePhong` chờ module 2 (bỏ comment và thêm `import`).
+4. **`DSHangHoa.xoa(ma)`**: vòng kiểm tra `DichVu` **đã bật khi ghép module 3**.
+5. **`MenuThongKe`**: `doanhThuTheoThangNam` **đã bật khi ghép module 3**. Còn lại: bỏ comment 2 dòng `import` (`CTHopDong`, `Phong`); trong `tinhTrangPhongTheoLoai`, `doanhThuTheoPhong` xóa dòng `println` tạm và bỏ comment khối `/* ... */`.
+6. Module Dịch vụ gọi `DuLieu.dsHangHoa.truKho(maH, sl)` khi ghi dịch vụ, rồi `DuLieu.dsHangHoa.ghiFile()` (**đã làm**, xem `HUONG_DAN_MUC3.md`).
 7. Module Thuê phòng / Hóa đơn chọn nhân viên lập bằng `DuLieu.dsNhanVien.xuat()` rồi `DuLieu.dsNhanVien.chon()` (trả `null` nếu gõ `0`).
 
 ## 8. Câu hỏi vấn đáp hay gặp

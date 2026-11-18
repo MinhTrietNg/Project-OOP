@@ -1,12 +1,12 @@
 package menu;
 
 import app.DuLieu;
+import core.DinhDang;
 import core.NhapLieu;
-// KHI GHÉP module 1 và 3: bỏ comment 5 import dưới
-// import core.DinhDang;
-// import java.time.LocalDate;
+import java.time.LocalDate;
+import model.HoaDon;
+// KHI GHÉP module 1 và 2: bỏ comment 2 import dưới
 // import model.CTHopDong;
-// import model.HoaDon;
 // import model.Phong;
 
 public class MenuThongKe {
@@ -42,13 +42,12 @@ public class MenuThongKe {
     // =====================================================================
     // 3 thống kê dưới cần lớp của module khác (Phong, CTHopDong, HoaDon).
     // Code đã viết sẵn theo đúng tên hàm trong MO_TA_DO_AN.md.
+    // doanhThuTheoThangNam đã bật khi ghép module 3; 2 hàm còn lại chờ module 1, 2.
     // KHI GHÉP: trong mỗi hàm xóa dòng println tạm và bỏ comment khối /* ... */
     // =====================================================================
 
     // tổng tongCong của hóa đơn DA_TT có ngày lập trong tháng/năm (mục 6.4)
     private static void doanhThuTheoThangNam() {
-        System.out.println("Cần module Dịch vụ & Thanh toán (HoaDon), sẽ bật khi ghép code.");
-        /*
         int nam = NhapLieu.nhapSoNguyen("Năm", 2000, 2100);
         int thang = NhapLieu.nhapSoNguyen("Tháng (0 = cả năm)", 0, 12);
         double tong = 0;
@@ -60,7 +59,6 @@ public class MenuThongKe {
             }
         }
         System.out.println("Doanh thu: " + DinhDang.tien(tong));
-        */
     }
 
     // đếm số phòng TRONG / DA_THUE của từng loại (mục 6.4)

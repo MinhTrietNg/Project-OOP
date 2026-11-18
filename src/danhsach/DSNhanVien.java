@@ -6,6 +6,7 @@ import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
 import java.util.Arrays;
+import model.HoaDon;
 import model.NhanVien;
 import model.PhieuNhap;
 
@@ -103,16 +104,16 @@ public class DSNhanVien {
                 return;
             }
         }
-        // KHI GHÉP module Thuê phòng và Hóa đơn: bỏ comment 2 vòng lặp dưới (và import 2 lớp)
+        for (HoaDon hd : DuLieu.dsHoaDon.getDs()) {
+            if (hd.getMaNV().equalsIgnoreCase(ma)) {
+                System.out.println("Nhân viên đã lập hóa đơn, không xóa được.");
+                return;
+            }
+        }
+        // KHI GHÉP module Thuê phòng: bỏ comment vòng lặp dưới (và import model.HDThuePhong)
         // for (HDThuePhong hd : DuLieu.dsHDThuePhong.getDs()) {
         //     if (hd.getMaNV().equalsIgnoreCase(ma)) {
         //         System.out.println("Nhân viên đã lập hợp đồng, không xóa được.");
-        //         return;
-        //     }
-        // }
-        // for (HoaDon hd : DuLieu.dsHoaDon.getDs()) {
-        //     if (hd.getMaNV().equalsIgnoreCase(ma)) {
-        //         System.out.println("Nhân viên đã lập hóa đơn, không xóa được.");
         //         return;
         //     }
         // }

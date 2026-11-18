@@ -7,6 +7,7 @@ import core.TepTin;
 import core.TimKiem;
 import java.util.Arrays;
 import model.CTPhieuNhap;
+import model.DichVu;
 import model.HangHoa;
 
 public class DSHangHoa {
@@ -88,13 +89,12 @@ public class DSHangHoa {
                 return;
             }
         }
-        // KHI GHÉP module Dịch vụ: bỏ comment vòng lặp dưới (và import model.DichVu)
-        // for (DichVu dv : DuLieu.dsDichVu.getDs()) {
-        //     if (dv.getMaH().equalsIgnoreCase(ma)) {
-        //         System.out.println("Hàng đang dùng cho dịch vụ " + dv.getMaDV() + ", không xóa được.");
-        //         return;
-        //     }
-        // }
+        for (DichVu dv : DuLieu.dsDichVu.getDs()) {
+            if (dv.getMaH().equalsIgnoreCase(ma)) {
+                System.out.println("Hàng đang dùng cho dịch vụ " + dv.getMaDV() + ", không xóa được.");
+                return;
+            }
+        }
 
         for (int i = 0; i < n; i++) {
             if (ds[i].getMaH().equalsIgnoreCase(ma)) {
