@@ -172,17 +172,12 @@ public class DSCTSuDungDV {
     // ================= CỬA GHÉP VỚI MODULE THUÊ PHÒNG =================
 
     // tìm hợp đồng theo mã; không thấy thì báo và trả null
-    // KHI GHÉP module Thuê phòng: xóa 2 dòng tạm, bỏ comment khối dưới
     private HDThuePhong timHopDong(String maHDong) {
-        System.out.println("Cần module Thuê phòng (DSHDThuePhong), sẽ bật khi ghép code.");
-        return null;
-        /*
         HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(maHDong);
         if (hd == null) {
             System.out.println("Không tìm thấy hợp đồng có mã: " + maHDong);
         }
         return hd;
-        */
     }
 
     // ================= ĐỌC / GHI FILE =================

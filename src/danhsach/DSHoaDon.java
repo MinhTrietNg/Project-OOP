@@ -12,6 +12,7 @@ import model.DichVu;
 import model.HDThuePhong;
 import model.HoaDon;
 import model.NhanVien;
+import model.Phong;
 
 // hóa đơn là chứng từ: chỉ lập mới, thanh toán và xem; không sửa tiền, không xóa (mục 6.5)
 public class DSHoaDon {
@@ -271,41 +272,32 @@ public class DSHoaDon {
     }
 
     // ================= CỬA GHÉP VỚI MODULE PHÒNG, THUÊ PHÒNG =================
-    // 3 hàm dưới là chỗ DUY NHẤT của DSHoaDon cần danh sách của module 1, 2.
-    // KHI GHÉP: trong mỗi hàm xóa các dòng tạm, bỏ comment khối /* ... */ (và import model.Phong)
+    // các hàm dưới là chỗ DUY NHẤT của DSHoaDon cần danh sách của module 1, 2.
 
     // tìm hợp đồng theo mã; không thấy thì báo và trả null
     private HDThuePhong timHopDong(String maHDong) {
-        System.out.println("Cần module Thuê phòng (DSHDThuePhong), sẽ bật khi ghép code.");
-        return null;
-        /*
         HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(maHDong);
         if (hd == null) {
             System.out.println("Không tìm thấy hợp đồng có mã: " + maHDong);
         }
         return hd;
-        */
     }
 
     // như trên nhưng không in gì (dùng khi in hóa đơn để lấy tiền cọc)
     private HDThuePhong timHopDongKhongBao(String maHDong) {
-        return null;
-        // return DuLieu.dsHDThuePhong.timTheoMa(maHDong);
+        return DuLieu.dsHDThuePhong.timTheoMa(maHDong);
     }
 
     // các phòng (CTHopDong) của hợp đồng
     private CTHopDong[] layPhongCuaHopDong(String maHDong) {
-        return new CTHopDong[0];
-        // return DuLieu.dsCTHopDong.layTheoHopDong(maHDong);
+        return DuLieu.dsCTHopDong.layTheoHopDong(maHDong);
     }
 
     // trả phòng: mọi phòng của hợp đồng về TRONG (bước 3 mục 6.3)
     private void traPhong(CTHopDong[] cacPhong) {
-        /*
         for (CTHopDong ct : cacPhong) {
             DuLieu.dsPhong.capNhatTinhTrang(ct.getMaP(), Phong.TRONG);
         }
-        */
     }
 
     // ================= ĐỌC / GHI FILE =================

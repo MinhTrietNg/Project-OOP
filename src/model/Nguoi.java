@@ -4,7 +4,6 @@ import core.DoiTuong;
 import core.NhapLieu;
 
 // phần chung của KhachHang và NhanVien
-// (lớp thuộc module 1, viết đúng theo mô tả mục 4.1 để module 4 biên dịch được trước khi ghép)
 public abstract class Nguoi implements DoiTuong {
 
     private String hoTen;

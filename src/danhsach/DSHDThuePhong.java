@@ -180,7 +180,12 @@ public class DSHDThuePhong {
             return kh;
         }
         System.out.println("  Chưa có khách hàng này, tiến hành thêm khách mới:");
+        int truoc = DuLieu.dsKhachHang.getN();
         DuLieu.dsKhachHang.them();
+        // them() có thể từ chối (trùng SĐT), khi đó không được lấy nhầm khách cuối mảng
+        if (DuLieu.dsKhachHang.getN() == truoc) {
+            return null;
+        }
         KhachHang[] dsKH = DuLieu.dsKhachHang.getDs();
         return dsKH[dsKH.length - 1];
     }

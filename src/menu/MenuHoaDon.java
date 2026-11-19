@@ -18,8 +18,8 @@ public class MenuHoaDon {
                 case 1:
                     DuLieu.dsHoaDon.them();
                     DuLieu.dsHoaDon.ghiFile();
-                    // KHI GHÉP module Phòng: trả phòng đổi tình trạng phòng nên ghi cả file phòng
-                    // DuLieu.dsPhong.ghiFile();
+                    // trả phòng đổi tình trạng phòng nên ghi cả file phòng
+                    DuLieu.dsPhong.ghiFile();
                     break;
                 case 2:
                     DuLieu.dsHoaDon.thanhToan();

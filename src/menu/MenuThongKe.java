@@ -4,10 +4,9 @@ import app.DuLieu;
 import core.DinhDang;
 import core.NhapLieu;
 import java.time.LocalDate;
+import model.CTHopDong;
 import model.HoaDon;
-// KHI GHÉP module 1 và 2: bỏ comment 2 import dưới
-// import model.CTHopDong;
-// import model.Phong;
+import model.Phong;
 
 public class MenuThongKe {
 
@@ -39,12 +38,7 @@ public class MenuThongKe {
         }
     }
 
-    // =====================================================================
-    // 3 thống kê dưới cần lớp của module khác (Phong, CTHopDong, HoaDon).
-    // Code đã viết sẵn theo đúng tên hàm trong MO_TA_DO_AN.md.
-    // doanhThuTheoThangNam đã bật khi ghép module 3; 2 hàm còn lại chờ module 1, 2.
-    // KHI GHÉP: trong mỗi hàm xóa dòng println tạm và bỏ comment khối /* ... */
-    // =====================================================================
+    // ===== 3 thống kê dưới dùng lớp của module khác (Phong, CTHopDong, HoaDon) =====
 
     // tổng tongCong của hóa đơn DA_TT có ngày lập trong tháng/năm (mục 6.4)
     private static void doanhThuTheoThangNam() {
@@ -63,9 +57,7 @@ public class MenuThongKe {
 
     // đếm số phòng TRONG / DA_THUE của từng loại (mục 6.4)
     private static void tinhTrangPhongTheoLoai() {
-        System.out.println("Cần module Phòng (Phong), sẽ bật khi ghép code.");
-        /*
-        String[] cacLoai = {"THUONG", "DELUXE", "SUITE"};
+        String[] cacLoai = {Phong.THUONG, Phong.DELUXE, Phong.SUITE};
         for (String loai : cacLoai) {
             int trong = 0;
             int daThue = 0;
@@ -80,14 +72,11 @@ public class MenuThongKe {
             }
             System.out.println(loai + ": " + trong + " trống, " + daThue + " đã thuê");
         }
-        */
     }
 
     // mỗi phòng: cộng thanhTien các CTHopDong của phòng đó,
     // chỉ tính hợp đồng đã có hóa đơn DA_TT (mục 7)
     private static void doanhThuTheoPhong() {
-        System.out.println("Cần module Phòng, Thuê phòng và Hóa đơn, sẽ bật khi ghép code.");
-        /*
         for (Phong p : DuLieu.dsPhong.getDs()) {
             double tong = 0;
             for (CTHopDong ct : DuLieu.dsCTHopDong.getDs()) {
@@ -100,6 +89,5 @@ public class MenuThongKe {
             }
             System.out.println("Phòng " + p.getTenP() + ": " + DinhDang.tien(tong));
         }
-        */
     }
 }

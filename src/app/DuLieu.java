@@ -8,12 +8,18 @@ import danhsach.DSDichVu;
 import danhsach.DSHDThuePhong;
 import danhsach.DSHangHoa;
 import danhsach.DSHoaDon;
+import danhsach.DSKhachHang;
 import danhsach.DSNhaCC;
 import danhsach.DSNhanVien;
 import danhsach.DSPhieuNhap;
+import danhsach.DSPhong;
 
 // giữ 1 bản duy nhất của mỗi danh sách, module nào thêm danh sách thì khai báo ở đây và gọi docFile() trong docTatCa()
 public final class DuLieu {
+    // ----- module 1: Phòng & Khách hàng -----
+    public static final DSPhong dsPhong = new DSPhong();
+    public static final DSKhachHang dsKhachHang = new DSKhachHang();
+
     // ----- module 2: Thuê phòng -----
     public static final DSHDThuePhong dsHDThuePhong = new DSHDThuePhong();
     public static final DSCTHopDong dsCTHopDong = new DSCTHopDong();
@@ -35,6 +41,10 @@ public final class DuLieu {
     }
 
     public static void docTatCa() {
+        // ----- module 1 -----
+        dsPhong.docFile();
+        dsKhachHang.docFile();
+
         // ----- module 2 -----
         dsHDThuePhong.docFile();
         dsCTHopDong.docFile();
