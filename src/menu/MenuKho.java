@@ -63,7 +63,7 @@ public class MenuKho {
         while (true) {
             int chon = NhapLieu.chonMenu("HÀNG HÓA", "Quay lại",
                     "Thêm hàng hóa",
-                    "Sửa hàng hóa (tên, giá)",
+                    "Sửa tên hàng hóa",
                     "Xóa hàng hóa",
                     "Tìm theo mã",
                     "Xem tất cả",

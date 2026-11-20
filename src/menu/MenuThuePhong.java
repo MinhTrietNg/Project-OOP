@@ -18,13 +18,14 @@ public class MenuThuePhong {
                     "Xem danh sách khách ở theo phòng");
             switch (chon) {
                 case 1:
-                    DuLieu.dsHDThuePhong.lapHopDong();
+                    DuLieu.dsHDThuePhong.them();
                     // lập hợp đồng có thể thêm khách mới, thêm HĐ, chi tiết HĐ, chi tiết khách ở
-                    // (riêng dsPhong đã tự ghiFile() trong capNhatTinhTrang)
+                    // và đổi tình trạng phòng sang DA_THUE
                     DuLieu.dsHDThuePhong.ghiFile();
                     DuLieu.dsCTHopDong.ghiFile();
                     DuLieu.dsCTKhachO.ghiFile();
                     DuLieu.dsKhachHang.ghiFile();
+                    DuLieu.dsPhong.ghiFile();
                     break;
                 case 2:
                     DuLieu.dsHDThuePhong.sua();

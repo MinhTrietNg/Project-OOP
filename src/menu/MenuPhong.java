@@ -31,7 +31,7 @@ public class MenuPhong {
                     break;
                 case 4: DuLieu.dsPhong.timTheoMa(); break;
                 case 5: DuLieu.dsPhong.xuat(); break;
-                case 6: DuLieu.dsPhong.xuat(DuLieu.dsPhong.dsPhongTrong()); break;
+                case 6: DuLieu.dsPhong.xuatPhongTrong(); break;
                 case 7: DuLieu.dsPhong.locTheoLoai(); break;
                 case 8: DuLieu.dsPhong.sapXepTheoGia(); break;
                 default:

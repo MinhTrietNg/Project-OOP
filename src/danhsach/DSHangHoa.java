@@ -65,14 +65,14 @@ public class DSHangHoa {
         sua(ma);
     }
 
-    // sửa tên và giá; slTon không sửa tay được (nhap() không hỏi slTon)
+    // chỉ sửa tên: donGia tự cập nhật khi lập phiếu nhập, slTon chỉ đổi qua congKho / truKho (mục 4.5)
     public void sua(String ma) {
         HangHoa hh = timTheoMa(ma);
         if (hh == null) {
             System.out.println("Không tìm thấy hàng có mã: " + ma);
             return;
         }
-        hh.nhap();
+        hh.setTenH(NhapLieu.nhapChuoi("Tên hàng"));
         System.out.println("Đã cập nhật hàng " + ma);
     }
 
@@ -117,6 +117,7 @@ public class DSHangHoa {
     public void xuat(HangHoa[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
+            return;
         }
         for (HangHoa hh : mang) {
             hh.xuat();
@@ -245,12 +246,9 @@ public class DSHangHoa {
         n = 0;
         for (String[] t : TepTin.doc(FILE)) {
             try {
-                if (!t[0].matches("HH\\d+")) {
-                    throw new IllegalArgumentException();
-                }
                 them(new HangHoa(t[0], t[1], Double.parseDouble(t[2]), Integer.parseInt(t[3])));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }

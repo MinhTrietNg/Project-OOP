@@ -31,6 +31,7 @@ public class DSPhong {
     public void them() {
         Phong p = taoTheoLoai();
         p.nhap();
+        // thêm mới: chưa có mã nên không bỏ qua ai
         if (trungTenP(p.getTenP(), "")) {
             System.out.println("Số phòng " + p.getTenP() + " đã có, không thêm.");
             return;
@@ -127,6 +128,7 @@ public class DSPhong {
     public void xuat(Phong[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
+            return;
         }
         for (Phong p : mang) {
             p.xuat();
@@ -147,6 +149,10 @@ public class DSPhong {
 
     // ================= GIAO TIẾP VỚI MODULE KHÁC (mục 6.6) =================
 
+    public void xuatPhongTrong() {
+        xuat(dsPhongTrong());
+    }
+
     public Phong[] dsPhongTrong() {
         Phong[] kq = new Phong[0];
         for (int i = 0; i < n; i++) {
@@ -158,12 +164,11 @@ public class DSPhong {
         return kq;
     }
 
-    // thuê phòng / trả phòng gọi hàm này, đổi xong ghi file luôn
+    // thuê phòng / trả phòng gọi hàm này; menu gọi xong thì ghiFile() (mục 2.7)
     public void capNhatTinhTrang(String maP, String tinhTrang) {
         Phong p = timTheoMa(maP);
         if (p != null) {
             p.setTinhTrang(tinhTrang);
-            ghiFile();
         }
     }
 
@@ -182,8 +187,14 @@ public class DSPhong {
     public void locTheoLoai() {
         System.out.println("  1. Thường   2. Deluxe   3. Suite");
         int chon = NhapLieu.nhapSoNguyen("Chọn loại phòng", 1, 3);
-        String[] cacLoai = {Phong.THUONG, Phong.DELUXE, Phong.SUITE};
-        xuat(locTheoLoai(cacLoai[chon - 1]));
+        String loai = Phong.THUONG;
+        if (chon == 2) {
+            loai = Phong.DELUXE;
+        }
+        if (chon == 3) {
+            loai = Phong.SUITE;
+        }
+        xuat(locTheoLoai(loai));
     }
 
     public Phong[] locTheoLoai(String loai) {
@@ -252,13 +263,9 @@ public class DSPhong {
         n = 0;
         for (String[] t : TepTin.doc(FILE)) {
             try {
-                // mã sai dạng sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
-                if (!t[1].matches("P\\d+") || !(t[6].equals(Phong.TRONG) || t[6].equals(Phong.DA_THUE))) {
-                    throw new IllegalArgumentException();
-                }
                 them(docDong(t));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }
@@ -278,10 +285,7 @@ public class DSPhong {
             return new PhongSuite(ma, ten, gia, soNguoi, giuong, tinhTrang, Boolean.parseBoolean(t[7]),
                     Integer.parseInt(t[8]));
         }
-        if (t[0].equals(Phong.THUONG)) {
-            return new PhongThuong(ma, ten, gia, soNguoi, giuong, tinhTrang);
-        }
-        throw new IllegalArgumentException();
+        return new PhongThuong(ma, ten, gia, soNguoi, giuong, tinhTrang);
     }
 
     public void ghiFile() {

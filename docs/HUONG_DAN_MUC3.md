@@ -43,14 +43,16 @@ B2  lapHoaDon(hd, maNV, cacPhong):
       tongTienThue = cộng thanhTien các CTHopDong
       tongTienDV   = cộng thanhTien các CTSuDungDV của hợp đồng
       tongCong     = tongTienThue + tongTienDV, trạng thái CHUA_TT, ngày lập = hôm nay
-B3  trả mọi phòng của hợp đồng về TRONG
+B3  (trong lapHoaDon) trả mọi phòng của hợp đồng về TRONG: DuLieu.dsPhong.capNhatTinhTrang(maP, Phong.TRONG)
 ```
+
+Lưu ý tên hàm: `them()` (không tham số) là **cả quy trình trả phòng** ở trên; `them(HoaDon x)` (có tham số) chỉ **nới mảng ra 1 rồi đặt bản sao vào cuối**, dùng trong `lapHoaDon` và `docFile`. Menu ghi 2 file: `hoadon.txt` và `phong.txt`.
 
 In hóa đơn (`xuatChiTiet`) hiện từng phòng, từng dịch vụ, tổng cộng, tiền cọc và **còn phải trả** = `tongCong − tienCoc`. Số này không lưu vào file (mục 7 của mô tả đồ án).
 
 ### 2.3 Thanh toán — `DSHoaDon.thanhToan()`
 
-In hóa đơn, hỏi xác nhận, đổi `CHUA_TT` → `DA_TT`. Hóa đơn đã thanh toán thì báo và không đổi gì. Đây là thao tác "sửa" duy nhất của hóa đơn; tiền trên hóa đơn không sửa tay được.
+In hóa đơn, hỏi xác nhận, đổi `CHUA_TT` → `DA_TT` (trả lời `k` thì báo "Đã hủy thanh toán."). Hóa đơn đã thanh toán thì báo và không đổi gì. Đây là thao tác "sửa" duy nhất của hóa đơn; tiền trên hóa đơn không sửa tay được.
 
 ### 2.4 Ràng buộc đã cài
 
@@ -78,7 +80,7 @@ In hóa đơn, hỏi xác nhận, đổi `CHUA_TT` → `DA_TT`. Hóa đơn đã 
 | Lọc hóa đơn theo khoảng ngày | `DSHoaDon.locTheoKhoangNgay` | `isBefore` / `isAfter` |
 | In hóa đơn đầy đủ (phòng, dịch vụ, cọc, còn phải trả) | `DSHoaDon.xuatChiTiet` | |
 | Nhắc sửa ngày trả khi khách trả sớm | `DSHoaDon.them` | |
-| Bỏ qua dòng file lỗi, mã sai dạng, trạng thái lạ | `docFile()` | `matches("HDON\\d+")` |
+| Bỏ qua dòng file lỗi | `docFile()` | `try { them(...); } catch (Exception e) { ... }` |
 
 ## 4. Kiểm thử
 
@@ -89,25 +91,26 @@ javac -encoding UTF-8 -d out (Get-ChildItem -Recurse src, test -Filter *.java).F
 java -cp out KiemThuModule3
 ```
 
-Kết quả mong đợi: `Kết quả: 46 đạt, 0 trượt`. Lớp test chỉ dùng dữ liệu trong bộ nhớ và tự tạo `HDThuePhong`, `CTHopDong` bằng constructor, nên chạy được cả khi module 2 chưa có danh sách.
+Kết quả mong đợi: `Kết quả: 46 đạt, 0 trượt`. Lớp test chỉ dùng dữ liệu trong bộ nhớ (không đọc/ghi file), tự tạo `HDThuePhong`, `CTHopDong` bằng constructor rồi truyền vào hàm có tham số.
 
 Các ca được kiểm: sinh mã (kể cả sau khi xóa), dòng file có `maH` rỗng, ghi dịch vụ (đủ hàng, thiếu hàng, **đúng bằng tồn**, không dùng hàng, ngày ngoài khoảng, hợp đồng đã có hóa đơn), giá chốt lúc dùng, tính tiền hóa đơn, chặn lập hóa đơn 2 lần, còn phải trả, thanh toán (lần 1, lần 2, mã sai), lọc ngày, xóa có kiểm tra tham chiếu (dịch vụ, hàng hóa, nhân viên).
 
-## 5. Khi ghép với module 1, 2
+## 5. Liên hệ với module khác
 
-Mọi chỗ module 3 cần danh sách của module 1, 2 được gom vào phần **`CỬA GHÉP`** ở cuối 2 file. Khi ghép:
+Module 3 gọi thẳng danh sách của module khác qua `DuLieu`, không có hàm bọc trung gian:
 
-1. **`DSCTSuDungDV.timHopDong`**: xóa 2 dòng tạm, bỏ comment khối dưới (dùng `DuLieu.dsHDThuePhong.timTheoMa`).
-2. **`DSHoaDon`**, 4 hàm trong phần `CỬA GHÉP`:
-   - `timHopDong`, `timHopDongKhongBao`: dùng `DuLieu.dsHDThuePhong.timTheoMa`.
-   - `layPhongCuaHopDong`: dùng `DuLieu.dsCTHopDong.layTheoHopDong`.
-   - `traPhong`: dùng `DuLieu.dsPhong.capNhatTinhTrang(maP, Phong.TRONG)`, thêm `import model.Phong`.
-3. **`MenuHoaDon`** mục 1: bỏ comment `DuLieu.dsPhong.ghiFile()`.
-4. **`DSNhanVien.xoa`**: vòng kiểm tra `HoaDon` đã bật; vòng `HDThuePhong` chờ module 2.
+| Module 3 gọi | Ở đâu |
+|---|---|
+| `DuLieu.dsHDThuePhong.timTheoMa(maHDong)` | `DSCTSuDungDV.ghiDichVu()`, `DSHoaDon.them()`, `DSHoaDon.xuatChiTiet` (lấy tiền cọc) |
+| `DuLieu.dsCTHopDong.layTheoHopDong(maHDong)` | `DSHoaDon.them()`, `DSHoaDon.xuatChiTiet` |
+| `DuLieu.dsPhong.capNhatTinhTrang(maP, Phong.TRONG)` | `DSHoaDon.lapHoaDon` (trả phòng) |
+| `DuLieu.dsHangHoa.truKho(maH, sl)` | `DSCTSuDungDV.ghiDichVu(hd, dv, ngaySD, sl)` |
+| `DuLieu.dsNhanVien.chon()`, `timTheoMa(maNV)` | `DSHoaDon.them()`, `DSHoaDon.xuatChiTiet` |
 
-Module 2 cần dùng từ module 3:
+Module khác dùng từ module 3:
 
-- `DuLieu.dsHoaDon.timTheoHopDong(maHDong)`: khác `null` thì hợp đồng đã có hóa đơn, không cho sửa ngày trả.
+- `DuLieu.dsHoaDon.timTheoHopDong(maHDong)`: khác `null` thì hợp đồng đã có hóa đơn, module 2 không cho sửa ngày trả.
+- `DSNhanVien.xoa` duyệt `DuLieu.dsHoaDon.getDs()`; `DSHangHoa.xoa` duyệt `DuLieu.dsDichVu.getDs()`.
 - Khi xóa khách hàng / phòng không cần kiểm tra bên module 3 (hóa đơn chỉ giữ `maHDong`).
 
 ## 6. Câu hỏi vấn đáp hay gặp

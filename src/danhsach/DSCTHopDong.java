@@ -101,9 +101,6 @@ public class DSCTHopDong {
         n = 0;
         for (String[] t : TepTin.doc(FILE)) {
             try {
-                if (!t[0].matches("HDTP\\d+") || !t[1].matches("P\\d+")) {
-                    throw new IllegalArgumentException();
-                }
                 them(new CTHopDong(
                         t[0],
                         t[1],
@@ -111,8 +108,8 @@ public class DSCTHopDong {
                         Integer.parseInt(t[3]),
                         Double.parseDouble(t[4])
                 ));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }

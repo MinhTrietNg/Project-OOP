@@ -149,7 +149,10 @@ public class HoaDon implements DoiTuong {
     // vd: HDON001 | HDTP001 | NV001 | 18/11/2026 | phòng 600.000 đ + DV 30.000 đ = 630.000 đ | Chưa thanh toán
     @Override
     public void xuat() {
-        String tt = daThanhToan() ? "Đã thanh toán" : "Chưa thanh toán";
+        String tt = "Chưa thanh toán";
+        if (daThanhToan()) {
+            tt = "Đã thanh toán";
+        }
         System.out.println(maHDon + " | " + maHDong + " | " + maNV + " | " + DinhDang.ngay(ngayLapHD)
                 + " | phòng " + DinhDang.tien(tongTienThue) + " + DV " + DinhDang.tien(tongTienDV)
                 + " = " + DinhDang.tien(tongCong) + " | " + tt);

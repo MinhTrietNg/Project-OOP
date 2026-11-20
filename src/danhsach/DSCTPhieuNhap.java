@@ -19,7 +19,7 @@ public class DSCTPhieuNhap {
         return n;
     }
 
-    // chỉ có bản có tham số: chi tiết được tạo bên trong DSPhieuNhap.them()
+    // chỉ có bản có tham số: chi tiết được tạo bên trong DSPhieuNhap.lapPhieu()
     public void them(CTPhieuNhap ct) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new CTPhieuNhap(ct);
@@ -41,6 +41,7 @@ public class DSCTPhieuNhap {
     public void xuat() {
         if (n == 0) {
             System.out.println("Danh sách trống.");
+            return;
         }
         for (int i = 0; i < n; i++) {
             ds[i].xuat();
@@ -55,8 +56,8 @@ public class DSCTPhieuNhap {
             try {
                 them(new CTPhieuNhap(t[0], t[1], Integer.parseInt(t[2]),
                         Double.parseDouble(t[3]), Double.parseDouble(t[4])));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }

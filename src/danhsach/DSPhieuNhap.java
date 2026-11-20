@@ -30,8 +30,8 @@ public class DSPhieuNhap {
     // ================= LẬP PHIẾU NHẬP (nghiệp vụ mục 6.4) =================
     //   B1. them()        : chọn nhà cung cấp, nhân viên; tạo đầu phiếu
     //   B2. nhapCacDong() : nhập từng mặt hàng vào MẢNG TẠM, chưa đụng tới kho
-    //   B3. luuPhieu()    : cộng kho, cập nhật giá nhập, lưu chi tiết và phiếu
-    // Hủy ở B1 hoặc B2 thì chưa có gì bị lưu, nên kho không bị cộng sai.
+    //   B3. lapPhieu(...) : cộng kho, cập nhật giá nhập, lưu chi tiết và phiếu
+    // Hủy ở B1, B2 hoặc trả lời "k" khi hỏi lưu thì chưa có gì bị lưu, nên kho không bị cộng sai.
     // Menu gọi xong thì ghi 3 file: phiếu nhập, chi tiết phiếu nhập, hàng hóa.
 
     public void them() {
@@ -45,13 +45,13 @@ public class DSPhieuNhap {
         DuLieu.dsNhaCC.xuat();
         NhaCC ncc = DuLieu.dsNhaCC.chon();
         if (ncc == null) {
-            System.out.println("Đã hủy lập phiếu.");
+            System.out.println("Đã hủy lập phiếu nhập.");
             return;
         }
         DuLieu.dsNhanVien.xuat();
         NhanVien nv = DuLieu.dsNhanVien.chon();
         if (nv == null) {
-            System.out.println("Đã hủy lập phiếu.");
+            System.out.println("Đã hủy lập phiếu nhập.");
             return;
         }
         PhieuNhap pn = new PhieuNhap();
@@ -63,12 +63,16 @@ public class DSPhieuNhap {
         // ----- B2 -----
         CTPhieuNhap[] cacDong = nhapCacDong(pn.getMaPN());
         if (cacDong.length == 0) {
-            System.out.println("Phiếu phải có ít nhất 1 mặt hàng. Đã hủy lập phiếu.");
+            System.out.println("Phiếu phải có ít nhất 1 mặt hàng. Đã hủy lập phiếu nhập.");
+            return;
+        }
+        if (!NhapLieu.nhapCoKhong("Lưu phiếu nhập")) {
+            System.out.println("Đã hủy lập phiếu nhập.");
             return;
         }
 
         // ----- B3 -----
-        luuPhieu(pn, cacDong);
+        lapPhieu(pn, cacDong);
         System.out.println("Đã lập phiếu nhập " + pn.getMaPN() + ":");
         xuatChiTiet(pn.getMaPN());
     }
@@ -77,6 +81,7 @@ public class DSPhieuNhap {
     private CTPhieuNhap[] nhapCacDong(String maPN) {
         CTPhieuNhap[] cacDong = new CTPhieuNhap[0];
         DuLieu.dsHangHoa.xuat();
+        System.out.println("Chọn từng mặt hàng, gõ 0 để kết thúc.");
         while (true) {
             HangHoa hh = DuLieu.dsHangHoa.chon();
             if (hh == null) {
@@ -110,11 +115,13 @@ public class DSPhieuNhap {
         return false;
     }
 
-    // B3: tới đây dữ liệu đã đầy đủ, mới thật sự thay đổi kho
-    private void luuPhieu(PhieuNhap pn, CTPhieuNhap[] cacDong) {
+    // B3 (có tham số, module khác / kiểm thử gọi được):
+    // tới đây dữ liệu đã đầy đủ, mới thật sự thay đổi kho
+    public void lapPhieu(PhieuNhap pn, CTPhieuNhap[] cacDong) {
         for (CTPhieuNhap ct : cacDong) {
             DuLieu.dsHangHoa.congKho(ct.getMaH(), ct.getSl());
-            DuLieu.dsHangHoa.timTheoMa(ct.getMaH()).setDonGia(ct.getDonGiaNhap());
+            HangHoa hh = DuLieu.dsHangHoa.timTheoMa(ct.getMaH());
+            hh.setDonGia(ct.getDonGiaNhap());
             DuLieu.dsCTPhieuNhap.them(ct);
         }
         pn.tinhTongTien(cacDong);
@@ -129,10 +136,15 @@ public class DSPhieuNhap {
 
     // ================= CÁC HÀM BẮT BUỘC KHÁC (gói 50%) =================
 
-    // tìm theo mã thì in luôn chi tiết phiếu
+    // tìm thấy thì in luôn chi tiết phiếu
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã phiếu nhập");
-        xuatChiTiet(ma);
+        String ma = NhapLieu.nhapChuoi("Nhập mã phiếu nhập cần tìm");
+        PhieuNhap pn = timTheoMa(ma);
+        if (pn == null) {
+            System.out.println("Không tìm thấy phiếu nhập có mã: " + ma);
+        } else {
+            xuatChiTiet(ma);
+        }
     }
 
     public PhieuNhap timTheoMa(String ma) {
@@ -151,6 +163,7 @@ public class DSPhieuNhap {
     public void xuat(PhieuNhap[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
+            return;
         }
         for (PhieuNhap pn : mang) {
             pn.xuat();
@@ -158,6 +171,7 @@ public class DSPhieuNhap {
     }
 
     // in 1 phiếu đầy đủ: đầu phiếu (kèm tên NCC, tên NV) + từng mặt hàng
+    // NCC, NV, hàng đã nằm trong phiếu thì không xóa được (mục 6.5) nên luôn tìm thấy
     public void xuatChiTiet(String maPN) {
         PhieuNhap pn = timTheoMa(maPN);
         if (pn == null) {
@@ -168,15 +182,14 @@ public class DSPhieuNhap {
         NhanVien nv = DuLieu.dsNhanVien.timTheoMa(pn.getMaNV());
         System.out.println("----- PHIẾU NHẬP " + pn.getMaPN() + " -----");
         System.out.println("Ngày nhập   : " + DinhDang.ngay(pn.getNgayNhap()));
-        System.out.println("Nhà cung cấp: " + (ncc == null ? pn.getMaNCC() : ncc.getTenNCC()));
-        System.out.println("Nhân viên   : " + (nv == null ? pn.getMaNV() : nv.getHoTen()));
+        System.out.println("Nhà cung cấp: " + ncc.getTenNCC());
+        System.out.println("Nhân viên   : " + nv.getHoTen());
 
         CTPhieuNhap[] cacDong = DuLieu.dsCTPhieuNhap.layTheoPhieu(pn.getMaPN());
         for (int i = 0; i < cacDong.length; i++) {
             CTPhieuNhap ct = cacDong[i];
             HangHoa hh = DuLieu.dsHangHoa.timTheoMa(ct.getMaH());
-            String tenH = (hh == null) ? ct.getMaH() : hh.getTenH();
-            System.out.println((i + 1) + ". " + tenH + ": " + ct.getSl() + " x "
+            System.out.println((i + 1) + ". " + hh.getTenH() + ": " + ct.getSl() + " x "
                     + DinhDang.tien(ct.getDonGiaNhap()) + " = " + DinhDang.tien(ct.getThanhTien()));
         }
         System.out.println("Tổng tiền   : " + DinhDang.tien(pn.getTongTien()));
@@ -282,12 +295,9 @@ public class DSPhieuNhap {
         n = 0;
         for (String[] t : TepTin.doc(FILE)) {
             try {
-                if (!t[0].matches("PN\\d+")) {
-                    throw new IllegalArgumentException();
-                }
                 them(new PhieuNhap(t[0], t[1], t[2], DinhDang.docNgay(t[3]), Double.parseDouble(t[4])));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }

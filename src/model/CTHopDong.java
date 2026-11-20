@@ -35,18 +35,17 @@ public class CTHopDong implements DoiTuong {
     }
 
     // Tính và lưu thành tiền theo số ngày thuê của hợp đồng
-    public double tinhThanhTien(long soNgay) {
-        this.thanhTien = donGia * soNgay;
-        return thanhTien;
+    public void tinhThanhTien(long soNgay) {
+        thanhTien = donGia * soNgay;
     }
 
-    // Nhập số người ở. maHDong, maP, donGia gán bằng setter; thanhTien tính bằng tinhThanhTien().
+    // Nhập số người ở (mặc định tối đa 10). maHDong, maP, donGia gán bằng setter; thanhTien tính bằng tinhThanhTien().
     @Override
     public void nhap() {
-        nhap(Integer.MAX_VALUE);
+        nhap(10);
     }
 
-    // Như nhap() nhưng giới hạn số người tối đa (Phong.soNguoiToiDa)
+    // Như nhap() nhưng giới hạn theo sức chứa của phòng (Phong.soNguoiToiDa), dùng khi lập hợp đồng
     public void nhap(int soNguoiToiDa) {
         slNguoi = NhapLieu.nhapSoNguyen("Số người ở (1-" + soNguoiToiDa + ")", 1, soNguoiToiDa);
     }

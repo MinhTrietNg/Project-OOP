@@ -16,9 +16,9 @@ Tài liệu đọc kèm code của module 4: có gì, học theo khuôn nào, c�
 | `core/` | `TepTin` | Đọc/ghi file dùng chung cho 5 danh sách |
 | | `TimKiem` | Tìm theo tên không phân biệt dấu |
 | `app/` | `DuLieu` | Khai báo 5 danh sách của module 4 |
-| `test/` | `KiemThuModule4` | 29 ca kiểm thử tự động |
+| `test/` | `KiemThuModule4` | 32 ca kiểm thử tự động |
 
-`model/Nguoi.java` là lớp của **module 1**, được viết đúng theo mục 4.1 của `MO_TA_DO_AN.md` để `NhanVien` biên dịch được. Khi ghép thì dùng bản của module 1 (xem mục 7).
+`model/Nguoi.java` là lớp cha dùng chung với `KhachHang` (module 1).
 
 ### So với ERD vẽ tay
 
@@ -46,17 +46,21 @@ toLine() : DinhDang.dong(các trường theo đúng thứ tự file)
 
 ```text
 ds (mảng), n (số phần tử), getDs(), getN()
-them()      -> new X(); x.nhap(); x.setMa(sinhMa()); them(x)
+them()      -> new X(); x.nhap(); (NV: trungSdt(sdt, "") thì báo, return); x.setMa(sinhMa()); them(x)
 them(x)     -> ds = Arrays.copyOf(ds, n + 1); ds[n] = new X(x); n++;
-timTheoMa() -> nhập mã, gọi timTheoMa(ma), in
+timTheoMa() -> nhập mã, gọi timTheoMa(ma); null thì báo "Không tìm thấy...", không thì in
 timTheoMa(ma) -> for, equalsIgnoreCase, return ds[i]; hết vòng return null
-sua(), sua(ma) -> timTheoMa; null thì báo; x.nhap()
+sua(), sua(ma) -> timTheoMa; null thì báo; rồi:
+                 NhaCC: x.nhap()
+                 HangHoa: chỉ setTenH(...) (donGia, slTon tự cập nhật)
+                 NhanVien: nhập vào bản tạm, trungSdt(sdt, ma) thì báo, không thì chép sang
 xoa(), xoa(ma) -> kiểm tra bị tham chiếu chưa; for tìm i; dời ds[j] = ds[j+1]; copyOf(n - 1); n--
-xuat(), xuat(mang)
+xuat(), xuat(mang) -> rỗng thì in "Danh sách trống." và return; không thì for in từng phần tử
 sinhMa()    -> max của Integer.parseInt(ma.substring(độ dài tiền tố)); format("NV%03d", max + 1)
 chon()      -> while(true): nhập mã, "0" thì return null, có thì return
 --- gói 70% ---
---- docFile(): for (String[] t : TepTin.doc(FILE)) { try { them(new X(t[0], ...)); } catch ... }
+--- docFile(): for (String[] t : TepTin.doc(FILE)) { try { them(new X(t[0], ...)); }
+               catch (Exception e) { in "Bỏ qua 1 dòng lỗi" } }
 --- ghiFile(): gom toLine() vào mảng, TepTin.ghi(FILE, mảng)
 ```
 
@@ -92,7 +96,7 @@ Khuôn C dùng cho: `timTheoTen`, `dsSapHet`, `locTheoKhoangNgay`, `layTheoPhieu
 2. `model/NhanVien.java` — khuôn A + kế thừa: `super(...)`, `super.nhap()`, `super.xuat()`.
 3. `danhsach/DSNhaCC.java` — khuôn B ngắn nhất.
 4. `danhsach/DSHangHoa.java` — thêm `truKho`, `congKho`, sắp xếp.
-5. `danhsach/DSPhieuNhap.java` — **nghiệp vụ chính**: `them()` → `nhapCacDong()` → `luuPhieu()`.
+5. `danhsach/DSPhieuNhap.java` — **nghiệp vụ chính**: `them()` → `nhapCacDong()` → `lapPhieu(pn, cacDong)`.
 6. `core/TepTin.java`, `core/TimKiem.java` — 2 lớp tiện ích.
 7. `menu/` — menu chỉ gọi hàm, không có logic.
 
@@ -106,7 +110,7 @@ Trong mỗi lớp `DS...` code được chia bằng dòng `===== CÁC HÀM BẮT
 
 | Hàm | Ở đâu | Ý chính |
 |---|---|---|
-| Lập phiếu qua **mảng tạm**, hủy giữa chừng không hỏng kho | `DSPhieuNhap.them/nhapCacDong/luuPhieu` | Gom đủ rồi mới lưu |
+| Lập phiếu qua **mảng tạm**, hủy giữa chừng không hỏng kho | `DSPhieuNhap.them/nhapCacDong/lapPhieu` | Gom đủ, hỏi "Lưu phiếu nhập" rồi mới lưu |
 | Chặn 1 hàng 2 lần trong 1 phiếu | `DSPhieuNhap.daCoTrongPhieu` | Duyệt mảng tạm |
 | Sửa qua **bản tạm** | `DSNhanVien.sua(ma)` | Constructor sao chép |
 | Chặn trùng số điện thoại | `DSNhanVien.trungSdt` | Bỏ qua chính người đang sửa |
@@ -115,7 +119,7 @@ Trong mỗi lớp `DS...` code được chia bằng dòng `===== CÁC HÀM BẮT
 | Hàng sắp hết, tổng giá trị tồn | `DSHangHoa.dsSapHet`, `tongGiaTriTon` | Khuôn C |
 | Lọc phiếu theo khoảng ngày | `DSPhieuNhap.locTheoKhoangNgay` | `isBefore` / `isAfter` |
 | Chi phí nhập 12 tháng; theo NCC; theo nhân viên; theo chức vụ | `thongKe...` | Khuôn C |
-| Bỏ qua dòng file lỗi, mã sai dạng | `docFile()` | `try/catch` + `matches("NV\\d+")` |
+| Bỏ qua dòng file lỗi | `docFile()` | `try/catch` |
 
 ## 5. Giải thích các đoạn khó
 
@@ -133,14 +137,15 @@ Trong mỗi lớp `DS...` code được chia bằng dòng `===== CÁC HÀM BẮT
 
 ```text
 them()          B1  chọn NCC, chọn NV (gõ 0 = hủy) -> tạo đầu phiếu, ngày = hôm nay
-nhapCacDong()   B2  lặp: chọn hàng (0 = dừng) -> trùng thì chọn lại -> nhập sl, giá
+nhapCacDong()   B2  lặp: chọn hàng (0 = kết thúc) -> trùng thì chọn lại -> nhập sl, giá
                     -> thêm vào MẢNG TẠM -> hỏi "nhập thêm?"
                     mảng rỗng -> hủy, kho không đổi
-luuPhieu()      B3  mỗi dòng: congKho, setDonGia = giá mới, thêm chi tiết
+                    hỏi "Lưu phiếu nhập": k -> "Đã hủy lập phiếu nhập.", kho không đổi
+lapPhieu(pn, cacDong)  B3  mỗi dòng: congKho, hh = timTheoMa(maH), hh.setDonGia(giá mới), thêm chi tiết
                     tính tổng tiền -> thêm phiếu
 ```
 
-Chưa lưu gì cho tới B3. Nếu cộng kho ngay ở B2 mà người dùng hủy thì tồn kho sai.
+Chưa lưu gì cho tới B3. Nếu cộng kho ngay ở B2 mà người dùng hủy thì tồn kho sai. `lapPhieu` là hàm public có tham số (giống `lapHopDong`, `lapHoaDon`) nên kiểm thử gọi thẳng được.
 
 ### 5.4 Tìm không dấu
 
@@ -152,7 +157,7 @@ So 2 phần tử **đứng cạnh nhau**, sai thứ tự thì đổi chỗ; mỗ
 
 ### 5.6 Đọc / ghi file qua `TepTin`
 
-`TepTin.doc(FILE)` trả về `String[][]`: mỗi phần tử là 1 dòng đã tách theo `|`. `docFile()` chỉ còn việc dựng đối tượng từ `t[0], t[1]...`. Dòng nào lỗi (thiếu trường, sai số, mã sai dạng) thì nhảy vào `catch`, báo "Bỏ qua dòng lỗi" và đọc tiếp.
+`TepTin.doc(FILE)` trả về `String[][]`: mỗi phần tử là 1 dòng đã tách theo `|`. `docFile()` chỉ còn việc dựng đối tượng từ `t[0], t[1]...`. Dòng nào lỗi (thiếu trường, sai số, sai ngày) thì nhảy vào `catch (Exception e)`, báo "Bỏ qua 1 dòng lỗi" và đọc tiếp.
 
 ## 6. Kiểm thử
 
@@ -168,9 +173,9 @@ javac -encoding UTF-8 -d out (Get-ChildItem -Recurse src, test -Filter *.java).F
 java -cp out KiemThuModule4
 ```
 
-Kết quả mong đợi: `Kết quả: 29 đạt, 0 trượt`. Lớp test chỉ dùng dữ liệu trong bộ nhớ, không đọc/ghi thư mục `data/`.
+Kết quả mong đợi: `Kết quả: 32 đạt, 0 trượt`. Lớp test chỉ dùng dữ liệu trong bộ nhớ, không đọc/ghi thư mục `data/`.
 
-Các ca được kiểm: sinh mã (kể cả danh sách rỗng), trừ/cộng kho (đủ, thiếu, mã sai, **trừ đúng bằng tồn**), trùng sđt, tìm không dấu, sắp xếp (đúng thứ tự, không đổi mảng gốc), hàng sắp hết (kể cả bằng ngưỡng), tính thành tiền / tổng tiền, lọc ngày (lấy cả 2 ngày biên), tổng theo tháng, định dạng dòng file.
+Các ca được kiểm: sinh mã (kể cả danh sách rỗng), trừ/cộng kho (đủ, thiếu, mã sai, **trừ đúng bằng tồn**), trùng sđt, tìm không dấu, sắp xếp (đúng thứ tự, không đổi mảng gốc), hàng sắp hết (kể cả bằng ngưỡng), tính thành tiền / tổng tiền, lọc ngày (lấy cả 2 ngày biên), tổng theo tháng, định dạng dòng file, lập phiếu (cộng kho, cập nhật giá, lưu phiếu + chi tiết).
 
 ### Chạy chương trình
 
@@ -185,19 +190,18 @@ Thử nhanh: menu 6 thêm 2 nhân viên → 7 › 1 thêm nhà cung cấp → 7 
 | Vấn đề tìm ra | Hậu quả | Xử lý |
 |---|---|---|
 | Số lượng nhập cho tới `Integer.MAX_VALUE` | `slTon` (int) cộng dồn bị tràn thành **số âm** | Giới hạn 1–100.000 mỗi dòng |
-| Mã sai dạng trong file (vd `NVabc`) vẫn được nạp | `sinhMa()` văng `NumberFormatException`, chương trình dừng | `docFile()` loại dòng có mã không khớp `NV\d+` |
-| `NhapLieu.nhapSoThuc` (file chung của nhóm) nhận `Infinity` | Lương / giá có thể là vô cực | **Chưa sửa** vì là file chung, cần báo người viết `core` |
+| `NhapLieu.nhapSoThuc` nhận `Infinity` | Ghi file văng lỗi, chương trình dừng | **Đã sửa**: `nhapSoThuc` từ chối `Infinity` (`Double.isInfinite`) |
+| Gõ 0 khi chọn hàng tưởng là hủy cả phiếu | Phiếu vẫn được lưu ngoài ý muốn | Ghi rõ "gõ 0 để kết thúc" và hỏi "Lưu phiếu nhập" trước khi lưu |
+| Sửa hàng hóa cho đổi tay `donGia` | Trái mục 4.5 (giá chỉ tự cập nhật khi nhập hàng) | `sua` chỉ sửa tên |
 | Trùng sđt chỉ báo sau khi nhập hết các ô | Bất tiện, không sai dữ liệu | Giữ nguyên cho code đơn giản |
 
-## 7. Khi ghép code với 3 module còn lại
+## 7. Chỗ module 4 nối với các module khác
 
-1. **`Nguoi`**: dùng bản của module 1, xóa bản tạm. Bản đó phải có `getHoTen()`, `getSdt()`, `setHoTen()`, `setSdt()`, constructor `(hoTen, sdt)` và constructor sao chép. `NhanVien.xuat()` gọi `super.xuat()` để in `hoTen | sdt | ` **chưa xuống dòng**; nếu bản của module 1 in kiểu khác thì cần thống nhất.
-2. **`DuLieu.java`**: giữ 5 dòng khai báo + 5 dòng `docFile()` của module 4, thêm của các bạn vào.
-3. **`DSNhanVien.xoa(ma)`**: vòng kiểm tra `HoaDon` **đã bật khi ghép module 3**; còn vòng `HDThuePhong` chờ module 2 (bỏ comment và thêm `import`).
-4. **`DSHangHoa.xoa(ma)`**: vòng kiểm tra `DichVu` **đã bật khi ghép module 3**.
-5. **`MenuThongKe`**: `doanhThuTheoThangNam` **đã bật khi ghép module 3**. Còn lại: bỏ comment 2 dòng `import` (`CTHopDong`, `Phong`); trong `tinhTrangPhongTheoLoai`, `doanhThuTheoPhong` xóa dòng `println` tạm và bỏ comment khối `/* ... */`.
-6. Module Dịch vụ gọi `DuLieu.dsHangHoa.truKho(maH, sl)` khi ghi dịch vụ, rồi `DuLieu.dsHangHoa.ghiFile()` (**đã làm**, xem `HUONG_DAN_MUC3.md`).
-7. Module Thuê phòng / Hóa đơn chọn nhân viên lập bằng `DuLieu.dsNhanVien.xuat()` rồi `DuLieu.dsNhanVien.chon()` (trả `null` nếu gõ `0`).
+1. **`NhanVien extends Nguoi`**: `Nguoi` dùng chung với `KhachHang`; `NhanVien.xuat()` gọi `super.xuat()` để in `hoTen | sdt | ` (chưa xuống dòng) rồi in tiếp phần riêng.
+2. **`DSNhanVien.xoa(ma)`** kiểm tra `PhieuNhap`, `HoaDon`, `HDThuePhong`; **`DSHangHoa.xoa(ma)`** kiểm tra `CTPhieuNhap`, `DichVu`.
+3. **`MenuThongKe`**: doanh thu theo tháng/năm dùng `HoaDon.daThanhToan()`; doanh thu theo phòng dùng `DuLieu.dsCTHopDong.layTheoPhong(maP)` + `DuLieu.dsHoaDon.timTheoHopDong(maHDong)`; tình trạng phòng duyệt `DuLieu.dsPhong`.
+4. Module Dịch vụ gọi `DuLieu.dsHangHoa.truKho(maH, sl)` khi ghi dịch vụ, rồi `DuLieu.dsHangHoa.ghiFile()`.
+5. Module Thuê phòng / Hóa đơn chọn nhân viên lập bằng `DuLieu.dsNhanVien.xuat()` rồi `DuLieu.dsNhanVien.chon()` (trả `null` nếu gõ `0`).
 
 ## 8. Câu hỏi vấn đáp hay gặp
 

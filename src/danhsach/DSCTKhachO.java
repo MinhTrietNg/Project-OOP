@@ -104,12 +104,9 @@ public class DSCTKhachO {
         n = 0;
         for (String[] t : TepTin.doc(FILE)) {
             try {
-                if (!t[0].matches("HDTP\\d+") || !t[1].matches("P\\d+") || !t[2].matches("KH\\d+")) {
-                    throw new IllegalArgumentException();
-                }
                 them(new CTKhachO(t[0], t[1], t[2]));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }

@@ -58,8 +58,11 @@ public class PhongSuite extends Phong {
     @Override
     public void xuat() {
         super.xuat();
-        System.out.println(" | " + slPhong + " phòng con | "
-                + (phongKhachRieng ? "Có phòng khách riêng" : "Không phòng khách riêng"));
+        String chuPhongKhach = "Không phòng khách riêng";
+        if (phongKhachRieng) {
+            chuPhongKhach = "Có phòng khách riêng";
+        }
+        System.out.println(" | " + slPhong + " phòng con | " + chuPhongKhach);
     }
 
     @Override

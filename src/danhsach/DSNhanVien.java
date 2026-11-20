@@ -31,6 +31,7 @@ public class DSNhanVien {
     public void them() {
         NhanVien nv = new NhanVien();
         nv.nhap();
+        // thêm mới: chưa có mã nên không bỏ qua ai
         if (trungSdt(nv.getSdt(), "")) {
             System.out.println("Số điện thoại đã có nhân viên khác dùng, không thêm.");
             return;
@@ -141,6 +142,7 @@ public class DSNhanVien {
     public void xuat(NhanVien[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
+            return;
         }
         for (NhanVien nv : mang) {
             nv.xuat();
@@ -248,13 +250,9 @@ public class DSNhanVien {
         n = 0;
         for (String[] t : TepTin.doc(FILE)) {
             try {
-                // mã sai dạng (vd "NVabc") sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
-                if (!t[0].matches("NV\\d+")) {
-                    throw new IllegalArgumentException();
-                }
                 them(new NhanVien(t[0], t[1], t[2], t[3], Double.parseDouble(t[4])));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }

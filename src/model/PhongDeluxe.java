@@ -71,8 +71,11 @@ public class PhongDeluxe extends Phong {
     @Override
     public void xuat() {
         super.xuat();
-        System.out.println(" | View " + view + " | " + (banCong ? "Có ban công" : "Không ban công")
-                + " | Nội thất " + loaiNoiThat);
+        String chuBanCong = "Không ban công";
+        if (banCong) {
+            chuBanCong = "Có ban công";
+        }
+        System.out.println(" | View " + view + " | " + chuBanCong + " | Nội thất " + loaiNoiThat);
     }
 
     @Override

@@ -81,7 +81,10 @@ public class DichVu implements DoiTuong {
     // vd: DV001 | Nước suối | 15.000 đ | dùng hàng HH001
     @Override
     public void xuat() {
-        String hang = coDungHang() ? "dùng hàng " + maH : "không dùng hàng";
+        String hang = "không dùng hàng";
+        if (coDungHang()) {
+            hang = "dùng hàng " + maH;
+        }
         System.out.println(maDV + " | " + tenDV + " | " + DinhDang.tien(donGia) + " | " + hang);
     }
 

@@ -53,10 +53,9 @@ public class HDThuePhong implements DoiTuong {
     // maHDong, maKH, maNV, ngayLapHD gán trước bằng setter (không nhập ở đây).
     @Override
     public void nhap() {
-        LocalDate ngayLap = (ngayLapHD != null) ? ngayLapHD : LocalDate.now();
         while (true) {
             ngayNhanPhong = NhapLieu.nhapNgay("Ngày nhận phòng");
-            if (!ngayNhanPhong.isBefore(ngayLap)) {
+            if (!ngayNhanPhong.isBefore(ngayLapHD)) {
                 break;
             }
             System.out.println("  Ngày nhận phòng không được trước ngày lập hợp đồng.");

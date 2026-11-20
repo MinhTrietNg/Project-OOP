@@ -160,17 +160,8 @@ Mẫu đầy đủ (`DSKhachHang`):
 ```java
 package danhsach;
 
-import core.DinhDang;
 import core.NhapLieu;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import core.TepTin;
 import java.util.Arrays;
 import model.KhachHang;
 
@@ -284,39 +275,27 @@ public class DSKhachHang {
         return String.format("KH%03d", max + 1);
     }
 
+    // TepTin.doc trả về mảng các dòng, mỗi dòng đã tách sẵn thành mảng trường t
+    // dòng nào hỏng (thiếu trường, sai số, sai ngày) thì bỏ qua, không làm dừng chương trình
     public void docFile() {
         ds = new KhachHang[0];
         n = 0;
-        File f = new File(FILE);
-        if (!f.exists()) {
-            return;
-        }
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
-                String[] t = DinhDang.tach(line);
+        for (String[] t : TepTin.doc(FILE)) {
+            try {
                 them(new KhachHang(t[0], t[1], t[2], t[3]));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
-        } catch (IOException e) {
-            System.out.println("Lỗi đọc file " + FILE);
         }
     }
 
+    // đổi từng đối tượng thành 1 dòng rồi nhờ TepTin ghi đè cả file
     public void ghiFile() {
-        new File(FILE).getParentFile().mkdirs();
-        try (BufferedWriter bw = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(FILE), StandardCharsets.UTF_8))) {
-            for (int i = 0; i < n; i++) {
-                bw.write(ds[i].toLine());
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Lỗi ghi file " + FILE);
+        String[] cacDong = new String[n];
+        for (int i = 0; i < n; i++) {
+            cacDong[i] = ds[i].toLine();
         }
+        TepTin.ghi(FILE, cacDong);
     }
 }
 ```
@@ -344,11 +323,10 @@ Hàm trả về nhiều kết quả (mục 6.6) trả về **mảng**, gom kết
 ```java
 public Phong[] dsPhongTrong() {
     Phong[] kq = new Phong[0];
-    int dem = 0;
     for (int i = 0; i < n; i++) {
         if (ds[i].getTinhTrang().equals(Phong.TRONG)) {
-            kq = Arrays.copyOf(kq, dem + 1);
-            kq[dem++] = ds[i];
+            kq = Arrays.copyOf(kq, kq.length + 1);
+            kq[kq.length - 1] = ds[i];
         }
     }
     return kq;

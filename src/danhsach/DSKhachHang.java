@@ -29,7 +29,8 @@ public class DSKhachHang {
     public void them() {
         KhachHang kh = new KhachHang();
         kh.nhap();
-        if (timTheoSdt(kh.getSdt()) != null) {
+        // thêm mới: chưa có mã nên không bỏ qua ai
+        if (trungSdt(kh.getSdt(), "")) {
             System.out.println("Số điện thoại đã có khách khác dùng, không thêm.");
             return;
         }
@@ -79,8 +80,7 @@ public class DSKhachHang {
         }
         KhachHang tam = new KhachHang(kh);
         tam.nhap();
-        KhachHang trung = timTheoSdt(tam.getSdt());
-        if (trung != null && trung != kh) {
+        if (trungSdt(tam.getSdt(), ma)) {
             System.out.println("Số điện thoại đã có khách khác dùng, không sửa.");
             return;
         }
@@ -132,6 +132,7 @@ public class DSKhachHang {
     public void xuat(KhachHang[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
+            return;
         }
         for (KhachHang kh : mang) {
             kh.xuat();
@@ -151,6 +152,16 @@ public class DSKhachHang {
     }
 
     // ================= HÀM NÂNG CAO (gói 70%) =================
+
+    // sđt đã có khách KHÁC dùng chưa; maBoQua là mã của chính khách đang sửa
+    public boolean trungSdt(String sdt, String maBoQua) {
+        for (int i = 0; i < n; i++) {
+            if (ds[i].getSdt().equals(sdt) && !ds[i].getMaKH().equalsIgnoreCase(maBoQua)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void timTheoSdt() {
         String sdt = NhapLieu.nhapChuoi("Nhập số điện thoại cần tìm");
@@ -197,13 +208,9 @@ public class DSKhachHang {
         n = 0;
         for (String[] t : TepTin.doc(FILE)) {
             try {
-                // mã sai dạng (vd "KHabc") sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
-                if (!t[0].matches("KH\\d+")) {
-                    throw new IllegalArgumentException();
-                }
                 them(new KhachHang(t[0], t[1], t[2], t[3]));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }

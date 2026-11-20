@@ -33,7 +33,7 @@ public class DSHoaDon {
     //   B1. them()     : nhập mã hợp đồng (chưa có hóa đơn), chọn nhân viên lập
     //   B2. lapHoaDon(): lấy các phòng + các lần dùng dịch vụ, tính tiền, lưu hóa đơn CHUA_TT
     //   B3.              trả mọi phòng của hợp đồng về TRONG
-    // Menu gọi xong thì ghi file hóa đơn (và file phòng khi đã ghép module Phòng).
+    // Menu gọi xong thì ghi file hóa đơn và file phòng.
 
     public void them() {
         if (DuLieu.dsNhanVien.getN() == 0) {
@@ -43,8 +43,9 @@ public class DSHoaDon {
 
         // ----- B1 -----
         String maHDong = NhapLieu.nhapChuoi("Nhập mã hợp đồng trả phòng");
-        HDThuePhong hd = timHopDong(maHDong);
+        HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(maHDong);
         if (hd == null) {
+            System.out.println("Không tìm thấy hợp đồng có mã: " + maHDong);
             return;
         }
         HoaDon cu = timTheoHopDong(hd.getMaHDong());
@@ -69,7 +70,7 @@ public class DSHoaDon {
         }
 
         // ----- B2, B3 -----
-        HoaDon hdon = lapHoaDon(hd, nv.getMaNV(), layPhongCuaHopDong(hd.getMaHDong()));
+        HoaDon hdon = lapHoaDon(hd, nv.getMaNV(), DuLieu.dsCTHopDong.layTheoHopDong(hd.getMaHDong()));
         if (hdon != null) {
             System.out.println("Đã lập hóa đơn " + hdon.getMaHDon() + ":");
             xuatChiTiet(hdon.getMaHDon());
@@ -77,7 +78,7 @@ public class DSHoaDon {
     }
 
     // bản có tham số: tính tiền, lưu hóa đơn, trả phòng; hợp đồng đã có hóa đơn thì trả null
-    // cacPhong = các CTHopDong của hợp đồng (truyền vào để kiểm thử được khi chưa ghép module 2)
+    // cacPhong = các CTHopDong của hợp đồng
     public HoaDon lapHoaDon(HDThuePhong hd, String maNV, CTHopDong[] cacPhong) {
         if (timTheoHopDong(hd.getMaHDong()) != null) {
             System.out.println("Hợp đồng này đã có hóa đơn.");
@@ -85,16 +86,18 @@ public class DSHoaDon {
         }
         CTSuDungDV[] cacDV = DuLieu.dsCTSuDungDV.layTheoHopDong(hd.getMaHDong());
 
-        HoaDon hdon = new HoaDon();
-        hdon.nhap();                         // ngày lập = hôm nay, trạng thái CHUA_TT
+        HoaDon hdon = new HoaDon();          // constructor đã gán ngày lập = hôm nay, trạng thái CHUA_TT
         hdon.setMaHDon(sinhMa());
         hdon.setMaHDong(hd.getMaHDong());
         hdon.setMaNV(maNV);
         hdon.tinhTien(cacPhong, cacDV);
         them(hdon);
 
-        traPhong(cacPhong);
-        return timTheoMa(hdon.getMaHDon());
+        // trả phòng: mọi phòng của hợp đồng về TRONG (bước 3 mục 6.3)
+        for (CTHopDong ct : cacPhong) {
+            DuLieu.dsPhong.capNhatTinhTrang(ct.getMaP(), Phong.TRONG);
+        }
+        return ds[n - 1];
     }
 
     public void them(HoaDon hdon) {
@@ -121,6 +124,8 @@ public class DSHoaDon {
         if (NhapLieu.nhapCoKhong("Xác nhận khách đã thanh toán")) {
             thanhToan(hdon.getMaHDon());
             System.out.println("Đã thanh toán hóa đơn " + hdon.getMaHDon());
+        } else {
+            System.out.println("Đã hủy thanh toán.");
         }
     }
 
@@ -168,6 +173,7 @@ public class DSHoaDon {
     public void xuat(HoaDon[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
+            return;
         }
         for (HoaDon hdon : mang) {
             hdon.xuat();
@@ -185,10 +191,10 @@ public class DSHoaDon {
         System.out.println("----- HÓA ĐƠN " + hdon.getMaHDon() + " -----");
         System.out.println("Hợp đồng    : " + hdon.getMaHDong());
         System.out.println("Ngày lập    : " + DinhDang.ngay(hdon.getNgayLapHD()));
-        System.out.println("Nhân viên   : " + (nv == null ? hdon.getMaNV() : nv.getHoTen()));
+        System.out.println("Nhân viên   : " + nv.getHoTen());
 
         System.out.println("Tiền phòng:");
-        for (CTHopDong ct : layPhongCuaHopDong(hdon.getMaHDong())) {
+        for (CTHopDong ct : DuLieu.dsCTHopDong.layTheoHopDong(hdon.getMaHDong())) {
             System.out.println("  Phòng " + ct.getMaP() + ": " + DinhDang.tien(ct.getThanhTien()));
         }
         System.out.println("  Cộng tiền phòng: " + DinhDang.tien(hdon.getTongTienThue()));
@@ -196,19 +202,20 @@ public class DSHoaDon {
         System.out.println("Tiền dịch vụ:");
         for (CTSuDungDV ct : DuLieu.dsCTSuDungDV.layTheoHopDong(hdon.getMaHDong())) {
             DichVu dv = DuLieu.dsDichVu.timTheoMa(ct.getMaDV());
-            String tenDV = (dv == null) ? ct.getMaDV() : dv.getTenDV();
-            System.out.println("  " + DinhDang.ngay(ct.getNgaySD()) + " " + tenDV + ": " + ct.getSl()
+            System.out.println("  " + DinhDang.ngay(ct.getNgaySD()) + " " + dv.getTenDV() + ": " + ct.getSl()
                     + " x " + DinhDang.tien(ct.getDonGia()) + " = " + DinhDang.tien(ct.getThanhTien()));
         }
         System.out.println("  Cộng tiền dịch vụ: " + DinhDang.tien(hdon.getTongTienDV()));
 
         System.out.println("TỔNG CỘNG   : " + DinhDang.tien(hdon.getTongCong()));
-        HDThuePhong hd = timHopDongKhongBao(hdon.getMaHDong());
-        if (hd != null) {
-            System.out.println("Đã cọc      : " + DinhDang.tien(hd.getTienCoc()));
-            System.out.println("Còn phải trả: " + DinhDang.tien(hdon.soConPhaiTra(hd.getTienCoc())));
+        HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(hdon.getMaHDong());
+        System.out.println("Đã cọc      : " + DinhDang.tien(hd.getTienCoc()));
+        System.out.println("Còn phải trả: " + DinhDang.tien(hdon.soConPhaiTra(hd.getTienCoc())));
+        if (hdon.daThanhToan()) {
+            System.out.println("Trạng thái  : Đã thanh toán");
+        } else {
+            System.out.println("Trạng thái  : Chưa thanh toán");
         }
-        System.out.println("Trạng thái  : " + (hdon.daThanhToan() ? "Đã thanh toán" : "Chưa thanh toán"));
     }
 
     // "HDON012".substring(4) = "012" -> 12
@@ -271,35 +278,6 @@ public class DSHoaDon {
         return kq;
     }
 
-    // ================= CỬA GHÉP VỚI MODULE PHÒNG, THUÊ PHÒNG =================
-    // các hàm dưới là chỗ DUY NHẤT của DSHoaDon cần danh sách của module 1, 2.
-
-    // tìm hợp đồng theo mã; không thấy thì báo và trả null
-    private HDThuePhong timHopDong(String maHDong) {
-        HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(maHDong);
-        if (hd == null) {
-            System.out.println("Không tìm thấy hợp đồng có mã: " + maHDong);
-        }
-        return hd;
-    }
-
-    // như trên nhưng không in gì (dùng khi in hóa đơn để lấy tiền cọc)
-    private HDThuePhong timHopDongKhongBao(String maHDong) {
-        return DuLieu.dsHDThuePhong.timTheoMa(maHDong);
-    }
-
-    // các phòng (CTHopDong) của hợp đồng
-    private CTHopDong[] layPhongCuaHopDong(String maHDong) {
-        return DuLieu.dsCTHopDong.layTheoHopDong(maHDong);
-    }
-
-    // trả phòng: mọi phòng của hợp đồng về TRONG (bước 3 mục 6.3)
-    private void traPhong(CTHopDong[] cacPhong) {
-        for (CTHopDong ct : cacPhong) {
-            DuLieu.dsPhong.capNhatTinhTrang(ct.getMaP(), Phong.TRONG);
-        }
-    }
-
     // ================= ĐỌC / GHI FILE =================
 
     // hoadon.txt: maHDon|maHDong|maNV|ngayLapHD|tongTienThue|tongTienDV|tongCong|trangThai
@@ -308,14 +286,10 @@ public class DSHoaDon {
         n = 0;
         for (String[] t : TepTin.doc(FILE)) {
             try {
-                if (!t[0].matches("HDON\\d+")
-                        || !(t[7].equals(HoaDon.CHUA_TT) || t[7].equals(HoaDon.DA_TT))) {
-                    throw new IllegalArgumentException();
-                }
                 them(new HoaDon(t[0], t[1], t[2], DinhDang.docNgay(t[3]), Double.parseDouble(t[4]),
                         Double.parseDouble(t[5]), Double.parseDouble(t[6]), t[7]));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }

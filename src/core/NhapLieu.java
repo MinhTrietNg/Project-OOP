@@ -47,7 +47,8 @@ public final class NhapLieu {
             String s = docDong(nhac);
             try {
                 double x = Double.parseDouble(s);
-                if (x >= min) {
+                // chặn "Infinity" / "1e400", không thì lúc ghi file sẽ văng lỗi
+                if (x >= min && !Double.isInfinite(x)) {
                     return x;
                 }
                 System.out.println("  Phải lớn hơn hoặc bằng " + DinhDang.tien(min) + ".");

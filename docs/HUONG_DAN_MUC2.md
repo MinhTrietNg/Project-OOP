@@ -13,7 +13,7 @@ Tài liệu đọc kèm code của module 2: có gì, học theo khuôn nào, c�
 | `menu/` | `MenuThuePhong` | Chỉ hiện menu và gọi hàm của danh sách |
 | `core/` | `TepTin`, `DinhDang`, `TimKiem` | Đọc/ghi file, định dạng ngày `dd/MM/uuuu`, tìm không dấu (dùng chung) |
 | `app/` | `DuLieu` | Khai báo 3 danh sách của module 2 |
-| `test/` | `KiemThuModule2` | 22 ca kiểm thử tự động |
+| `test/` | `KiemThuModule2` | 24 ca kiểm thử tự động |
 
 Các lớp của module khác có liên kết trực tiếp với module 2: `KhachHang`, `Phong` (**module 1**), `HoaDon` (**module 3**), `NhanVien` (**module 4**).
 
@@ -45,14 +45,14 @@ toLine() : DinhDang.dong(các trường theo đúng thứ tự file)
 ```text
 --- Danh sách có mã (DSHDThuePhong) ---
 ds (mảng), n (số phần tử), getDs(), getN()
-lapHopDong(), lapHopDong(hd, dsCT, dsKO) -> nghiệp vụ chính
-them(), them(hd)
+them()   -> nghiệp vụ lập hợp đồng (giống DSHoaDon.them()), cuối cùng gọi lapHopDong(hd, dsCT, dsKO)
+lapHopDong(hd, dsCT, dsKO) -> them(hd), them từng ct + đổi phòng DA_THUE, them từng ko
+them(hd) -> copyOf(ds, n + 1); ds[n] = new HDThuePhong(hd); n++
 timTheoMa(), timTheoMa(ma) -> for, equalsIgnoreCase, return ds[i]; hết vòng return null
-sua(), sua(ma) -> kiểm tra chưa có hóa đơn; nhập lại ngayTraPhong; tính lại thanhTien các CTHopDong
+sua(), sua(ma) -> kiểm tra chưa có hóa đơn; nhập lại ngayTraPhong; ct.tinhThanhTien(soNgay) cho các CTHopDong
 (không có xoa() vì là chứng từ - mục 6.5)
 xuat(), xuat(mang)
 sinhMa() -> max của Integer.parseInt(ma.substring(4)); format("HDTP%03d", max + 1)
-chon()   -> while(true): nhập mã, "0" thì return null, có thì return
 
 --- Danh sách chi tiết (DSCTHopDong, DSCTKhachO) ---
 ds, n, getDs(), getN()
@@ -83,7 +83,7 @@ Khuôn C dùng cho: `dsChuaThanhToan`, `timTheoMaKH`, `timTheoTenKH` (trong `DSH
 2. `model/CTHopDong.java` — khuôn A + hàm tính `tinhThanhTien(long soNgay)`.
 3. `model/HDThuePhong.java` — khuôn A + kiểm tra ngày nhận/trả (`nhap()`, `nhapNgayTra()`, `soNgayThue()`).
 4. `danhsach/DSCTKhachO.java`, `danhsach/DSCTHopDong.java` — khuôn B cho danh sách chi tiết + chống trùng khóa.
-5. `danhsach/DSHDThuePhong.java` — **nghiệp vụ chính**: `lapHopDong()` -> `lapHopDong(hd, dsCT, dsKO)` và `sua(ma)`.
+5. `danhsach/DSHDThuePhong.java` — **nghiệp vụ chính**: `them()` -> `nhapKhachO(...)` -> `lapHopDong(hd, dsCT, dsKO)` và `sua(ma)`.
 6. `menu/MenuThuePhong.java` — menu chỉ gọi hàm và gọi `ghiFile()` cho các danh sách thay đổi.
 
 ## 4. Phần nào thuộc gói nào
@@ -96,13 +96,13 @@ Trong mỗi lớp `DS...` code được chia bằng dòng `===== CÁC HÀM BẮT
 
 | Hàm | Ở đâu | Ý chính |
 |---|---|---|
-| Lập hợp đồng gom qua **mảng tạm** rồi mới chốt | `DSHDThuePhong.lapHopDong` | Chọn đủ phòng & khách mới lưu và đổi trạng thái phòng |
+| Lập hợp đồng gom qua **mảng tạm** rồi mới chốt | `DSHDThuePhong.them()` | Chọn đủ phòng & khách mới lưu và đổi trạng thái phòng; gõ `0` là hủy |
 | Tìm/thêm khách ngay tại chỗ khi lập hợp đồng | `DSHDThuePhong.chonHoacThemKhach` | Tìm theo mã hoặc SĐT; chưa có gọi `dsKhachHang.them()` |
-| Chặn trùng phòng trong 1 hợp đồng & trùng khách trong 1 phòng | `lapHopDong` + `timTheoKhoa` | Kiểm tra cả trên mảng tạm và mảng chính |
+| Chặn trùng phòng trong 1 hợp đồng & trùng khách trong 1 phòng | `them()` + `timTheoKhoa` | Trùng phòng: kiểm tra trên mảng tạm `dsCT`. Trùng khách: `DSCTKhachO.them()` bỏ qua lúc chốt |
 | Sửa ngày trả tự cập nhật lại thành tiền từng phòng | `DSHDThuePhong.sua(ma)` | Chặn nếu đã có `HoaDon`; tính lại `donGia * soNgayThue()` |
 | Lọc hợp đồng chưa thanh toán | `DSHDThuePhong.dsChuaThanhToan` | Kiểm tra `dsHoaDon.timTheoHopDong(ma) == null` |
 | Tìm hợp đồng theo tên khách không dấu | `DSHDThuePhong.timTheoTenKH` | Kết hợp `dsKhachHang.timTheoMa` + `TimKiem.chua` |
-| Bỏ qua dòng file lỗi, mã sai dạng, ngày sai lịch | `docFile()` | `try/catch` + `matches("HDTP\\d+")` + `DinhDang.docNgay` |
+| Bỏ qua dòng file lỗi, ngày sai lịch | `docFile()` | `try/catch` quanh `them(...)` + `DinhDang.docNgay` |
 
 ## 5. Giải thích các đoạn khó
 
@@ -119,23 +119,27 @@ Theo mục 6.5 của đồ án, `HDThuePhong`, `CTHopDong`, `CTKhachO` thuộc n
 ### 5.3 Lập hợp đồng qua mảng tạm
 
 ```text
-lapHopDong()    B1  kiểm tra còn phòng TRONG -> chọn/thêm KH đứng tên -> chọn NV
+them()          B1  kiểm tra có nhân viên, còn phòng TRONG -> chọn/thêm KH đứng tên -> chọn NV
                 B2  tạo đầu hợp đồng, ngày lập = hôm nay -> nhập ngày nhận, trả, cọc
                 B3  lặp: chọn phòng TRONG -> nhập slNguoi -> thêm vào mảng tạm dsCT
-                    -> nhập 1..slNguoi khách ở -> thêm vào mảng tạm dsKO
+                    -> nhapKhachO(...): 1..slNguoi khách ở -> nối vào mảng tạm dsKO
 lapHopDong(...) B4  lưu hd -> lưu từng ct -> đổi phòng sang DA_THUE -> lưu từng ko
 ```
 
-Chỉ tới B4 dữ liệu mới ghi vào các danh sách và đổi tình trạng phòng. Nếu người dùng gõ `0` hủy ở B1, dữ liệu các bảng vẫn nguyên vẹn.
+Chỉ tới B4 dữ liệu mới ghi vào các danh sách và đổi tình trạng phòng. Gõ `0` ở bước chọn khách, chọn nhân viên, chọn phòng (khi chưa có phòng nào) hoặc chọn khách ở thì in `Đã hủy lập hợp đồng.` và các bảng giữ nguyên (riêng khách mới thêm tại chỗ thì vẫn được giữ).
+
+`nhapKhachO` dùng `while (dem < slNguoi)`: từ khách thứ 2 hỏi `nhapCoKhong("Thêm khách ở phòng ...")`; gõ `0` thì trả `null` để `them()` hủy cả hợp đồng.
 
 ### 5.4 Chặn trùng khóa ở bảng chi tiết (`timTheoKhoa`)
 
 - `DSCTHopDong`: cặp `(maHDong, maP)` là khóa chính -> `timTheoKhoa(maHDong, maP)` kiểm tra không cho 1 phòng xuất hiện 2 lần trong cùng hợp đồng.
-- `DSCTKhachO`: bộ `(maHDong, maP, maKH)` là khóa chính -> `timTheoKhoa(maHDong, maP, maKH)` chặn ghi trùng cùng 1 khách 2 lần vào 1 phòng.
+- `DSCTKhachO`: bộ `(maHDong, maP, maKH)` là khóa chính -> `timTheoKhoa(maHDong, maP, maKH)` chặn ghi trùng cùng 1 khách 2 lần vào 1 phòng. Khi lập hợp đồng, khách trùng trong mảng tạm chỉ bị bỏ qua lúc chốt, phần còn lại vẫn lưu đủ.
 
 ### 5.5 Sửa ngày trả phòng và tính lại thành tiền chi tiết
 
-Khi khách trả sớm hoặc gia hạn thêm ngày (và hợp đồng **chưa lập hóa đơn**), `DSHDThuePhong.sua(ma)` gọi `hd.nhapNgayTra()` để đảm bảo ngày trả mới vẫn sau ngày nhận phòng, sau đó duyệt `DuLieu.dsCTHopDong.layTheoHopDong(ma)` cập nhật lại `thanhTien = donGia * hd.soNgayThue()`. Menu sau đó ghi cả 2 file `hdthuephong.txt` và `cthopdong.txt`.
+Khi khách trả sớm hoặc gia hạn thêm ngày (và hợp đồng **chưa lập hóa đơn**), `DSHDThuePhong.sua(ma)` gọi `hd.nhapNgayTra()` để đảm bảo ngày trả mới vẫn sau ngày nhận phòng, sau đó duyệt `DuLieu.dsCTHopDong.layTheoHopDong(ma)` gọi `ct.tinhThanhTien(hd.soNgayThue())`. Menu sau đó ghi cả 2 file `hdthuephong.txt` và `cthopdong.txt`.
+
+Giới hạn đã biết (không xử lý): rút ngắn ngày trả thì các lần dùng dịch vụ (`CTSuDungDV`) có `ngaySD` sau ngày trả mới **không bị xóa** và vẫn được tính vào hóa đơn.
 
 ### 5.6 Đọc / ghi file qua `TepTin` và `DinhDang.docNgay`
 
@@ -155,7 +159,7 @@ javac -encoding UTF-8 -d out (Get-ChildItem -Recurse src, test -Filter *.java).F
 java -cp out KiemThuModule2
 ```
 
-Kết quả mong đợi: `Kết quả: 22 đạt, 0 trượt`. *(Lưu ý: `lapHopDong(...)` gọi `DSPhong.capNhatTinhTrang(...)` nên sẽ ghi dữ liệu mẫu vào `data/phong.txt`; hãy sao lưu `data/phong.txt` trước khi chạy test nếu đang có dữ liệu thật).*
+Kết quả mong đợi: `Kết quả: 24 đạt, 0 trượt`.
 
 Các ca được kiểm: sinh mã (kể cả danh sách rỗng), tính số ngày thuê (kể cả ca biên 1 đêm), tính thành tiền chi tiết, lập hợp đồng liên bảng (lưu `HDThuePhong`, `CTHopDong`, `CTKhachO` và đổi trạng thái phòng sang `DA_THUE`), chặn trùng khóa chi tiết, tra cứu theo khóa/phòng/hợp đồng, tìm theo mã KH và tên KH không dấu, lọc hợp đồng chưa thanh toán trước và sau khi lập hóa đơn, định dạng dòng file `toLine()`.
 
@@ -173,23 +177,24 @@ Thử nhanh: menu 1 thêm 2 phòng trống -> menu 6 thêm 1 nhân viên -> menu
 |---|---|---|
 | Lập hợp đồng chọn lại phòng đã chọn trước đó trong cùng hợp đồng | Trùng cặp `(maHDong, maP)` hoặc nhân đôi tiền phòng | Kiểm tra trùng trên mảng tạm `dsCT` ngay lúc chọn và chặn thêm ở `DSCTHopDong.them(ct)` |
 | Sửa ngày trả phòng sau khi hợp đồng đã xuất hóa đơn | Tiền trên hợp đồng lệch với `tongTienThue` đã chốt trên `HoaDon` | `sua(ma)` kiểm tra `DuLieu.dsHoaDon.timTheoHopDong(ma) == null` trước khi cho sửa |
-| Người dùng gõ `0` thoát khi chưa chọn được phòng nào | Tạo hợp đồng rỗng không có phòng thuê | Chặn kết thúc chọn phòng khi `dsCT.length == 0` |
-| File `.txt` có ngày không tồn tại (vd `31/02/2026`) hoặc sai tiền tố mã | Văng `DateTimeParseException` / `NumberFormatException` khi khởi động | `DinhDang.docNgay` + `matches("HDTP\\d+")` nằm trong `try/catch` của `docFile()` để bỏ qua dòng lỗi |
+| Người dùng gõ `0` khi chưa chọn được phòng nào | Tạo hợp đồng rỗng không có phòng thuê | `dsCT.length == 0` thì hủy cả hợp đồng (`Đã hủy lập hợp đồng.`) |
+| Chưa có nhân viên mà vẫn cho lập hợp đồng | Nhập khách xong mới kẹt ở bước chọn nhân viên | Kiểm tra `dsNhanVien.getN() == 0` ngay đầu `them()` |
+| File `.txt` có ngày không tồn tại (vd `31/02/2026`) | Văng `DateTimeParseException` khi khởi động | `DinhDang.docNgay` nằm trong `try/catch` của `docFile()` để bỏ qua dòng lỗi |
 
 ## 7. Khi ghép code với 3 module còn lại
 
 1. **`DuLieu.java`**: đảm bảo đã khai báo đủ 3 danh sách (`dsHDThuePhong`, `dsCTHopDong`, `dsCTKhachO`) cùng `dsPhong`, `dsKhachHang` và gọi `docFile()` trong `DuLieu.docTatCa()`.
 2. **`Main.java`**: tại lựa chọn `3. Thuê phòng`, gọi `MenuThuePhong.chay()`.
 3. **Module 1 (`DSPhong`, `DSKhachHang`)**:
-   - `DSPhong` cần có `dsPhongTrong()` và `capNhatTinhTrang(String maP, String tinhTrang)` (đổi tình trạng và tự ghi `phong.txt`).
+   - `DSPhong` cần có `dsPhongTrong()` và `capNhatTinhTrang(String maP, String tinhTrang)` (chỉ đổi tình trạng, không ghi file; `MenuThuePhong` tự gọi `dsPhong.ghiFile()`).
    - `DSKhachHang` cần có `timTheoSdt(String sdt)` và `them()` tự lưu khách mới vào cuối mảng `ds` để `chonHoacThemKhach()` lấy lại được ngay.
-   - Trong `DSPhong.xoa(ma)` và `DSKhachHang.xoa(ma)`: duyệt `DuLieu.dsCTHopDong.getDs()`, `DuLieu.dsHDThuePhong.getDs()`, `DuLieu.dsCTKhachO.getDs()` để chặn xóa nếu đã phát sinh hợp đồng.
+   - `DSPhong.xoa(ma)` duyệt `DuLieu.dsCTHopDong.getDs()`; `DSKhachHang.xoa(ma)` duyệt `DuLieu.dsHDThuePhong.getDs()` và `DuLieu.dsCTKhachO.getDs()` để chặn xóa nếu đã phát sinh hợp đồng.
 4. **Module 3 (`DSHoaDon`, `DSCTSuDungDV`)**:
    - `DSHoaDon` cần có `timTheoHopDong(String maHDong)` trả về `null` nếu hợp đồng chưa lập hóa đơn.
    - Khi trả phòng (lập hóa đơn), module 3 gọi `DuLieu.dsCTHopDong.layTheoHopDong(maHDong)` để tính `tongTienThue` và đổi các phòng về `Phong.TRONG`.
 5. **Module 4 (`DSNhanVien`, `MenuThongKe`)**:
    - Trong `DSNhanVien.xoa(ma)`: bật vòng kiểm tra `DuLieu.dsHDThuePhong.getDs()` để chặn xóa nhân viên đã từng lập hợp đồng.
-   - Trong `MenuThongKe`: bật thống kê `doanhThuTheoPhong` dựa trên `DuLieu.dsCTHopDong.layTheoPhong(maP)` kết hợp kiểm tra hóa đơn `DA_TT`.
+   - `MenuThongKe.doanhThuTheoPhong` duyệt `DuLieu.dsCTHopDong.getDs()` theo `maP` kết hợp kiểm tra hóa đơn `DA_TT`.
 
 ## 8. Câu hỏi vấn đáp hay gặp
 

@@ -48,6 +48,7 @@ public class DSCTSuDungDV {
     public void xuat() {
         if (n == 0) {
             System.out.println("Danh sách trống.");
+            return;
         }
         for (int i = 0; i < n; i++) {
             ds[i].xuat();
@@ -69,8 +70,9 @@ public class DSCTSuDungDV {
 
         // ----- B1 -----
         String maHDong = NhapLieu.nhapChuoi("Nhập mã hợp đồng");
-        HDThuePhong hd = timHopDong(maHDong);
+        HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(maHDong);
         if (hd == null) {
+            System.out.println("Không tìm thấy hợp đồng có mã: " + maHDong);
             return;
         }
         if (DuLieu.dsHoaDon.timTheoHopDong(hd.getMaHDong()) != null) {
@@ -134,8 +136,7 @@ public class DSCTSuDungDV {
         for (int i = 0; i < cacDV.length; i++) {
             CTSuDungDV ct = cacDV[i];
             DichVu dv = DuLieu.dsDichVu.timTheoMa(ct.getMaDV());
-            String tenDV = (dv == null) ? ct.getMaDV() : dv.getTenDV();
-            System.out.println((i + 1) + ". " + DinhDang.ngay(ct.getNgaySD()) + " | " + tenDV + ": "
+            System.out.println((i + 1) + ". " + DinhDang.ngay(ct.getNgaySD()) + " | " + dv.getTenDV() + ": "
                     + ct.getSl() + " x " + DinhDang.tien(ct.getDonGia()) + " = " + DinhDang.tien(ct.getThanhTien()));
             tong += ct.getThanhTien();
         }
@@ -157,27 +158,18 @@ public class DSCTSuDungDV {
     public void thongKeTheoDichVu() {
         for (DichVu dv : DuLieu.dsDichVu.getDs()) {
             int soLuot = 0;
+            int tongSL = 0;
             double tong = 0;
             for (int i = 0; i < n; i++) {
                 if (ds[i].getMaDV().equalsIgnoreCase(dv.getMaDV())) {
                     soLuot++;
+                    tongSL += ds[i].getSl();
                     tong += ds[i].getThanhTien();
                 }
             }
-            System.out.println(dv.getTenDV() + ": " + soLuot + " lượt, " + tongSoLuong(dv.getMaDV())
+            System.out.println(dv.getTenDV() + ": " + soLuot + " lượt, " + tongSL
                     + " đơn vị, " + DinhDang.tien(tong));
         }
-    }
-
-    // ================= CỬA GHÉP VỚI MODULE THUÊ PHÒNG =================
-
-    // tìm hợp đồng theo mã; không thấy thì báo và trả null
-    private HDThuePhong timHopDong(String maHDong) {
-        HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(maHDong);
-        if (hd == null) {
-            System.out.println("Không tìm thấy hợp đồng có mã: " + maHDong);
-        }
-        return hd;
     }
 
     // ================= ĐỌC / GHI FILE =================
@@ -190,8 +182,8 @@ public class DSCTSuDungDV {
             try {
                 them(new CTSuDungDV(t[0], t[1], DinhDang.docNgay(t[2]), Integer.parseInt(t[3]),
                         Double.parseDouble(t[4]), Double.parseDouble(t[5])));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }

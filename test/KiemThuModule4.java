@@ -106,6 +106,19 @@ public class KiemThuModule4 {
         kiemTra("truKho đúng bằng số tồn (5/5) trả true", DuLieu.dsHangHoa.truKho("HH003", 5));
         kiemTra("... và tồn về 0", DuLieu.dsHangHoa.timTheoMa("HH003").getSlTon() == 0);
 
+        // ----- lập phiếu nhập (B3): cộng kho, cập nhật giá, lưu phiếu + chi tiết -----
+        PhieuNhap pnMoi = new PhieuNhap("PN004", "NCC001", "NV001", LocalDate.of(2027, 1, 5), 0);
+        CTPhieuNhap ctMoi = new CTPhieuNhap("PN004", "HH003", 10, 3500, 0);
+        ctMoi.tinhThanhTien();
+        DuLieu.dsPhieuNhap.lapPhieu(pnMoi, new CTPhieuNhap[] {ctMoi});
+        kiemTra("lapPhieu cộng kho HH003: 0 + 10 = 10", DuLieu.dsHangHoa.timTheoMa("HH003").getSlTon() == 10);
+        kiemTra("lapPhieu cập nhật giá nhập HH003 = 3500",
+                DuLieu.dsHangHoa.timTheoMa("HH003").getDonGia() == 3500);
+        kiemTra("lapPhieu lưu phiếu PN004 (tổng 35000) và 1 dòng chi tiết",
+                DuLieu.dsPhieuNhap.timTheoMa("PN004") != null
+                && DuLieu.dsPhieuNhap.timTheoMa("PN004").getTongTien() == 35000
+                && DuLieu.dsCTPhieuNhap.layTheoPhieu("PN004").length == 1);
+
         System.out.println();
         System.out.println("Kết quả: " + dat + " đạt, " + truot + " trượt");
         System.exit(truot == 0 ? 0 : 1);

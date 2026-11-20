@@ -106,6 +106,7 @@ public class DSNhaCC {
     public void xuat(NhaCC[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
+            return;
         }
         for (NhaCC ncc : mang) {
             ncc.xuat();
@@ -164,12 +165,9 @@ public class DSNhaCC {
         n = 0;
         for (String[] t : TepTin.doc(FILE)) {
             try {
-                if (!t[0].matches("NCC\\d+")) {
-                    throw new IllegalArgumentException();
-                }
                 them(new NhaCC(t[0], t[1], t[2], t[3]));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }

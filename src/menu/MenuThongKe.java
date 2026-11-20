@@ -47,9 +47,11 @@ public class MenuThongKe {
         double tong = 0;
         for (HoaDon hd : DuLieu.dsHoaDon.getDs()) {
             LocalDate d = hd.getNgayLapHD();
-            boolean dungKy = d.getYear() == nam && (thang == 0 || d.getMonthValue() == thang);
-            if (dungKy && hd.getTrangThai().equals(HoaDon.DA_TT)) {
-                tong += hd.getTongCong();
+            if (hd.daThanhToan() && d.getYear() == nam) {
+                // tháng = 0 thì lấy cả năm
+                if (thang == 0 || d.getMonthValue() == thang) {
+                    tong += hd.getTongCong();
+                }
             }
         }
         System.out.println("Doanh thu: " + DinhDang.tien(tong));
@@ -79,12 +81,10 @@ public class MenuThongKe {
     private static void doanhThuTheoPhong() {
         for (Phong p : DuLieu.dsPhong.getDs()) {
             double tong = 0;
-            for (CTHopDong ct : DuLieu.dsCTHopDong.getDs()) {
-                if (ct.getMaP().equalsIgnoreCase(p.getMaP())) {
-                    HoaDon hd = DuLieu.dsHoaDon.timTheoHopDong(ct.getMaHDong());
-                    if (hd != null && hd.getTrangThai().equals(HoaDon.DA_TT)) {
-                        tong += ct.getThanhTien();
-                    }
+            for (CTHopDong ct : DuLieu.dsCTHopDong.layTheoPhong(p.getMaP())) {
+                HoaDon hd = DuLieu.dsHoaDon.timTheoHopDong(ct.getMaHDong());
+                if (hd != null && hd.daThanhToan()) {
+                    tong += ct.getThanhTien();
                 }
             }
             System.out.println("Phòng " + p.getTenP() + ": " + DinhDang.tien(tong));

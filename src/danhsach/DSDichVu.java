@@ -117,6 +117,7 @@ public class DSDichVu {
     public void xuat(DichVu[] mang) {
         if (mang.length == 0) {
             System.out.println("Danh sách trống.");
+            return;
         }
         for (DichVu dv : mang) {
             dv.xuat();
@@ -161,7 +162,10 @@ public class DSDichVu {
         }
         DuLieu.dsHangHoa.xuat();
         HangHoa hh = DuLieu.dsHangHoa.chon();
-        return (hh == null) ? "" : hh.getMaH();
+        if (hh == null) {
+            return "";
+        }
+        return hh.getMaH();
     }
 
     // ================= HÀM NÂNG CAO (gói 70%) =================
@@ -190,13 +194,9 @@ public class DSDichVu {
         n = 0;
         for (String[] t : TepTin.doc(FILE)) {
             try {
-                // mã sai dạng (vd "DVabc") sẽ làm sinhMa() lỗi, nên loại ngay từ lúc đọc
-                if (!t[0].matches("DV\\d+")) {
-                    throw new IllegalArgumentException();
-                }
                 them(new DichVu(t[0], t[1], Double.parseDouble(t[2]), t[3]));
-            } catch (RuntimeException e) {
-                System.out.println("Bỏ qua dòng lỗi trong " + FILE + ": " + String.join("|", t));
+            } catch (Exception e) {
+                System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);
             }
         }
     }
