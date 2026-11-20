@@ -30,6 +30,11 @@ public class DSHangHoa {
     public void them() {
         HangHoa hh = new HangHoa();
         hh.nhap();
+        // thêm mới: chưa có mã nên không bỏ qua ai
+        if (trungTen(hh.getTenH(), "")) {
+            System.out.println("Tên hàng " + hh.getTenH() + " đã có, không thêm.");
+            return;
+        }
         hh.setMaH(sinhMa());
         them(hh);
         System.out.println("Đã thêm hàng " + hh.getMaH() + " (tồn kho = 0, hãy lập phiếu nhập)");
@@ -72,7 +77,12 @@ public class DSHangHoa {
             System.out.println("Không tìm thấy hàng có mã: " + ma);
             return;
         }
-        hh.setTenH(NhapLieu.nhapChuoi("Tên hàng"));
+        String ten = NhapLieu.nhapChuoi("Tên hàng");
+        if (trungTen(ten, ma)) {
+            System.out.println("Tên hàng " + ten + " đã có, không sửa.");
+            return;
+        }
+        hh.setTenH(ten);
         System.out.println("Đã cập nhật hàng " + ma);
     }
 
@@ -172,6 +182,16 @@ public class DSHangHoa {
     }
 
     // ================= HÀM NÂNG CAO (gói 70%) =================
+
+    // tên hàng đã có chưa (không phân biệt hoa thường); maBoQua là mã của chính hàng đang sửa
+    public boolean trungTen(String ten, String maBoQua) {
+        for (int i = 0; i < n; i++) {
+            if (ds[i].getTenH().equalsIgnoreCase(ten) && !ds[i].getMaH().equalsIgnoreCase(maBoQua)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void timTheoTen() {
         String tuKhoa = NhapLieu.nhapChuoi("Nhập tên hàng (gõ không dấu cũng được)");

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import model.CTSuDungDV;
 import model.DichVu;
 import model.HDThuePhong;
+import model.HoaDon;
 
 // danh sách chi tiết: không có mã riêng, không sửa, không xóa (mục 6.5)
 public class DSCTSuDungDV {
@@ -155,13 +156,15 @@ public class DSCTSuDungDV {
     }
 
     // mỗi dịch vụ: số lượt ghi, tổng số lượng, tổng tiền (vòng ngoài duyệt dịch vụ, vòng trong cộng dồn)
+    // chỉ tính hợp đồng đã có hóa đơn DA_TT, giống các thống kê doanh thu khác
     public void thongKeTheoDichVu() {
         for (DichVu dv : DuLieu.dsDichVu.getDs()) {
             int soLuot = 0;
             int tongSL = 0;
             double tong = 0;
             for (int i = 0; i < n; i++) {
-                if (ds[i].getMaDV().equalsIgnoreCase(dv.getMaDV())) {
+                HoaDon hd = DuLieu.dsHoaDon.timTheoHopDong(ds[i].getMaHDong());
+                if (ds[i].getMaDV().equalsIgnoreCase(dv.getMaDV()) && hd != null && hd.daThanhToan()) {
                     soLuot++;
                     tongSL += ds[i].getSl();
                     tong += ds[i].getThanhTien();

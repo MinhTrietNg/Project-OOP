@@ -74,8 +74,10 @@ In hóa đơn, hỏi xác nhận, đổi `CHUA_TT` → `DA_TT` (trả lời `k` 
 | Hàm | Ở đâu | Ý chính |
 |---|---|---|
 | Tìm dịch vụ không dấu | `DSDichVu.timTheoTen` | Dùng lại `core.TimKiem` |
+| Chặn trùng tên dịch vụ | `DSDichVu.trungTen(ten, maBoQua)` | `them()` truyền `""`; `sua(ma)` nhập vào bản tạm, truyền `ma` để bỏ qua chính dịch vụ đang sửa |
 | Xem dịch vụ đã dùng của 1 hợp đồng | `DSCTSuDungDV.xuatTheoHopDong` | Kèm tên dịch vụ và tổng tiền |
-| Thống kê theo dịch vụ (số lượt, số lượng, tiền) | `DSCTSuDungDV.thongKeTheoDichVu` | Khuôn C |
+| Thống kê theo dịch vụ (số lượt, số lượng, tiền) | `DSCTSuDungDV.thongKeTheoDichVu` | Khuôn C; chỉ cộng hợp đồng có hóa đơn `DA_TT` (giống các thống kê doanh thu khác) |
+| In hóa đơn: còn phải trả / trả lại khách | `DSHoaDon.xuatChiTiet` | `conLai = soConPhaiTra(coc)`; âm (cọc dư) thì in `Trả lại khách` thay vì số âm |
 | Hóa đơn chưa thanh toán + tổng nợ | `DSHoaDon.dsChuaThanhToan` | Khuôn C |
 | Lọc hóa đơn theo khoảng ngày | `DSHoaDon.locTheoKhoangNgay` | `isBefore` / `isAfter` |
 | In hóa đơn đầy đủ (phòng, dịch vụ, cọc, còn phải trả) | `DSHoaDon.xuatChiTiet` | |

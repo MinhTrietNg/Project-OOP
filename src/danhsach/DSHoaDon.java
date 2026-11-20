@@ -210,7 +210,13 @@ public class DSHoaDon {
         System.out.println("TỔNG CỘNG   : " + DinhDang.tien(hdon.getTongCong()));
         HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(hdon.getMaHDong());
         System.out.println("Đã cọc      : " + DinhDang.tien(hd.getTienCoc()));
-        System.out.println("Còn phải trả: " + DinhDang.tien(hdon.soConPhaiTra(hd.getTienCoc())));
+        // cọc nhiều hơn tổng tiền thì khách sạn trả lại phần dư, không in số âm
+        double conLai = hdon.soConPhaiTra(hd.getTienCoc());
+        if (conLai >= 0) {
+            System.out.println("Còn phải trả: " + DinhDang.tien(conLai));
+        } else {
+            System.out.println("Trả lại khách: " + DinhDang.tien(-conLai));
+        }
         if (hdon.daThanhToan()) {
             System.out.println("Trạng thái  : Đã thanh toán");
         } else {

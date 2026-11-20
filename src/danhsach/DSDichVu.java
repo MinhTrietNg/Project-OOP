@@ -29,6 +29,11 @@ public class DSDichVu {
     public void them() {
         DichVu dv = new DichVu();
         dv.nhap();
+        // thêm mới: chưa có mã nên không bỏ qua ai
+        if (trungTen(dv.getTenDV(), "")) {
+            System.out.println("Tên dịch vụ " + dv.getTenDV() + " đã có, không thêm.");
+            return;
+        }
         dv.setMaH(chonMaHang());
         dv.setMaDV(sinhMa());
         them(dv);
@@ -69,13 +74,21 @@ public class DSDichVu {
 
     // sửa tên, giá, hàng tiêu hao; giá mới chỉ áp dụng cho lần dùng sau
     // (CTSuDungDV đã ghi giữ nguyên giá cũ vì đã chép donGia lúc dùng)
+    // nhập vào bản tạm trước, hợp lệ rồi mới chép sang để không làm hỏng dữ liệu cũ
     public void sua(String ma) {
         DichVu dv = timTheoMa(ma);
         if (dv == null) {
             System.out.println("Không tìm thấy dịch vụ có mã: " + ma);
             return;
         }
-        dv.nhap();
+        DichVu tam = new DichVu(dv);
+        tam.nhap();
+        if (trungTen(tam.getTenDV(), ma)) {
+            System.out.println("Tên dịch vụ " + tam.getTenDV() + " đã có, không sửa.");
+            return;
+        }
+        dv.setTenDV(tam.getTenDV());
+        dv.setDonGia(tam.getDonGia());
         dv.setMaH(chonMaHang());
         System.out.println("Đã cập nhật dịch vụ " + ma);
     }
@@ -169,6 +182,16 @@ public class DSDichVu {
     }
 
     // ================= HÀM NÂNG CAO (gói 70%) =================
+
+    // tên dịch vụ đã có chưa (không phân biệt hoa thường); maBoQua là mã của chính dịch vụ đang sửa
+    public boolean trungTen(String ten, String maBoQua) {
+        for (int i = 0; i < n; i++) {
+            if (ds[i].getTenDV().equalsIgnoreCase(ten) && !ds[i].getMaDV().equalsIgnoreCase(maBoQua)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void timTheoTen() {
         String tuKhoa = NhapLieu.nhapChuoi("Nhập tên dịch vụ (gõ không dấu cũng được)");

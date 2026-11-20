@@ -21,7 +21,8 @@ public class MenuThongKe {
                     "Chi phí nhập hàng theo tháng",
                     "Nhập hàng theo nhà cung cấp",
                     "Phiếu nhập theo nhân viên",
-                    "Nhân viên theo chức vụ");
+                    "Nhân viên theo chức vụ",
+                    "Doanh thu theo dịch vụ");
             switch (chon) {
                 case 1: doanhThuTheoThangNam(); break;
                 case 2: tinhTrangPhongTheoLoai(); break;
@@ -32,6 +33,7 @@ public class MenuThongKe {
                 case 7: DuLieu.dsPhieuNhap.thongKeTheoNhaCC(); break;
                 case 8: DuLieu.dsPhieuNhap.thongKeTheoNhanVien(); break;
                 case 9: DuLieu.dsNhanVien.thongKeTheoChucVu(); break;
+                case 10: DuLieu.dsCTSuDungDV.thongKeTheoDichVu(); break;
                 default:
                     return;
             }

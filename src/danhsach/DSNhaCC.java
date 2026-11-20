@@ -27,6 +27,11 @@ public class DSNhaCC {
     public void them() {
         NhaCC ncc = new NhaCC();
         ncc.nhap();
+        // thêm mới: chưa có mã nên không bỏ qua ai
+        if (trungTen(ncc.getTenNCC(), "")) {
+            System.out.println("Nhà cung cấp " + ncc.getTenNCC() + " đã có, không thêm.");
+            return;
+        }
         ncc.setMaNCC(sinhMa());
         them(ncc);
         System.out.println("Đã thêm nhà cung cấp " + ncc.getMaNCC());
@@ -62,13 +67,22 @@ public class DSNhaCC {
         sua(ma);
     }
 
+    // nhập vào bản tạm trước, hợp lệ rồi mới chép sang để không làm hỏng dữ liệu cũ
     public void sua(String ma) {
         NhaCC ncc = timTheoMa(ma);
         if (ncc == null) {
             System.out.println("Không tìm thấy nhà cung cấp có mã: " + ma);
             return;
         }
-        ncc.nhap();
+        NhaCC tam = new NhaCC(ncc);
+        tam.nhap();
+        if (trungTen(tam.getTenNCC(), ma)) {
+            System.out.println("Nhà cung cấp " + tam.getTenNCC() + " đã có, không sửa.");
+            return;
+        }
+        ncc.setTenNCC(tam.getTenNCC());
+        ncc.setDiaChi(tam.getDiaChi());
+        ncc.setSdt(tam.getSdt());
         System.out.println("Đã cập nhật nhà cung cấp " + ma);
     }
 
@@ -140,6 +154,16 @@ public class DSNhaCC {
     }
 
     // ================= HÀM NÂNG CAO (gói 70%) =================
+
+    // tên nhà cung cấp đã có chưa (không phân biệt hoa thường); maBoQua là mã của chính NCC đang sửa
+    public boolean trungTen(String ten, String maBoQua) {
+        for (int i = 0; i < n; i++) {
+            if (ds[i].getTenNCC().equalsIgnoreCase(ten) && !ds[i].getMaNCC().equalsIgnoreCase(maBoQua)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void timTheoTen() {
         String tuKhoa = NhapLieu.nhapChuoi("Nhập tên nhà cung cấp (gõ không dấu cũng được)");

@@ -3,6 +3,7 @@ package danhsach;
 import app.DuLieu;
 import core.NhapLieu;
 import core.TepTin;
+import core.TimKiem;
 import java.util.Arrays;
 import model.CTHopDong;
 import model.Phong;
@@ -182,6 +183,24 @@ public class DSPhong {
             }
         }
         return false;
+    }
+
+    // tên phòng là số phòng, vd gõ "10" ra 101, 102...
+    public void timTheoTen() {
+        String tuKhoa = NhapLieu.nhapChuoi("Nhập tên (số) phòng cần tìm");
+        xuat(timTheoTen(tuKhoa));
+    }
+
+    // gom các kết quả khớp vào mảng mới
+    public Phong[] timTheoTen(String tuKhoa) {
+        Phong[] kq = new Phong[0];
+        for (int i = 0; i < n; i++) {
+            if (TimKiem.chua(ds[i].getTenP(), tuKhoa)) {
+                kq = Arrays.copyOf(kq, kq.length + 1);
+                kq[kq.length - 1] = ds[i];
+            }
+        }
+        return kq;
     }
 
     public void locTheoLoai() {

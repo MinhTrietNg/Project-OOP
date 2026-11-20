@@ -15,7 +15,8 @@ public class MenuPhong {
                     "Xem tất cả phòng",
                     "Xem phòng trống",
                     "Lọc phòng theo loại",
-                    "Sắp xếp theo giá thuê");
+                    "Sắp xếp theo giá thuê",
+                    "Tìm phòng theo tên");
             switch (chon) {
                 case 1:
                     DuLieu.dsPhong.them();
@@ -34,6 +35,7 @@ public class MenuPhong {
                 case 6: DuLieu.dsPhong.xuatPhongTrong(); break;
                 case 7: DuLieu.dsPhong.locTheoLoai(); break;
                 case 8: DuLieu.dsPhong.sapXepTheoGia(); break;
+                case 9: DuLieu.dsPhong.timTheoTen(); break;
                 default:
                     return;
             }

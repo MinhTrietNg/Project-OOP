@@ -69,6 +69,12 @@ public class KiemThuModule3 {
                 && CTSuDungDV.trongKhoang(LocalDate.of(2026, 11, 18), hd1.getNgayNhanPhong(), hd1.getNgayTraPhong()));
         kiemTra("tìm dịch vụ không dấu \"giat\" ra Giặt ủi",
                 DuLieu.dsDichVu.timTheoTen("giat").length == 1);
+        kiemTra("trungTen dịch vụ: \"giặt ủi\" đã có (không phân biệt hoa thường)",
+                DuLieu.dsDichVu.trungTen("giặt ủi", ""));
+        kiemTra("trungTen dịch vụ: bỏ qua chính dịch vụ đang sửa",
+                !DuLieu.dsDichVu.trungTen("Giặt ủi", "DV002"));
+        kiemTra("trungTen hàng: \"Khăn tắm\" đã có, \"Xà phòng\" chưa có",
+                DuLieu.dsHangHoa.trungTen("Khăn tắm", "") && !DuLieu.dsHangHoa.trungTen("Xà phòng", ""));
 
         // ----- ghi dịch vụ -----
         kiemTra("ghi 3 nước suối (dùng hàng, đủ kho) trả true",

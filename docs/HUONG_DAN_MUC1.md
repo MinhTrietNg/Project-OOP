@@ -109,6 +109,7 @@ Trong mỗi lớp `DS...` code được chia bằng dòng `===== CÁC HÀM BẮT
 | Sửa qua **bản tạm** | `sua(ma)` cả 2 lớp | Nhập lỗi / trùng thì dữ liệu cũ không hỏng |
 | Chặn trùng số phòng, trùng SĐT | `DSPhong.trungTenP`, `DSKhachHang.trungSdt` | `them()` truyền `""`, `sua(ma)` truyền `ma` để bỏ qua chính đối tượng đang sửa |
 | Tìm theo SĐT, tìm tên không dấu | `DSKhachHang.timTheoSdt`, `timTheoTen` | `TimKiem.chua` |
+| Tìm phòng theo tên (số phòng) | `DSPhong.timTheoTen` (menu Phòng mục 9) | Khuôn C, cùng khuôn với `DSKhachHang.timTheoTen` |
 | Lọc theo loại, sắp theo giá | `DSPhong.locTheoLoai`, `sapXepTheoGiaTang` | Khuôn C, bubble sort trên bản sao |
 | Bỏ qua dòng file lỗi (thiếu trường, sai số) | `docFile()` | `try { them(...); } catch (Exception e)` |
 

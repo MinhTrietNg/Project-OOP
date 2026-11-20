@@ -121,25 +121,28 @@ Theo mục 6.5 của đồ án, `HDThuePhong`, `CTHopDong`, `CTKhachO` thuộc n
 ```text
 them()          B1  kiểm tra có nhân viên, còn phòng TRONG -> chọn/thêm KH đứng tên -> chọn NV
                 B2  tạo đầu hợp đồng, ngày lập = hôm nay -> nhập ngày nhận, trả, cọc
-                B3  lặp: chọn phòng TRONG -> nhập slNguoi -> thêm vào mảng tạm dsCT
+                B3  lặp: chọn phòng TRONG -> daChonPhong(dsCT, maP) thì báo, chọn lại
+                    -> taoCTHopDong(hd, p, soNgay) -> thêm vào mảng tạm dsCT
                     -> nhapKhachO(...): 1..slNguoi khách ở -> nối vào mảng tạm dsKO
 lapHopDong(...) B4  lưu hd -> lưu từng ct -> đổi phòng sang DA_THUE -> lưu từng ko
 ```
 
 Chỉ tới B4 dữ liệu mới ghi vào các danh sách và đổi tình trạng phòng. Gõ `0` ở bước chọn khách, chọn nhân viên, chọn phòng (khi chưa có phòng nào) hoặc chọn khách ở thì in `Đã hủy lập hợp đồng.` và các bảng giữ nguyên (riêng khách mới thêm tại chỗ thì vẫn được giữ).
 
-`nhapKhachO` dùng `while (dem < slNguoi)`: từ khách thứ 2 hỏi `nhapCoKhong("Thêm khách ở phòng ...")`; gõ `0` thì trả `null` để `them()` hủy cả hợp đồng.
+`nhapKhachO` dùng `while (dem < slNguoi)`: từ khách thứ 2 hỏi `nhapCoKhong("Thêm khách ở phòng ...")`; gõ `0` thì trả `null` để `them()` hủy cả hợp đồng; chọn lại khách đã có trong phòng thì `daCoKhach(dsKO, maP, maKH)` báo và hỏi lại.
+
+3 hàm phụ `daChonPhong`, `daCoKhach`, `taoCTHopDong` đều là khuôn quen: hai hàm đầu "for tìm, thấy thì `return true`, hết vòng `return false`"; hàm cuối "new + set + nhap + return".
 
 ### 5.4 Chặn trùng khóa ở bảng chi tiết (`timTheoKhoa`)
 
 - `DSCTHopDong`: cặp `(maHDong, maP)` là khóa chính -> `timTheoKhoa(maHDong, maP)` kiểm tra không cho 1 phòng xuất hiện 2 lần trong cùng hợp đồng.
-- `DSCTKhachO`: bộ `(maHDong, maP, maKH)` là khóa chính -> `timTheoKhoa(maHDong, maP, maKH)` chặn ghi trùng cùng 1 khách 2 lần vào 1 phòng. Khi lập hợp đồng, khách trùng trong mảng tạm chỉ bị bỏ qua lúc chốt, phần còn lại vẫn lưu đủ.
+- `DSCTKhachO`: bộ `(maHDong, maP, maKH)` là khóa chính -> `timTheoKhoa(maHDong, maP, maKH)` chặn ghi trùng cùng 1 khách 2 lần vào 1 phòng. Khi lập hợp đồng, `daCoKhach` đã chặn ngay lúc nhập nên tới lúc chốt không còn khách trùng.
 
 ### 5.5 Sửa ngày trả phòng và tính lại thành tiền chi tiết
 
 Khi khách trả sớm hoặc gia hạn thêm ngày (và hợp đồng **chưa lập hóa đơn**), `DSHDThuePhong.sua(ma)` gọi `hd.nhapNgayTra()` để đảm bảo ngày trả mới vẫn sau ngày nhận phòng, sau đó duyệt `DuLieu.dsCTHopDong.layTheoHopDong(ma)` gọi `ct.tinhThanhTien(hd.soNgayThue())`. Menu sau đó ghi cả 2 file `hdthuephong.txt` và `cthopdong.txt`.
 
-Giới hạn đã biết (không xử lý): rút ngắn ngày trả thì các lần dùng dịch vụ (`CTSuDungDV`) có `ngaySD` sau ngày trả mới **không bị xóa** và vẫn được tính vào hóa đơn.
+Rút ngắn ngày trả: `sua(ma)` lưu `ngayTraCu` trước khi nhập; nếu có `CTSuDungDV` của hợp đồng mà `ngaySD` sau ngày trả mới thì đặt lại `ngayTraCu`, báo `Đã có dịch vụ dùng ngày ..., ngày trả không được sớm hơn ngày đó. Không sửa.` và dừng.
 
 ### 5.6 Đọc / ghi file qua `TepTin` và `DinhDang.docNgay`
 

@@ -46,13 +46,13 @@ toLine() : DinhDang.dong(các trường theo đúng thứ tự file)
 
 ```text
 ds (mảng), n (số phần tử), getDs(), getN()
-them()      -> new X(); x.nhap(); (NV: trungSdt(sdt, "") thì báo, return); x.setMa(sinhMa()); them(x)
+them()      -> new X(); x.nhap(); (NV: trungSdt(sdt, ""), NCC/HangHoa: trungTen(ten, "") thì báo, return); x.setMa(sinhMa()); them(x)
 them(x)     -> ds = Arrays.copyOf(ds, n + 1); ds[n] = new X(x); n++;
 timTheoMa() -> nhập mã, gọi timTheoMa(ma); null thì báo "Không tìm thấy...", không thì in
 timTheoMa(ma) -> for, equalsIgnoreCase, return ds[i]; hết vòng return null
 sua(), sua(ma) -> timTheoMa; null thì báo; rồi:
-                 NhaCC: x.nhap()
-                 HangHoa: chỉ setTenH(...) (donGia, slTon tự cập nhật)
+                 NhaCC: nhập vào bản tạm, trungTen(ten, ma) thì báo, không thì chép sang
+                 HangHoa: chỉ nhập tên mới, trungTen(ten, ma) thì báo, không thì setTenH (donGia, slTon tự cập nhật)
                  NhanVien: nhập vào bản tạm, trungSdt(sdt, ma) thì báo, không thì chép sang
 xoa(), xoa(ma) -> kiểm tra bị tham chiếu chưa; for tìm i; dời ds[j] = ds[j+1]; copyOf(n - 1); n--
 xuat(), xuat(mang) -> rỗng thì in "Danh sách trống." và return; không thì for in từng phần tử
@@ -114,6 +114,8 @@ Trong mỗi lớp `DS...` code được chia bằng dòng `===== CÁC HÀM BẮT
 | Chặn 1 hàng 2 lần trong 1 phiếu | `DSPhieuNhap.daCoTrongPhieu` | Duyệt mảng tạm |
 | Sửa qua **bản tạm** | `DSNhanVien.sua(ma)` | Constructor sao chép |
 | Chặn trùng số điện thoại | `DSNhanVien.trungSdt` | Bỏ qua chính người đang sửa |
+| Chặn trùng tên hàng, tên nhà cung cấp | `DSHangHoa.trungTen`, `DSNhaCC.trungTen` | Cùng khuôn với `trungSdt`, so `equalsIgnoreCase` |
+| Doanh thu theo dịch vụ (menu Thống kê mục 10) | gọi `DSCTSuDungDV.thongKeTheoDichVu` của module 3 | Chỗ nào có tiền thì có thống kê |
 | Tìm không dấu | `TimKiem` + `timTheoTen` | `Normalizer` NFD |
 | Sắp lương giảm dần, tồn kho tăng dần | `sapXepTheoLuongGiam`, `sapXepTheoTonTang` | Bubble sort trên bản sao |
 | Hàng sắp hết, tổng giá trị tồn | `DSHangHoa.dsSapHet`, `tongGiaTriTon` | Khuôn C |

@@ -1,0 +1,2 @@
+NCC001|Công ty Nước giải khát Sài Gòn|12 Lê Lợi, Quận 1, TP.HCM|0281234567
+NCC002|Công ty Thực phẩm Minh Phát|45 Nguyễn Trãi, Quận 5, TP.HCM|0287654321

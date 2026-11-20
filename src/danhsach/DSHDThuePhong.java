@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import model.CTHopDong;
 import model.CTKhachO;
+import model.CTSuDungDV;
 import model.HDThuePhong;
 import model.KhachHang;
 import model.NhanVien;
@@ -96,26 +97,13 @@ public class DSHDThuePhong {
             }
 
             // Kiểm tra phòng này đã được chọn trong chính hợp đồng đang lập chưa
-            boolean daChon = false;
-            for (CTHopDong item : dsCT) {
-                if (item.getMaP().equalsIgnoreCase(p.getMaP())) {
-                    daChon = true;
-                    break;
-                }
-            }
-            if (daChon) {
+            if (daChonPhong(dsCT, p.getMaP())) {
                 System.out.println("  Phòng " + p.getMaP() + " đã có trong hợp đồng này rồi.");
                 continue;
             }
 
             // Nhập chi tiết thuê cho phòng p
-            CTHopDong ct = new CTHopDong();
-            ct.setMaHDong(hd.getMaHDong());
-            ct.setMaP(p.getMaP());
-            ct.setDonGia(p.getDonGia());
-            ct.nhap(p.getSoNguoiToiDa());
-            ct.tinhThanhTien(soNgay);
-
+            CTHopDong ct = taoCTHopDong(hd, p, soNgay);
             dsCT = Arrays.copyOf(dsCT, dsCT.length + 1);
             dsCT[dsCT.length - 1] = ct;
 
@@ -144,6 +132,10 @@ public class DSHDThuePhong {
             if (kh == null) {
                 return null;
             }
+            if (daCoKhach(dsKO, maP, kh.getMaKH())) {
+                System.out.println("  Khách " + kh.getMaKH() + " đã có trong phòng " + maP + ", chọn khách khác.");
+                continue;
+            }
             dsKO = Arrays.copyOf(dsKO, dsKO.length + 1);
             dsKO[dsKO.length - 1] = new CTKhachO(maHDong, maP, kh.getMaKH());
             dem++;
@@ -161,6 +153,37 @@ public class DSHDThuePhong {
         for (CTKhachO ko : dsKO) {
             DuLieu.dsCTKhachO.them(ko);
         }
+    }
+
+    // Hàm phụ trợ: phòng maP đã có trong mảng chi tiết đang lập chưa
+    private boolean daChonPhong(CTHopDong[] dsCT, String maP) {
+        for (CTHopDong ct : dsCT) {
+            if (ct.getMaP().equalsIgnoreCase(maP)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Hàm phụ trợ: khách maKH đã được ghi ở phòng maP trong mảng đang lập chưa
+    private boolean daCoKhach(CTKhachO[] dsKO, String maP, String maKH) {
+        for (CTKhachO ko : dsKO) {
+            if (ko.getMaP().equalsIgnoreCase(maP) && ko.getMaKH().equalsIgnoreCase(maKH)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Hàm phụ trợ: tạo chi tiết thuê cho phòng p (giá chép từ phòng, nhập số người, tính thành tiền)
+    private CTHopDong taoCTHopDong(HDThuePhong hd, Phong p, long soNgay) {
+        CTHopDong ct = new CTHopDong();
+        ct.setMaHDong(hd.getMaHDong());
+        ct.setMaP(p.getMaP());
+        ct.setDonGia(p.getDonGia());
+        ct.nhap(p.getSoNguoiToiDa());
+        ct.tinhThanhTien(soNgay);
+        return ct;
     }
 
     // Hàm phụ trợ: tìm khách theo mã hoặc SĐT, nếu chưa có thì cho thêm mới ngay tại chỗ
@@ -238,7 +261,17 @@ public class DSHDThuePhong {
             return;
         }
 
+        LocalDate ngayTraCu = hd.getNgayTraPhong();
         hd.nhapNgayTra();
+        // đã có dịch vụ dùng sau ngày trả mới thì không cho rút ngắn, trả lại ngày cũ
+        for (CTSuDungDV sd : DuLieu.dsCTSuDungDV.layTheoHopDong(hd.getMaHDong())) {
+            if (sd.getNgaySD().isAfter(hd.getNgayTraPhong())) {
+                hd.setNgayTraPhong(ngayTraCu);
+                System.out.println("Đã có dịch vụ dùng ngày " + DinhDang.ngay(sd.getNgaySD())
+                        + ", ngày trả không được sớm hơn ngày đó. Không sửa.");
+                return;
+            }
+        }
 
         long soNgay = hd.soNgayThue();
         for (CTHopDong ct : DuLieu.dsCTHopDong.layTheoHopDong(hd.getMaHDong())) {

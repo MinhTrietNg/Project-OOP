@@ -65,6 +65,8 @@ public class KiemThuModule1 {
         kiemTra("trungTenP: số 201 đã có", dsP.trungTenP("201", ""));
         kiemTra("trungTenP: bỏ qua chính phòng đang sửa", !dsP.trungTenP("201", "P002"));
         kiemTra("locTheoLoai DELUXE có 2 phòng", dsP.locTheoLoai(Phong.DELUXE).length == 2);
+        kiemTra("timTheoTen \"20\" ra 2 phòng (201, 202)", dsP.timTheoTen("20").length == 2);
+        kiemTra("timTheoTen \"999\" ra mảng rỗng", dsP.timTheoTen("999").length == 0);
 
         Phong[] sx = dsP.sapXepTheoGiaTang();
         kiemTra("sapXepTheoGiaTang: rẻ nhất đầu, đắt nhất cuối",

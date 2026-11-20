@@ -1,0 +1,6 @@
+KH001|Nguyễn Văn Minh|0901112222|Quận 1, TP.HCM
+KH002|Trần Ngọc Ánh|0903334444|Ba Đình, Hà Nội
+KH003|Lê Hoàng Nam|0905556666|Hải Châu, Đà Nẵng
+KH004|Phạm Thị Hồng|0907778888|Ninh Kiều, Cần Thơ
+KH005|Võ Quốc Bảo|0908889999|Biên Hòa, Đồng Nai
+KH006|Đặng Mỹ Linh|0909990000|Thủ Đức, TP.HCM
