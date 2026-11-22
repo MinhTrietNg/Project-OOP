@@ -1,6 +1,7 @@
 package danhsach;
 
 import app.DuLieu;
+import core.DanhSach;
 import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
@@ -13,7 +14,7 @@ import model.PhongSuite;
 import model.PhongThuong;
 
 // mảng Phong[] chứa lẫn cả 3 loại phòng (đa hình): gọi xuat() thì mỗi loại tự in phần riêng
-public class DSPhong {
+public class DSPhong implements DanhSach<Phong> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -22,10 +23,12 @@ public class DSPhong {
     private Phong[] ds = new Phong[0];
     private int n = 0;
 
+    @Override
     public Phong[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -48,6 +51,7 @@ public class DSPhong {
     }
 
     // Thêm (có tham số): nới mảng ra 1 rồi đặt BẢN SAO vào cuối
+    @Override
     public void them(Phong p) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = saoChep(p);
@@ -125,6 +129,7 @@ public class DSPhong {
         System.out.println("Không tìm thấy phòng có mã: " + ma);
     }
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -281,6 +286,7 @@ public class DSPhong {
     // ================= ĐỌC / GHI FILE =================
 
     // phong.txt: loai|maP|tenP|donGia|soNguoiToiDa|slGiuong|tinhTrang (+ phần riêng)
+    @Override
     public void docFile() {
         ds = new Phong[0];
         n = 0;
@@ -311,6 +317,7 @@ public class DSPhong {
         return new PhongThuong(ma, ten, gia, soNguoi, giuong, tinhTrang);
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

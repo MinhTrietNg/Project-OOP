@@ -36,7 +36,8 @@ Chương trình chia thành 4 module:
 ```text
 src/
   app/        Main.java (menu chính), DuLieu.java (giữ các danh sách dùng chung)
-  core/       NhapLieu.java (hàm kiểm tra nhập, nhận Scanner qua tham số), DinhDang.java (ngày, tiền, dòng file), DoiTuong.java
+  core/       NhapLieu.java (hàm kiểm tra nhập, nhận Scanner qua tham số), DinhDang.java (ngày, tiền, dòng file),
+              DoiTuong.java (interface của lớp đối tượng), DanhSach.java (interface của lớp danh sách)
   model/      19 lớp đối tượng (mục 2.8, 3, 4)
   danhsach/   13 lớp danh sách DSxxx, mỗi lớp quản lý một mảng (mục 2.9)
   menu/       MenuPhong, MenuKhachHang, MenuThuePhong, MenuDichVu,
@@ -155,27 +156,32 @@ Các hàm bắt buộc:
 | `xuat()`, `docFile()`, `ghiFile()` | ✓ | ✓ |
 | `sinhMa()` | ✓ | |
 
+Sáu hàm chung của mọi danh sách (`getDs()`, `getN()`, `them(x)`, `xuat()`, `docFile()`, `ghiFile()`) được khai báo trong interface `core.DanhSach<T>`. Mỗi lớp danh sách `implements DanhSach<X>` (ví dụ `DSKhachHang implements DanhSach<KhachHang>`) và ghi `@Override` trên 6 hàm đó.
+
 Mẫu đầy đủ (`DSKhachHang`):
 
 ```java
 package danhsach;
 
+import core.DanhSach;
 import core.NhapLieu;
 import core.TepTin;
 import java.util.Arrays;
 import java.util.Scanner;
 import model.KhachHang;
 
-public class DSKhachHang {
+public class DSKhachHang implements DanhSach<KhachHang> {
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
     private static final String FILE = "data/khachhang.txt";
     private KhachHang[] ds = new KhachHang[0];
     private int n = 0;
 
+    @Override
     public KhachHang[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -190,6 +196,7 @@ public class DSKhachHang {
     }
 
     // Thêm (có tham số)
+    @Override
     public void them(KhachHang kh) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n++] = new KhachHang(kh);
@@ -255,6 +262,7 @@ public class DSKhachHang {
         System.out.println("Không tìm thấy khách hàng có mã: " + ma);
     }
 
+    @Override
     public void xuat() {
         if (n == 0) {
             System.out.println("Danh sách trống.");
@@ -279,6 +287,7 @@ public class DSKhachHang {
 
     // TepTin.doc trả về mảng các dòng, mỗi dòng đã tách sẵn thành mảng trường t
     // dòng nào hỏng (thiếu trường, sai số, sai ngày) thì bỏ qua, không làm dừng chương trình
+    @Override
     public void docFile() {
         ds = new KhachHang[0];
         n = 0;
@@ -292,6 +301,7 @@ public class DSKhachHang {
     }
 
     // đổi từng đối tượng thành 1 dòng rồi nhờ TepTin ghi đè cả file
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {
@@ -335,11 +345,11 @@ public Phong[] dsPhongTrong() {
 }
 ```
 
-Mỗi danh sách được tạo **đúng một lần** trong `app/DuLieu.java` và đọc file trong `DuLieu.docTatCa()`. Module khác dùng `DuLieu.dsKhachHang`, không tự `new DSKhachHang()`:
+Mỗi danh sách được tạo **đúng một lần** trong `app/DuLieu.java`. Mảng `DanhSach<?>[] TAT_CA` gom cả 13 danh sách, và `DuLieu.docTatCa()` duyệt mảng này để gọi `docFile()`. Module khác dùng `DuLieu.dsKhachHang`, không tự `new DSKhachHang()`:
 
 ```java
 public static final DSKhachHang dsKhachHang = new DSKhachHang();   // khai báo trong DuLieu
-dsKhachHang.docFile();                                             // thêm vào docTatCa()
+private static final DanhSach<?>[] TAT_CA = { dsPhong, dsKhachHang, ... };   // thêm vào mảng
 ```
 
 ### 2.10 Nhập từ bàn phím

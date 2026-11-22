@@ -1,6 +1,7 @@
 package danhsach;
 
 import app.DuLieu;
+import core.DanhSach;
 import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
@@ -10,7 +11,7 @@ import model.CTKhachO;
 import model.HDThuePhong;
 import model.KhachHang;
 
-public class DSKhachHang {
+public class DSKhachHang implements DanhSach<KhachHang> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -19,10 +20,12 @@ public class DSKhachHang {
     private KhachHang[] ds = new KhachHang[0];
     private int n = 0;
 
+    @Override
     public KhachHang[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -44,6 +47,7 @@ public class DSKhachHang {
     }
 
     // Thêm (có tham số): nới mảng ra 1 rồi đặt BẢN SAO vào cuối
+    @Override
     public void them(KhachHang kh) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new KhachHang(kh);
@@ -128,6 +132,7 @@ public class DSKhachHang {
         System.out.println("Không tìm thấy khách hàng có mã: " + ma);
     }
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -207,6 +212,7 @@ public class DSKhachHang {
     // ================= ĐỌC / GHI FILE =================
 
     // khachhang.txt: maKH|hoTen|sdt|diaChi
+    @Override
     public void docFile() {
         ds = new KhachHang[0];
         n = 0;
@@ -219,6 +225,7 @@ public class DSKhachHang {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

@@ -1,6 +1,7 @@
 package danhsach;
 
 import app.DuLieu;
+import core.DanhSach;
 import core.DinhDang;
 import core.NhapLieu;
 import core.TepTin;
@@ -16,7 +17,7 @@ import model.NhanVien;
 import model.Phong;
 
 // hóa đơn là chứng từ: chỉ lập mới, thanh toán và xem; không sửa tiền, không xóa (mục 6.5)
-public class DSHoaDon {
+public class DSHoaDon implements DanhSach<HoaDon> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -25,10 +26,12 @@ public class DSHoaDon {
     private HoaDon[] ds = new HoaDon[0];
     private int n = 0;
 
+    @Override
     public HoaDon[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -104,6 +107,7 @@ public class DSHoaDon {
         return ds[n - 1];
     }
 
+    @Override
     public void them(HoaDon hdon) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new HoaDon(hdon);
@@ -170,6 +174,7 @@ public class DSHoaDon {
         return null;
     }
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -291,6 +296,7 @@ public class DSHoaDon {
     // ================= ĐỌC / GHI FILE =================
 
     // hoadon.txt: maHDon|maHDong|maNV|ngayLapHD|tongTienThue|tongTienDV|tongCong|trangThai
+    @Override
     public void docFile() {
         ds = new HoaDon[0];
         n = 0;
@@ -304,6 +310,7 @@ public class DSHoaDon {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

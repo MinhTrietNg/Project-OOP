@@ -1,6 +1,7 @@
 package danhsach;
 
 import app.DuLieu;
+import core.DanhSach;
 import core.DinhDang;
 import core.NhapLieu;
 import core.TepTin;
@@ -13,7 +14,7 @@ import model.HDThuePhong;
 import model.HoaDon;
 
 // danh sách chi tiết: không có mã riêng, không sửa, không xóa (mục 6.5)
-public class DSCTSuDungDV {
+public class DSCTSuDungDV implements DanhSach<CTSuDungDV> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -22,16 +23,19 @@ public class DSCTSuDungDV {
     private CTSuDungDV[] ds = new CTSuDungDV[0];
     private int n = 0;
 
+    @Override
     public CTSuDungDV[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
 
     // ================= CÁC HÀM BẮT BUỘC (gói 50%) =================
 
+    @Override
     public void them(CTSuDungDV ct) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new CTSuDungDV(ct);
@@ -50,6 +54,7 @@ public class DSCTSuDungDV {
         return kq;
     }
 
+    @Override
     public void xuat() {
         if (n == 0) {
             System.out.println("Danh sách trống.");
@@ -182,6 +187,7 @@ public class DSCTSuDungDV {
     // ================= ĐỌC / GHI FILE =================
 
     // ctsudungdv.txt: maHDong|maDV|ngaySD|sl|donGia|thanhTien
+    @Override
     public void docFile() {
         ds = new CTSuDungDV[0];
         n = 0;
@@ -195,6 +201,7 @@ public class DSCTSuDungDV {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

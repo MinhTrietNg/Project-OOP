@@ -1,12 +1,13 @@
 package danhsach;
 
+import core.DanhSach;
 import core.NhapLieu;
 import core.TepTin;
 import java.util.Arrays;
 import java.util.Scanner;
 import model.CTKhachO;
 
-public class DSCTKhachO {
+public class DSCTKhachO implements DanhSach<CTKhachO> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -15,10 +16,12 @@ public class DSCTKhachO {
     private CTKhachO[] ds = new CTKhachO[0];
     private int n = 0;
 
+    @Override
     public CTKhachO[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -27,6 +30,7 @@ public class DSCTKhachO {
 
     // Thêm (có tham số):
     // Kiểm tra tránh trùng bộ 3 khóa (maHDong, maP, maKH) trước khi nới mảng thêm vào cuối.
+    @Override
     public void them(CTKhachO ct) {
         if (timTheoKhoa(ct.getMaHDong(), ct.getMaP(), ct.getMaKH()) != null) {
             System.out.println("Khách " + ct.getMaKH() + " đã được ghi nhận ở phòng " + ct.getMaP() + " trong hợp đồng này.");
@@ -40,6 +44,7 @@ public class DSCTKhachO {
     // Sửa & Xóa (không tham số & có tham số):
     // Theo quy định mục 2.9 và 6.5, danh sách chi tiết không cài đặt sua() và xoa().
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -103,6 +108,7 @@ public class DSCTKhachO {
     // ================= ĐỌC / GHI FILE =================
 
     // ctkhacho.txt: maHDong|maP|maKH
+    @Override
     public void docFile() {
         ds = new CTKhachO[0];
         n = 0;
@@ -115,6 +121,7 @@ public class DSCTKhachO {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

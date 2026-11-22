@@ -1,5 +1,6 @@
 package app;
 
+import core.DanhSach;
 import danhsach.DSCTHopDong;
 import danhsach.DSCTKhachO;
 import danhsach.DSCTPhieuNhap;
@@ -14,7 +15,7 @@ import danhsach.DSNhanVien;
 import danhsach.DSPhieuNhap;
 import danhsach.DSPhong;
 
-// giữ 1 bản duy nhất của mỗi danh sách, module nào thêm danh sách thì khai báo ở đây và gọi docFile() trong docTatCa()
+// giữ 1 bản duy nhất của mỗi danh sách, module nào thêm danh sách thì khai báo ở đây và thêm vào mảng TAT_CA
 public final class DuLieu {
     // ----- module 1: Phòng & Khách hàng -----
     public static final DSPhong dsPhong = new DSPhong();
@@ -37,28 +38,22 @@ public final class DuLieu {
     public static final DSCTSuDungDV dsCTSuDungDV = new DSCTSuDungDV();
     public static final DSHoaDon dsHoaDon = new DSHoaDon();
 
+    // cả 13 danh sách đều implements DanhSach nên gom được vào 1 mảng kiểu interface
+    // (phải khai báo SAU các danh sách ở trên, vì static được khởi tạo theo thứ tự viết)
+    private static final DanhSach<?>[] TAT_CA = {
+        dsPhong, dsKhachHang,                                         // module 1
+        dsHDThuePhong, dsCTHopDong, dsCTKhachO,                       // module 2
+        dsNhanVien, dsNhaCC, dsHangHoa, dsPhieuNhap, dsCTPhieuNhap,   // module 4
+        dsDichVu, dsCTSuDungDV, dsHoaDon                              // module 3
+    };
+
     private DuLieu() {
     }
 
+    // đa hình qua interface: cùng lệnh d.docFile() nhưng mỗi danh sách đọc file của riêng nó
     public static void docTatCa() {
-        // ----- module 1 -----
-        dsPhong.docFile();
-        dsKhachHang.docFile();
-
-        // ----- module 2 -----
-        dsHDThuePhong.docFile();
-        dsCTHopDong.docFile();
-        dsCTKhachO.docFile();
-
-        // ----- module 4 -----
-        dsNhanVien.docFile();
-        dsNhaCC.docFile();
-        dsHangHoa.docFile();
-        dsPhieuNhap.docFile();
-        dsCTPhieuNhap.docFile();
-        // ----- module 3 -----
-        dsDichVu.docFile();
-        dsCTSuDungDV.docFile();
-        dsHoaDon.docFile();
+        for (DanhSach<?> d : TAT_CA) {
+            d.docFile();
+        }
     }
 }

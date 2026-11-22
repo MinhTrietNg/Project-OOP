@@ -1,6 +1,7 @@
 package danhsach;
 
 import app.DuLieu;
+import core.DanhSach;
 import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
@@ -9,7 +10,7 @@ import java.util.Scanner;
 import model.NhaCC;
 import model.PhieuNhap;
 
-public class DSNhaCC {
+public class DSNhaCC implements DanhSach<NhaCC> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -18,10 +19,12 @@ public class DSNhaCC {
     private NhaCC[] ds = new NhaCC[0];
     private int n = 0;
 
+    @Override
     public NhaCC[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -41,6 +44,7 @@ public class DSNhaCC {
         System.out.println("Đã thêm nhà cung cấp " + ncc.getMaNCC());
     }
 
+    @Override
     public void them(NhaCC ncc) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new NhaCC(ncc);
@@ -117,6 +121,7 @@ public class DSNhaCC {
         System.out.println("Không tìm thấy nhà cung cấp có mã: " + ma);
     }
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -188,6 +193,7 @@ public class DSNhaCC {
     // ================= ĐỌC / GHI FILE =================
 
     // nhacc.txt: maNCC|tenNCC|diaChi|sdt
+    @Override
     public void docFile() {
         ds = new NhaCC[0];
         n = 0;
@@ -200,6 +206,7 @@ public class DSNhaCC {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

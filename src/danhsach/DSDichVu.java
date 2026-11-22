@@ -1,6 +1,7 @@
 package danhsach;
 
 import app.DuLieu;
+import core.DanhSach;
 import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
@@ -10,7 +11,7 @@ import model.CTSuDungDV;
 import model.DichVu;
 import model.HangHoa;
 
-public class DSDichVu {
+public class DSDichVu implements DanhSach<DichVu> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -19,10 +20,12 @@ public class DSDichVu {
     private DichVu[] ds = new DichVu[0];
     private int n = 0;
 
+    @Override
     public DichVu[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -45,6 +48,7 @@ public class DSDichVu {
     }
 
     // Thêm (có tham số): nới mảng ra 1 rồi đặt BẢN SAO vào cuối
+    @Override
     public void them(DichVu dv) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new DichVu(dv);
@@ -126,6 +130,7 @@ public class DSDichVu {
         System.out.println("Không tìm thấy dịch vụ có mã: " + ma);
     }
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -216,6 +221,7 @@ public class DSDichVu {
     // ================= ĐỌC / GHI FILE =================
 
     // dichvu.txt: maDV|tenDV|donGia|maH
+    @Override
     public void docFile() {
         ds = new DichVu[0];
         n = 0;
@@ -228,6 +234,7 @@ public class DSDichVu {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

@@ -1,6 +1,7 @@
 package danhsach;
 
 import app.DuLieu;
+import core.DanhSach;
 import core.DinhDang;
 import core.NhapLieu;
 import core.TepTin;
@@ -11,7 +12,7 @@ import model.CTPhieuNhap;
 import model.DichVu;
 import model.HangHoa;
 
-public class DSHangHoa {
+public class DSHangHoa implements DanhSach<HangHoa> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -20,10 +21,12 @@ public class DSHangHoa {
     private HangHoa[] ds = new HangHoa[0];
     private int n = 0;
 
+    @Override
     public HangHoa[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -44,6 +47,7 @@ public class DSHangHoa {
         System.out.println("Đã thêm hàng " + hh.getMaH() + " (tồn kho = 0, hãy lập phiếu nhập)");
     }
 
+    @Override
     public void them(HangHoa hh) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new HangHoa(hh);
@@ -124,6 +128,7 @@ public class DSHangHoa {
         System.out.println("Không tìm thấy hàng có mã: " + ma);
     }
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -265,6 +270,7 @@ public class DSHangHoa {
     // ================= ĐỌC / GHI FILE =================
 
     // hanghoa.txt: maH|tenH|donGia|slTon
+    @Override
     public void docFile() {
         ds = new HangHoa[0];
         n = 0;
@@ -277,6 +283,7 @@ public class DSHangHoa {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

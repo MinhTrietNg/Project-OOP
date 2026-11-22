@@ -1,6 +1,7 @@
 package danhsach;
 
 import app.DuLieu;
+import core.DanhSach;
 import core.DinhDang;
 import core.NhapLieu;
 import core.TepTin;
@@ -14,7 +15,7 @@ import model.NhanVien;
 import model.PhieuNhap;
 
 // phiếu nhập là chứng từ: chỉ lập mới và xem, không sửa, không xóa (mục 6.5)
-public class DSPhieuNhap {
+public class DSPhieuNhap implements DanhSach<PhieuNhap> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -23,10 +24,12 @@ public class DSPhieuNhap {
     private PhieuNhap[] ds = new PhieuNhap[0];
     private int n = 0;
 
+    @Override
     public PhieuNhap[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -132,6 +135,7 @@ public class DSPhieuNhap {
         them(pn);
     }
 
+    @Override
     public void them(PhieuNhap pn) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new PhieuNhap(pn);
@@ -160,6 +164,7 @@ public class DSPhieuNhap {
         return null;
     }
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -294,6 +299,7 @@ public class DSPhieuNhap {
     // ================= ĐỌC / GHI FILE =================
 
     // phieunhap.txt: maPN|maNCC|maNV|ngayNhap|tongTien
+    @Override
     public void docFile() {
         ds = new PhieuNhap[0];
         n = 0;
@@ -306,6 +312,7 @@ public class DSPhieuNhap {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

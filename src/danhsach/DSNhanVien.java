@@ -1,6 +1,7 @@
 package danhsach;
 
 import app.DuLieu;
+import core.DanhSach;
 import core.DinhDang;
 import core.NhapLieu;
 import core.TepTin;
@@ -12,7 +13,7 @@ import model.HoaDon;
 import model.NhanVien;
 import model.PhieuNhap;
 
-public class DSNhanVien {
+public class DSNhanVien implements DanhSach<NhanVien> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -21,10 +22,12 @@ public class DSNhanVien {
     private NhanVien[] ds = new NhanVien[0];
     private int n = 0;
 
+    @Override
     public NhanVien[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -46,6 +49,7 @@ public class DSNhanVien {
     }
 
     // Thêm (có tham số): nới mảng ra 1 rồi đặt BẢN SAO vào cuối
+    @Override
     public void them(NhanVien nv) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new NhanVien(nv);
@@ -138,6 +142,7 @@ public class DSNhanVien {
         System.out.println("Không tìm thấy nhân viên có mã: " + ma);
     }
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -249,6 +254,7 @@ public class DSNhanVien {
     // ================= ĐỌC / GHI FILE =================
 
     // nhanvien.txt: maNV|hoTen|sdt|chucVu|luongCB
+    @Override
     public void docFile() {
         ds = new NhanVien[0];
         n = 0;
@@ -261,6 +267,7 @@ public class DSNhanVien {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

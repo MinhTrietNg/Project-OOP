@@ -1,6 +1,7 @@
 package danhsach;
 
 import app.DuLieu;
+import core.DanhSach;
 import core.DinhDang;
 import core.NhapLieu;
 import core.TepTin;
@@ -16,7 +17,7 @@ import model.KhachHang;
 import model.NhanVien;
 import model.Phong;
 
-public class DSHDThuePhong {
+public class DSHDThuePhong implements DanhSach<HDThuePhong> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -25,10 +26,12 @@ public class DSHDThuePhong {
     private HDThuePhong[] ds = new HDThuePhong[0];
     private int n = 0;
 
+    @Override
     public HDThuePhong[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -218,6 +221,7 @@ public class DSHDThuePhong {
     // ================= CÁC HÀM BẮT BUỘC (gói 50%) =================
 
     // Thêm (có tham số): nới mảng ds thêm 1 phần tử và sao chép đối tượng hd vào cuối mảng
+    @Override
     public void them(HDThuePhong hd) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new HDThuePhong(hd);
@@ -288,6 +292,7 @@ public class DSHDThuePhong {
     // Theo quy định mục 6.5 của đồ án, KHÔNG XÓA các lớp chứng từ (HDThuePhong, HoaDon, PhieuNhap)
     // và các lớp chi tiết để bảo toàn lịch sử giao dịch -> lớp này không cài đặt xoa() và xoa(String ma).
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -362,6 +367,7 @@ public class DSHDThuePhong {
     // ================= ĐỌC / GHI FILE =================
 
     // hdthuephong.txt: maHDong|maKH|maNV|ngayLapHD|tienCoc|ngayNhanPhong|ngayTraPhong
+    @Override
     public void docFile() {
         ds = new HDThuePhong[0];
         n = 0;
@@ -382,6 +388,7 @@ public class DSHDThuePhong {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

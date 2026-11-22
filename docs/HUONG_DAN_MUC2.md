@@ -190,7 +190,7 @@ Thử nhanh: menu 1 thêm 2 phòng trống -> menu 6 thêm 1 nhân viên -> menu
 
 ## 7. Khi ghép code với 3 module còn lại
 
-1. **`DuLieu.java`**: đảm bảo đã khai báo đủ 3 danh sách (`dsHDThuePhong`, `dsCTHopDong`, `dsCTKhachO`) cùng `dsPhong`, `dsKhachHang` và gọi `docFile()` trong `DuLieu.docTatCa()`.
+1. **`DuLieu.java`**: đảm bảo đã khai báo đủ 3 danh sách (`dsHDThuePhong`, `dsCTHopDong`, `dsCTKhachO`) cùng `dsPhong`, `dsKhachHang`, và đã đưa chúng vào mảng `TAT_CA` (để `DuLieu.docTatCa()` gọi `docFile()`).
 2. **`Main.java`**: tại lựa chọn `3. Thuê phòng`, gọi `MenuThuePhong.chay()`.
 3. **Module 1 (`DSPhong`, `DSKhachHang`)**:
    - `DSPhong` cần có `dsPhongTrong()` và `capNhatTinhTrang(String maP, String tinhTrang)` (chỉ đổi tình trạng, không ghi file; `MenuThuePhong` tự gọi `dsPhong.ghiFile()`).

@@ -1,12 +1,13 @@
 package danhsach;
 
+import core.DanhSach;
 import core.NhapLieu;
 import core.TepTin;
 import java.util.Arrays;
 import java.util.Scanner;
 import model.CTHopDong;
 
-public class DSCTHopDong {
+public class DSCTHopDong implements DanhSach<CTHopDong> {
 
     // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
     private static final Scanner sc = new Scanner(System.in, "UTF-8");
@@ -15,10 +16,12 @@ public class DSCTHopDong {
     private CTHopDong[] ds = new CTHopDong[0];
     private int n = 0;
 
+    @Override
     public CTHopDong[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
@@ -27,6 +30,7 @@ public class DSCTHopDong {
 
     // Thêm (có tham số): chỉ có bản có tham số
     // Kiểm tra tránh trùng cặp khóa (maHDong, maP) trước khi nới mảng thêm vào cuối.
+    @Override
     public void them(CTHopDong ct) {
         if (timTheoKhoa(ct.getMaHDong(), ct.getMaP()) != null) {
             System.out.println("Phòng " + ct.getMaP() + " đã có trong hợp đồng " + ct.getMaHDong());
@@ -40,6 +44,7 @@ public class DSCTHopDong {
     // Sửa & Xóa (không tham số & có tham số):
     // Theo quy định mục 2.9 và 6.5, danh sách chi tiết không cài đặt sua() và xoa() độc lập.
 
+    @Override
     public void xuat() {
         xuat(ds);
     }
@@ -100,6 +105,7 @@ public class DSCTHopDong {
     // ================= ĐỌC / GHI FILE =================
 
     // cthopdong.txt: maHDong|maP|donGia|slNguoi|thanhTien
+    @Override
     public void docFile() {
         ds = new CTHopDong[0];
         n = 0;
@@ -118,6 +124,7 @@ public class DSCTHopDong {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {

@@ -1,25 +1,29 @@
 package danhsach;
 
+import core.DanhSach;
 import core.TepTin;
 import java.util.Arrays;
 import model.CTPhieuNhap;
 
 // danh sách chi tiết: không có mã riêng, không sửa, không xóa (mục 6.5)
-public class DSCTPhieuNhap {
+public class DSCTPhieuNhap implements DanhSach<CTPhieuNhap> {
 
     private static final String FILE = "data/ctphieunhap.txt";
     private CTPhieuNhap[] ds = new CTPhieuNhap[0];
     private int n = 0;
 
+    @Override
     public CTPhieuNhap[] getDs() {
         return ds;
     }
 
+    @Override
     public int getN() {
         return n;
     }
 
     // chỉ có bản có tham số: chi tiết được tạo bên trong DSPhieuNhap.lapPhieu()
+    @Override
     public void them(CTPhieuNhap ct) {
         ds = Arrays.copyOf(ds, n + 1);
         ds[n] = new CTPhieuNhap(ct);
@@ -38,6 +42,7 @@ public class DSCTPhieuNhap {
         return kq;
     }
 
+    @Override
     public void xuat() {
         if (n == 0) {
             System.out.println("Danh sách trống.");
@@ -49,6 +54,7 @@ public class DSCTPhieuNhap {
     }
 
     // ctphieunhap.txt: maPN|maH|sl|donGiaNhap|thanhTien
+    @Override
     public void docFile() {
         ds = new CTPhieuNhap[0];
         n = 0;
@@ -62,6 +68,7 @@ public class DSCTPhieuNhap {
         }
     }
 
+    @Override
     public void ghiFile() {
         String[] cacDong = new String[n];
         for (int i = 0; i < n; i++) {
