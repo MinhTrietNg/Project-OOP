@@ -32,10 +32,11 @@ Cả module chỉ có **3 khuôn** lặp đi lặp lại. Thuộc 3 khuôn này 
 ### Khuôn A — lớp model (3 lớp giống nhau)
 
 ```text
+sc       : private static final Scanner sc = new Scanner(System.in, "UTF-8");  (Scanner riêng của lớp)
 thuộc tính private
 3 constructor: không tham số / đầy đủ / sao chép (nhận 1 đối tượng cùng lớp)
 get / set
-nhap()   : chỉ hỏi các trường người dùng gõ (không hỏi mã, không hỏi mã liên kết, không hỏi thành tiền)
+nhap()   : chỉ hỏi các trường người dùng gõ, qua NhapLieu.nhapXxx(sc, ...) (không hỏi mã, không hỏi mã liên kết, không hỏi thành tiền)
 xuat()   : 1 dòng System.out.println(...)
 toLine() : DinhDang.dong(các trường theo đúng thứ tự file)
 ```
@@ -43,6 +44,9 @@ toLine() : DinhDang.dong(các trường theo đúng thứ tự file)
 ### Khuôn B — lớp danh sách (phân biệt danh sách có mã và danh sách chi tiết)
 
 ```text
+--- Cả 3 lớp đều hỏi bàn phím nên đều có Scanner riêng ---
+private static final Scanner sc = new Scanner(System.in, "UTF-8");
+
 --- Danh sách có mã (DSHDThuePhong) ---
 ds (mảng), n (số phần tử), getDs(), getN()
 them()   -> nghiệp vụ lập hợp đồng (giống DSHoaDon.them()), cuối cùng gọi lapHopDong(hd, dsCT, dsKO)

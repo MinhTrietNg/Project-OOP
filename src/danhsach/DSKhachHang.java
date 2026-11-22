@@ -5,11 +5,15 @@ import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
 import java.util.Arrays;
+import java.util.Scanner;
 import model.CTKhachO;
 import model.HDThuePhong;
 import model.KhachHang;
 
 public class DSKhachHang {
+
+    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/khachhang.txt";
     private KhachHang[] ds = new KhachHang[0];
@@ -47,7 +51,7 @@ public class DSKhachHang {
     }
 
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã khách hàng cần tìm");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã khách hàng cần tìm");
         KhachHang kh = timTheoMa(ma);
         if (kh == null) {
             System.out.println("Không tìm thấy khách hàng có mã: " + ma);
@@ -67,7 +71,7 @@ public class DSKhachHang {
     }
 
     public void sua() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã khách hàng cần sửa");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã khách hàng cần sửa");
         sua(ma);
     }
 
@@ -91,7 +95,7 @@ public class DSKhachHang {
     }
 
     public void xoa() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã khách hàng cần xóa");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã khách hàng cần xóa");
         xoa(ma);
     }
 
@@ -164,7 +168,7 @@ public class DSKhachHang {
     }
 
     public void timTheoSdt() {
-        String sdt = NhapLieu.nhapChuoi("Nhập số điện thoại cần tìm");
+        String sdt = NhapLieu.nhapChuoi(sc, "Nhập số điện thoại cần tìm");
         KhachHang kh = timTheoSdt(sdt);
         if (kh == null) {
             System.out.println("Không tìm thấy khách hàng có số: " + sdt);
@@ -184,7 +188,7 @@ public class DSKhachHang {
     }
 
     public void timTheoTen() {
-        String tuKhoa = NhapLieu.nhapChuoi("Nhập tên (gõ không dấu cũng được)");
+        String tuKhoa = NhapLieu.nhapChuoi(sc, "Nhập tên (gõ không dấu cũng được)");
         xuat(timTheoTen(tuKhoa));
     }
 

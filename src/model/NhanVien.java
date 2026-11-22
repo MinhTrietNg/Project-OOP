@@ -2,9 +2,13 @@ package model;
 
 import core.DinhDang;
 import core.NhapLieu;
+import java.util.Scanner;
 
 // nhân viên: người lập hợp đồng, hóa đơn, phiếu nhập
 public class NhanVien extends Nguoi {
+
+    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     // chỉ cho chọn trong danh sách này để thống kê theo chức vụ không bị lệch kiểu "le tan" / "Lễ tân"
     public static final String[] CAC_CHUC_VU = {"Lễ tân", "Quản lý", "Thủ kho", "Phục vụ", "Bảo vệ"};
@@ -65,9 +69,9 @@ public class NhanVien extends Nguoi {
         for (int i = 0; i < CAC_CHUC_VU.length; i++) {
             System.out.println("  " + (i + 1) + ". " + CAC_CHUC_VU[i]);
         }
-        int chon = NhapLieu.nhapSoNguyen("Chọn chức vụ", 1, CAC_CHUC_VU.length);
+        int chon = NhapLieu.nhapSoNguyen(sc, "Chọn chức vụ", 1, CAC_CHUC_VU.length);
         chucVu = CAC_CHUC_VU[chon - 1];
-        luongCB = NhapLieu.nhapSoThuc("Lương cơ bản", 0);
+        luongCB = NhapLieu.nhapSoThuc(sc, "Lương cơ bản", 0);
     }
 
     // vd: NV001 | Nguyễn Văn An | 0901234567 | Lễ tân | 8.000.000 đ

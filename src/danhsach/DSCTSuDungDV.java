@@ -6,6 +6,7 @@ import core.NhapLieu;
 import core.TepTin;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Scanner;
 import model.CTSuDungDV;
 import model.DichVu;
 import model.HDThuePhong;
@@ -13,6 +14,9 @@ import model.HoaDon;
 
 // danh sách chi tiết: không có mã riêng, không sửa, không xóa (mục 6.5)
 public class DSCTSuDungDV {
+
+    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/ctsudungdv.txt";
     private CTSuDungDV[] ds = new CTSuDungDV[0];
@@ -70,7 +74,7 @@ public class DSCTSuDungDV {
         }
 
         // ----- B1 -----
-        String maHDong = NhapLieu.nhapChuoi("Nhập mã hợp đồng");
+        String maHDong = NhapLieu.nhapChuoi(sc, "Nhập mã hợp đồng");
         HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(maHDong);
         if (hd == null) {
             System.out.println("Không tìm thấy hợp đồng có mã: " + maHDong);
@@ -122,7 +126,7 @@ public class DSCTSuDungDV {
     // ================= HÀM NÂNG CAO (gói 70%) =================
 
     public void xuatTheoHopDong() {
-        String maHDong = NhapLieu.nhapChuoi("Nhập mã hợp đồng");
+        String maHDong = NhapLieu.nhapChuoi(sc, "Nhập mã hợp đồng");
         xuatTheoHopDong(maHDong);
     }
 

@@ -36,7 +36,7 @@ Chương trình chia thành 4 module:
 ```text
 src/
   app/        Main.java (menu chính), DuLieu.java (giữ các danh sách dùng chung)
-  core/       NhapLieu.java (nhập có kiểm tra), DinhDang.java (ngày, tiền, dòng file), DoiTuong.java
+  core/       NhapLieu.java (hàm kiểm tra nhập, nhận Scanner qua tham số), DinhDang.java (ngày, tiền, dòng file), DoiTuong.java
   model/      19 lớp đối tượng (mục 2.8, 3, 4)
   danhsach/   13 lớp danh sách DSxxx, mỗi lớp quản lý một mảng (mục 2.9)
   menu/       MenuPhong, MenuKhachHang, MenuThuePhong, MenuDichVu,
@@ -119,7 +119,7 @@ Mỗi lớp có:
 - Thuộc tính `private` như mục 4.
 - 3 constructor: **không tham số**, **đầy đủ tham số**, **sao chép** (nhận một đối tượng cùng lớp và chép từng thuộc tính).
 - Getter/setter.
-- `nhap()`: nhập các trường người dùng gõ vào, dùng hàm của `core.NhapLieu` (không tự tạo `Scanner`). Không nhập mã (danh sách tự sinh), không nhập mã liên kết (`maKH`, `maP`…) và trường tính toán (`thanhTien`…); các trường này gán bằng setter.
+- `nhap()`: nhập các trường người dùng gõ vào bằng **`Scanner` riêng của lớp** (mục 2.10), kiểm tra qua các hàm của `core.NhapLieu`. Không nhập mã (danh sách tự sinh), không nhập mã liên kết (`maKH`, `maP`…) và trường tính toán (`thanhTien`…); các trường này gán bằng setter.
 - `xuat()`: in thông tin ra màn hình.
 - `toLine()`: trả về một dòng file theo mục 5, viết bằng `DinhDang.dong(...)`.
 
@@ -163,9 +163,11 @@ package danhsach;
 import core.NhapLieu;
 import core.TepTin;
 import java.util.Arrays;
+import java.util.Scanner;
 import model.KhachHang;
 
 public class DSKhachHang {
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
     private static final String FILE = "data/khachhang.txt";
     private KhachHang[] ds = new KhachHang[0];
     private int n = 0;
@@ -195,7 +197,7 @@ public class DSKhachHang {
 
     // Tìm theo mã (không tham số): nhập mã rồi in kết quả
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã khách hàng cần tìm");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã khách hàng cần tìm");
         KhachHang kh = timTheoMa(ma);
         if (kh == null) {
             System.out.println("Không tìm thấy khách hàng có mã: " + ma);
@@ -216,7 +218,7 @@ public class DSKhachHang {
 
     // Sửa (không tham số)
     public void sua() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã khách hàng cần sửa");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã khách hàng cần sửa");
         sua(ma);
     }
 
@@ -233,7 +235,7 @@ public class DSKhachHang {
 
     // Xóa (không tham số)
     public void xoa() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã khách hàng cần xóa");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã khách hàng cần xóa");
         xoa(ma);
     }
 
@@ -339,6 +341,19 @@ Mỗi danh sách được tạo **đúng một lần** trong `app/DuLieu.java` v
 public static final DSKhachHang dsKhachHang = new DSKhachHang();   // khai báo trong DuLieu
 dsKhachHang.docFile();                                             // thêm vào docTatCa()
 ```
+
+### 2.10 Nhập từ bàn phím
+
+- Lớp nào cần đọc bàn phím thì **tự khởi tạo `Scanner` riêng** ở đầu lớp, không lấy Scanner từ lớp khác:
+
+  ```java
+  private static final Scanner sc = new Scanner(System.in, "UTF-8");
+  ```
+
+- `core.NhapLieu` **không giữ Scanner**. Nó chỉ chứa các hàm kiểm tra (sai thì báo lỗi và hỏi lại) và nhận Scanner qua tham số: `NhapLieu.nhapChuoi(sc, "Họ tên")`, `NhapLieu.chonMenu(sc, "KHO", "Quay lại", ...)`.
+- Luôn đọc cả dòng (`nextLine()`) rồi tự chuyển kiểu, không dùng `nextInt()`, để không bị trôi lệnh nhập phía sau.
+- Không gọi `sc.close()`: lệnh này đóng luôn `System.in`, các lớp khác sẽ không nhập được nữa.
+- Mỗi Scanner có bộ đệm riêng, nên chỉ gõ (hoặc dán) **từng dòng một**. Nếu dán nhiều dòng cùng lúc, hoặc chạy `java app.Main < input.txt`, Scanner nhận dữ liệu trước sẽ giữ luôn các dòng phía sau.
 
 ## 3. Sơ đồ lớp đối tượng
 

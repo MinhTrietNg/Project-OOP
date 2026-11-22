@@ -34,10 +34,11 @@ Cả module chỉ có **3 khuôn** lặp đi lặp lại. Thuộc 3 khuôn này 
 ### Khuôn A — lớp model (5 lớp giống nhau)
 
 ```text
+sc       : private static final Scanner sc = new Scanner(System.in, "UTF-8");  (Scanner riêng của lớp)
 thuộc tính private
 3 constructor: không tham số / đầy đủ / sao chép (nhận 1 đối tượng cùng lớp)
 get / set
-nhap()   : chỉ hỏi các trường người dùng gõ (không hỏi mã, không hỏi trường tính toán)
+nhap()   : chỉ hỏi các trường người dùng gõ, qua NhapLieu.nhapXxx(sc, ...) (không hỏi mã, không hỏi trường tính toán)
 xuat()   : 1 dòng System.out.println(a + " | " + b + ...)
 toLine() : DinhDang.dong(các trường theo đúng thứ tự file)
 ```
@@ -45,7 +46,7 @@ toLine() : DinhDang.dong(các trường theo đúng thứ tự file)
 ### Khuôn B — lớp danh sách (thứ tự hàm giống hệt nhau trong 4 lớp có mã)
 
 ```text
-ds (mảng), n (số phần tử), getDs(), getN()
+sc (Scanner riêng của lớp, nếu lớp có hỏi bàn phím), ds (mảng), n (số phần tử), getDs(), getN()
 them()      -> new X(); x.nhap(); (NV: trungSdt(sdt, ""), NCC/HangHoa: trungTen(ten, "") thì báo, return); x.setMa(sinhMa()); them(x)
 them(x)     -> ds = Arrays.copyOf(ds, n + 1); ds[n] = new X(x); n++;
 timTheoMa() -> nhập mã, gọi timTheoMa(ma); null thì báo "Không tìm thấy...", không thì in

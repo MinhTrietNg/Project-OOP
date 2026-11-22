@@ -5,11 +5,15 @@ import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
 import java.util.Arrays;
+import java.util.Scanner;
 import model.CTSuDungDV;
 import model.DichVu;
 import model.HangHoa;
 
 public class DSDichVu {
+
+    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/dichvu.txt";
     private DichVu[] ds = new DichVu[0];
@@ -48,7 +52,7 @@ public class DSDichVu {
     }
 
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã dịch vụ cần tìm");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã dịch vụ cần tìm");
         DichVu dv = timTheoMa(ma);
         if (dv == null) {
             System.out.println("Không tìm thấy dịch vụ có mã: " + ma);
@@ -68,7 +72,7 @@ public class DSDichVu {
     }
 
     public void sua() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã dịch vụ cần sửa");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã dịch vụ cần sửa");
         sua(ma);
     }
 
@@ -94,7 +98,7 @@ public class DSDichVu {
     }
 
     public void xoa() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã dịch vụ cần xóa");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã dịch vụ cần xóa");
         xoa(ma);
     }
 
@@ -152,7 +156,7 @@ public class DSDichVu {
     // cho chỗ khác chọn 1 dịch vụ: hỏi mã tới khi đúng, gõ 0 thì trả null
     public DichVu chon() {
         while (true) {
-            String ma = NhapLieu.nhapChuoi("Nhập mã dịch vụ (0 để thoát)");
+            String ma = NhapLieu.nhapChuoi(sc, "Nhập mã dịch vụ (0 để thoát)");
             if (ma.equals("0")) {
                 return null;
             }
@@ -170,7 +174,7 @@ public class DSDichVu {
             System.out.println("  (Kho chưa có hàng hóa nên dịch vụ này không gắn hàng.)");
             return "";
         }
-        if (!NhapLieu.nhapCoKhong("Dịch vụ có tiêu hao hàng trong kho không")) {
+        if (!NhapLieu.nhapCoKhong(sc, "Dịch vụ có tiêu hao hàng trong kho không")) {
             return "";
         }
         DuLieu.dsHangHoa.xuat();
@@ -194,7 +198,7 @@ public class DSDichVu {
     }
 
     public void timTheoTen() {
-        String tuKhoa = NhapLieu.nhapChuoi("Nhập tên dịch vụ (gõ không dấu cũng được)");
+        String tuKhoa = NhapLieu.nhapChuoi(sc, "Nhập tên dịch vụ (gõ không dấu cũng được)");
         xuat(timTheoTen(tuKhoa));
     }
 

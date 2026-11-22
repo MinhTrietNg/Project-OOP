@@ -49,6 +49,7 @@ Mẫu ngắn nhất để học thuộc là `DichVu`:
 
 ```java
 public class DichVu implements DoiTuong {
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");   // Scanner riêng của lớp
     private String maDV;
     private String tenDV;
     private double donGia;
@@ -63,8 +64,8 @@ public class DichVu implements DoiTuong {
     public boolean coDungHang() { return !maH.isEmpty(); }
 
     @Override public void nhap() {
-        tenDV = NhapLieu.nhapChuoi("Tên dịch vụ");
-        donGia = NhapLieu.nhapSoThuc("Đơn giá", 1);
+        tenDV = NhapLieu.nhapChuoi(sc, "Tên dịch vụ");
+        donGia = NhapLieu.nhapSoThuc(sc, "Đơn giá", 1);
     }
     @Override public void xuat()     { System.out.println(maDV + " | " + tenDV + " | " + ...); }
     @Override public String toLine() { return DinhDang.dong(maDV, tenDV, donGia, maH); }
@@ -76,7 +77,8 @@ public class DichVu implements DoiTuong {
 Phần **luôn giống nhau** ở cả 3 lớp:
 
 ```text
-FILE = "data/xxx.txt";  X[] ds = new X[0];  int n = 0;  getDs(), getN()
+sc = new Scanner(System.in, "UTF-8") (Scanner riêng của lớp);  FILE = "data/xxx.txt";
+X[] ds = new X[0];  int n = 0;  getDs(), getN()
 them(x)   -> ds = Arrays.copyOf(ds, n + 1); ds[n] = new X(x); n++;      (lưu BẢN SAO)
 xuat()    -> rỗng thì "Danh sách trống." rồi return; không thì for in từng phần tử
 docFile() -> ds rỗng, n = 0; for (String[] t : TepTin.doc(FILE)) { try { them(new X(t[0], ...)); }

@@ -7,6 +7,7 @@ import core.TepTin;
 import core.TimKiem;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Scanner;
 import model.CTHopDong;
 import model.CTKhachO;
 import model.CTSuDungDV;
@@ -16,6 +17,9 @@ import model.NhanVien;
 import model.Phong;
 
 public class DSHDThuePhong {
+
+    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/hdthuephong.txt";
     private HDThuePhong[] ds = new HDThuePhong[0];
@@ -81,7 +85,7 @@ public class DSHDThuePhong {
             System.out.println("--- Danh sách phòng TRONG ---");
             DuLieu.dsPhong.xuat(DuLieu.dsPhong.dsPhongTrong());
 
-            String maP = NhapLieu.nhapChuoi("Nhập mã phòng muốn thuê (0 để kết thúc chọn phòng)");
+            String maP = NhapLieu.nhapChuoi(sc, "Nhập mã phòng muốn thuê (0 để kết thúc chọn phòng)");
             if (maP.equals("0")) {
                 if (dsCT.length == 0) {
                     System.out.println("Đã hủy lập hợp đồng.");
@@ -125,7 +129,7 @@ public class DSHDThuePhong {
     private CTKhachO[] nhapKhachO(String maHDong, String maP, int slNguoi, CTKhachO[] dsKO) {
         int dem = 0;
         while (dem < slNguoi) {
-            if (dem > 0 && !NhapLieu.nhapCoKhong("Thêm khách ở phòng " + maP)) {
+            if (dem > 0 && !NhapLieu.nhapCoKhong(sc, "Thêm khách ở phòng " + maP)) {
                 break;
             }
             KhachHang kh = chonHoacThemKhach("khách ở thứ " + (dem + 1) + " phòng " + maP);
@@ -188,7 +192,7 @@ public class DSHDThuePhong {
 
     // Hàm phụ trợ: tìm khách theo mã hoặc SĐT, nếu chưa có thì cho thêm mới ngay tại chỗ
     private KhachHang chonHoacThemKhach(String vaiTro) {
-        String tuKhoa = NhapLieu.nhapChuoi("Nhập mã KH hoặc SĐT của " + vaiTro + " (0 để hủy)");
+        String tuKhoa = NhapLieu.nhapChuoi(sc, "Nhập mã KH hoặc SĐT của " + vaiTro + " (0 để hủy)");
         if (tuKhoa.equals("0")) {
             return null;
         }
@@ -222,7 +226,7 @@ public class DSHDThuePhong {
 
     // Tìm theo mã (không tham số): nhập mã từ bàn phím rồi in kết quả ra màn hình
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã hợp đồng cần tìm");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã hợp đồng cần tìm");
         HDThuePhong hd = timTheoMa(ma);
         if (hd == null) {
             System.out.println("Không tìm thấy hợp đồng có mã: " + ma);
@@ -243,7 +247,7 @@ public class DSHDThuePhong {
 
     // Sửa (không tham số): dùng cho menu, hỏi người dùng nhập mã hợp đồng rồi gọi sua(ma)
     public void sua() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã hợp đồng cần sửa ngày trả phòng");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã hợp đồng cần sửa ngày trả phòng");
         sua(ma);
     }
 
@@ -338,7 +342,7 @@ public class DSHDThuePhong {
 
     // Tìm theo tên khách đứng tên (không tham số)
     public void timTheoTenKH() {
-        String tuKhoa = NhapLieu.nhapChuoi("Nhập tên khách đứng tên (gõ không dấu cũng được)");
+        String tuKhoa = NhapLieu.nhapChuoi(sc, "Nhập tên khách đứng tên (gõ không dấu cũng được)");
         xuat(timTheoTenKH(tuKhoa));
     }
 

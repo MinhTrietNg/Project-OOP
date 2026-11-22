@@ -6,9 +6,13 @@ import core.NhapLieu;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Scanner;
 
 // Hợp đồng thuê phòng của một khách đứng tên.
 public class HDThuePhong implements DoiTuong {
+    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
+
     private String maHDong;
     private String maKH;
     private String maNV;
@@ -54,20 +58,20 @@ public class HDThuePhong implements DoiTuong {
     @Override
     public void nhap() {
         while (true) {
-            ngayNhanPhong = NhapLieu.nhapNgay("Ngày nhận phòng");
+            ngayNhanPhong = NhapLieu.nhapNgay(sc, "Ngày nhận phòng");
             if (!ngayNhanPhong.isBefore(ngayLapHD)) {
                 break;
             }
             System.out.println("  Ngày nhận phòng không được trước ngày lập hợp đồng.");
         }
         nhapNgayTra();
-        tienCoc = NhapLieu.nhapSoThuc("Tiền cọc", 0);
+        tienCoc = NhapLieu.nhapSoThuc(sc, "Tiền cọc", 0);
     }
 
     // Nhập ngày trả phòng (phải sau ngày nhận). Dùng khi lập hợp đồng và khi sửa ngày trả.
     public void nhapNgayTra() {
         while (true) {
-            LocalDate d = NhapLieu.nhapNgay("Ngày trả phòng");
+            LocalDate d = NhapLieu.nhapNgay(sc, "Ngày trả phòng");
             if (d.isAfter(ngayNhanPhong)) {
                 ngayTraPhong = d;
                 return;

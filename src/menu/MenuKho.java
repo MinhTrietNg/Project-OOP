@@ -2,13 +2,17 @@ package menu;
 
 import app.DuLieu;
 import core.NhapLieu;
+import java.util.Scanner;
 
 // menu Kho gồm 3 menu con: nhà cung cấp, hàng hóa, phiếu nhập
 public class MenuKho {
 
+    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
+
     public static void chay() {
         while (true) {
-            int chon = NhapLieu.chonMenu("KHO", "Quay lại",
+            int chon = NhapLieu.chonMenu(sc, "KHO", "Quay lại",
                     "Nhà cung cấp",
                     "Hàng hóa",
                     "Phiếu nhập hàng");
@@ -24,7 +28,7 @@ public class MenuKho {
 
     private static void menuNhaCC() {
         while (true) {
-            int chon = NhapLieu.chonMenu("NHÀ CUNG CẤP", "Quay lại",
+            int chon = NhapLieu.chonMenu(sc, "NHÀ CUNG CẤP", "Quay lại",
                     "Thêm nhà cung cấp",
                     "Sửa nhà cung cấp",
                     "Xóa nhà cung cấp",
@@ -61,7 +65,7 @@ public class MenuKho {
 
     private static void menuHangHoa() {
         while (true) {
-            int chon = NhapLieu.chonMenu("HÀNG HÓA", "Quay lại",
+            int chon = NhapLieu.chonMenu(sc, "HÀNG HÓA", "Quay lại",
                     "Thêm hàng hóa",
                     "Sửa tên hàng hóa",
                     "Xóa hàng hóa",
@@ -102,7 +106,7 @@ public class MenuKho {
 
     private static void menuPhieuNhap() {
         while (true) {
-            int chon = NhapLieu.chonMenu("PHIẾU NHẬP HÀNG", "Quay lại",
+            int chon = NhapLieu.chonMenu(sc, "PHIẾU NHẬP HÀNG", "Quay lại",
                     "Lập phiếu nhập",
                     "Xem tất cả phiếu",
                     "Xem chi tiết 1 phiếu",

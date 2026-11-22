@@ -5,10 +5,14 @@ import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
 import java.util.Arrays;
+import java.util.Scanner;
 import model.NhaCC;
 import model.PhieuNhap;
 
 public class DSNhaCC {
+
+    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/nhacc.txt";
     private NhaCC[] ds = new NhaCC[0];
@@ -44,7 +48,7 @@ public class DSNhaCC {
     }
 
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã nhà cung cấp cần tìm");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã nhà cung cấp cần tìm");
         NhaCC ncc = timTheoMa(ma);
         if (ncc == null) {
             System.out.println("Không tìm thấy nhà cung cấp có mã: " + ma);
@@ -63,7 +67,7 @@ public class DSNhaCC {
     }
 
     public void sua() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã nhà cung cấp cần sửa");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã nhà cung cấp cần sửa");
         sua(ma);
     }
 
@@ -87,7 +91,7 @@ public class DSNhaCC {
     }
 
     public void xoa() {
-        String ma = NhapLieu.nhapChuoi("Nhập mã nhà cung cấp cần xóa");
+        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã nhà cung cấp cần xóa");
         xoa(ma);
     }
 
@@ -141,7 +145,7 @@ public class DSNhaCC {
 
     public NhaCC chon() {
         while (true) {
-            String ma = NhapLieu.nhapChuoi("Nhập mã nhà cung cấp (0 để thoát)");
+            String ma = NhapLieu.nhapChuoi(sc, "Nhập mã nhà cung cấp (0 để thoát)");
             if (ma.equals("0")) {
                 return null;
             }
@@ -166,7 +170,7 @@ public class DSNhaCC {
     }
 
     public void timTheoTen() {
-        String tuKhoa = NhapLieu.nhapChuoi("Nhập tên nhà cung cấp (gõ không dấu cũng được)");
+        String tuKhoa = NhapLieu.nhapChuoi(sc, "Nhập tên nhà cung cấp (gõ không dấu cũng được)");
         xuat(timTheoTen(tuKhoa));
     }
 

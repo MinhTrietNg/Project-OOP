@@ -31,6 +31,9 @@ Module 1 còn phụ trách **khung chung** (`core/NhapLieu`, `core/DinhDang`, `c
 ### Khuôn A — lớp model có lớp cha abstract
 
 ```text
+MỖI LỚP (cha lẫn con) có hỏi bàn phím thì tự tạo Scanner riêng, không dùng của lớp cha:
+  private static final Scanner sc = new Scanner(System.in, "UTF-8");
+
 LỚP CHA (Phong, Nguoi) — abstract
   thuộc tính private chung
   3 constructor: không tham số / đầy đủ / sao chép
@@ -54,7 +57,7 @@ LỚP CON (PhongDeluxe, KhachHang...)
 ### Khuôn B — lớp danh sách (giống hệt module 2, 3, 4)
 
 ```text
-ds (mảng), n (số phần tử), getDs(), getN()
+sc (Scanner riêng của lớp), ds (mảng), n (số phần tử), getDs(), getN()
 them()        -> tạo đối tượng; x.nhap(); if (trungXxx(giaTri, "")) báo, return; x.setMa(sinhMa()); them(x)
 them(x)       -> ds = Arrays.copyOf(ds, n + 1); ds[n] = BẢN SAO của x; n++;
 timTheoMa()   -> nhập mã, gọi timTheoMa(ma), in

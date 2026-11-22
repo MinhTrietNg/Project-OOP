@@ -3,9 +3,13 @@ package danhsach;
 import core.NhapLieu;
 import core.TepTin;
 import java.util.Arrays;
+import java.util.Scanner;
 import model.CTHopDong;
 
 public class DSCTHopDong {
+
+    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/cthopdong.txt";
     private CTHopDong[] ds = new CTHopDong[0];
@@ -65,7 +69,7 @@ public class DSCTHopDong {
 
     // Lấy theo hợp đồng (không tham số):
     public void layTheoHopDong() {
-        String maHDong = NhapLieu.nhapChuoi("Nhập mã hợp đồng");
+        String maHDong = NhapLieu.nhapChuoi(sc, "Nhập mã hợp đồng");
         xuat(layTheoHopDong(maHDong));
     }
 
