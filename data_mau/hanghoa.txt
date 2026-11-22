@@ -1,4 +1,10 @@
-HH001|Nước suối|4500|138
-HH002|Bia lon|12000|66
+HH001|Nước suối|4500|190
+HH002|Bia lon|12000|174
 HH003|Mì ly|7500|5
-HH004|Khăn giấy|2000|50
+HH004|Khăn giấy|2000|260
+HH005|Nước ngọt lon|7200|168
+HH006|Snack khoai tây|9000|80
+HH007|Cà phê gói|2900|149
+HH008|Dầu gội gói|1500|300
+HH009|Xà phòng tắm|2500|240
+HH010|Trà túi lọc|1200|400

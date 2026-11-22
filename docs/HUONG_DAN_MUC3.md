@@ -353,7 +353,7 @@ Các ca được kiểm:
 
 ### Chạy chương trình
 
-Nạp dữ liệu mẫu rồi chạy (dữ liệu mẫu có **HDTP003** đang ở, chưa có hóa đơn, dùng để thử module 3):
+Nạp dữ liệu mẫu rồi chạy (dữ liệu mẫu có **HDTP022** đang ở, chưa có hóa đơn, dùng để thử module 3):
 
 ```powershell
 Copy-Item data_mau\*.txt data\ -Force
@@ -364,13 +364,13 @@ Thử nhanh đúng các thông báo thật:
 
 | Gõ | Thấy |
 |---|---|
-| `4 → 7` → "HDTP003" → "DV003" → "19/11/2026" → "6" | `Kho không đủ hàng HH003 cho dịch vụ này, không ghi được.` (Mì ly chỉ còn 5) |
-| `4 → 7` → "HDTP003" → "DV001" → "25/11/2026" | `Ngày sử dụng phải từ 17/11/2026 đến 20/11/2026.` rồi hỏi lại |
-| … → "19/11/2026" → "2" | `Đã ghi Nước suối cho hợp đồng HDTP003:` `HDTP003 \| DV001 \| 19/11/2026 \| 2 x 15.000 đ = 30.000 đ` |
-| `0 → 5 → 1` → "HDTP003" → "NV001" | `Đã lập hóa đơn HDON003:` rồi in hóa đơn đầy đủ, `Còn phải trả: ...` |
-| `5 → 2` → "HDON003" → "c" | `Đã thanh toán hóa đơn HDON003` |
-| `5 → 2` → "HDON003" | `Hóa đơn HDON003 đã thanh toán rồi.` |
-| `0 → 4 → 7` → "HDTP003" | `Hợp đồng đã lập hóa đơn, không ghi thêm dịch vụ được.` |
+| `4 → 7` → "HDTP022" → "DV003" → "19/11/2026" → "6" | `Kho không đủ hàng HH003 cho dịch vụ này, không ghi được.` (Mì ly chỉ còn 5) |
+| `4 → 7` → "HDTP022" → "DV001" → "25/11/2026" | `Ngày sử dụng phải từ 17/11/2026 đến 20/11/2026.` rồi hỏi lại |
+| … → "19/11/2026" → "2" | `Đã ghi Nước suối cho hợp đồng HDTP022:` `HDTP022 \| DV001 \| 19/11/2026 \| 2 x 15.000 đ = 30.000 đ` |
+| `0 → 5 → 1` → "HDTP022" → "NV001" | `Đã lập hóa đơn HDON022:` rồi in hóa đơn đầy đủ, `Còn phải trả: ...` |
+| `5 → 2` → "HDON022" → "c" | `Đã thanh toán hóa đơn HDON022` |
+| `5 → 2` → "HDON022" | `Hóa đơn HDON022 đã thanh toán rồi.` |
+| `0 → 4 → 7` → "HDTP022" | `Hợp đồng đã lập hóa đơn, không ghi thêm dịch vụ được.` |
 
 Kịch bản đầy đủ cho buổi demo: `docs/KICH_BAN_DEMO.md` mục 3.4, 3.5.
 
