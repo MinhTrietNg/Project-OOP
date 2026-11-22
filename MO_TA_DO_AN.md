@@ -38,7 +38,7 @@ src/
   app/        Main.java (menu chính), DuLieu.java (giữ các danh sách dùng chung)
   core/       NhapLieu.java (hàm kiểm tra nhập, nhận Scanner qua tham số), DinhDang.java (ngày, tiền, dòng file),
               DoiTuong.java (interface của lớp đối tượng), DanhSach.java (interface của lớp danh sách)
-  model/      19 lớp đối tượng (mục 2.8, 3, 4)
+  model/      17 lớp đối tượng (mục 2.8, 3, 4)
   danhsach/   13 lớp danh sách DSxxx, mỗi lớp quản lý một mảng (mục 2.9)
   menu/       MenuPhong, MenuKhachHang, MenuThuePhong, MenuDichVu,
               MenuHoaDon, MenuNhanVien, MenuKho, MenuThongKe
@@ -511,6 +511,8 @@ classDiagram
 ```
 
 Sơ đồ chỉ ghi thuộc tính và phương thức đặc trưng. Getter/setter, constructor, `nhap()`, `xuat()`, `toLine()` lớp nào cũng có (mục 2.8) nên không vẽ lại.
+
+Bản PlantUML ở [`docs/SO_DO_LOP.puml`](docs/SO_DO_LOP.puml) gồm 2 sơ đồ: sơ đồ lớp đối tượng như trên (có thêm interface `DoiTuong`), và sơ đồ kiến trúc các tầng `app` / `menu` / `danhsach` / `core` với interface `DanhSach<T>`.
 
 ### Cách đọc sơ đồ
 

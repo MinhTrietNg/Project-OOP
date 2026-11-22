@@ -1,0 +1,340 @@
+' Sơ đồ lớp — Đồ án OOP Quản lý khách sạn
+' File gồm 2 sơ đồ:
+'   1. LopDoiTuong : 17 lớp đối tượng (model), kế thừa, interface DoiTuong, quan hệ giữa các lớp
+'   2. KienTruc    : các tầng app / menu / danhsach / core và interface DanhSach<T>
+' Xem bằng extension PlantUML (VS Code, IntelliJ) hoặc https://www.plantuml.com/plantuml
+
+@startuml LopDoiTuong
+title Sơ đồ lớp đối tượng (package model)
+
+skinparam classAttributeIconSize 0
+hide empty members
+
+interface DoiTuong <<core>> {
+  + nhap() : void
+  + xuat() : void
+  + toLine() : String
+}
+
+package model {
+
+  ' ===== Người =====
+  abstract class Nguoi {
+    - hoTen : String
+    - sdt : String
+  }
+  class KhachHang {
+    - maKH : String
+    - diaChi : String
+  }
+  class NhanVien {
+    + {static} CAC_CHUC_VU : String[]
+    - maNV : String
+    - chucVu : String
+    - luongCB : double
+  }
+
+  ' ===== Phòng =====
+  abstract class Phong {
+    + {static} TRONG : String
+    + {static} DA_THUE : String
+    + {static} THUONG : String
+    + {static} DELUXE : String
+    + {static} SUITE : String
+    - maP : String
+    - tenP : String
+    - donGia : double
+    - soNguoiToiDa : int
+    - slGiuong : int
+    - tinhTrang : String
+    + {abstract} getLoaiPhong() : String
+  }
+  class PhongThuong
+  class PhongDeluxe {
+    - view : String
+    - banCong : boolean
+    - loaiNoiThat : String
+  }
+  class PhongSuite {
+    - phongKhachRieng : boolean
+    - slPhong : int
+  }
+
+  ' ===== Thuê phòng =====
+  class HDThuePhong {
+    - maHDong : String
+    - maKH : String
+    - maNV : String
+    - ngayLapHD : LocalDate
+    - tienCoc : double
+    - ngayNhanPhong : LocalDate
+    - ngayTraPhong : LocalDate
+    + soNgayThue() : long
+    + nhapNgayTra() : void
+  }
+  class CTHopDong {
+    - maHDong : String
+    - maP : String
+    - donGia : double
+    - slNguoi : int
+    - thanhTien : double
+    + tinhThanhTien(soNgay : long) : void
+    + nhap(soNguoiToiDa : int) : void
+  }
+  class CTKhachO {
+    - maHDong : String
+    - maP : String
+    - maKH : String
+  }
+
+  ' ===== Dịch vụ, thanh toán =====
+  class DichVu {
+    - maDV : String
+    - tenDV : String
+    - donGia : double
+    - maH : String
+    + coDungHang() : boolean
+  }
+  class CTSuDungDV {
+    - maHDong : String
+    - maDV : String
+    - ngaySD : LocalDate
+    - sl : int
+    - donGia : double
+    - thanhTien : double
+    + tinhThanhTien() : void
+    + {static} trongKhoang(ngay, tu, den : LocalDate) : boolean
+    + nhap(tu : LocalDate, den : LocalDate) : void
+  }
+  class HoaDon {
+    + {static} CHUA_TT : String
+    + {static} DA_TT : String
+    - maHDon : String
+    - maHDong : String
+    - maNV : String
+    - ngayLapHD : LocalDate
+    - tongTienThue : double
+    - tongTienDV : double
+    - tongCong : double
+    - trangThai : String
+    + tinhTien(cacPhong : CTHopDong[], cacDV : CTSuDungDV[]) : void
+    + soConPhaiTra(tienCoc : double) : double
+    + daThanhToan() : boolean
+  }
+
+  ' ===== Kho =====
+  class NhaCC {
+    - maNCC : String
+    - tenNCC : String
+    - diaChi : String
+    - sdt : String
+  }
+  class HangHoa {
+    - maH : String
+    - tenH : String
+    - donGia : double
+    - slTon : int
+    + giaTriTon() : double
+  }
+  class PhieuNhap {
+    - maPN : String
+    - maNCC : String
+    - maNV : String
+    - ngayNhap : LocalDate
+    - tongTien : double
+    + tinhTongTien(cacDong : CTPhieuNhap[]) : void
+  }
+  class CTPhieuNhap {
+    - maPN : String
+    - maH : String
+    - sl : int
+    - donGiaNhap : double
+    - thanhTien : double
+    + tinhThanhTien() : void
+  }
+}
+
+' ----- interface và kế thừa -----
+DoiTuong <|.. Nguoi
+DoiTuong <|.. Phong
+DoiTuong <|.. HDThuePhong
+DoiTuong <|.. CTHopDong
+DoiTuong <|.. CTKhachO
+DoiTuong <|.. DichVu
+DoiTuong <|.. CTSuDungDV
+DoiTuong <|.. HoaDon
+DoiTuong <|.. NhaCC
+DoiTuong <|.. HangHoa
+DoiTuong <|.. PhieuNhap
+DoiTuong <|.. CTPhieuNhap
+
+Nguoi <|-- KhachHang
+Nguoi <|-- NhanVien
+Phong <|-- PhongThuong
+Phong <|-- PhongDeluxe
+Phong <|-- PhongSuite
+
+' ----- quan hệ qua mã liên kết -----
+KhachHang "1" -- "0..*" HDThuePhong
+NhanVien "1" -- "0..*" HDThuePhong
+HDThuePhong "1" -- "1..*" CTHopDong
+Phong "1" -- "0..*" CTHopDong
+CTHopDong "1" -- "1..*" CTKhachO
+KhachHang "1" -- "0..*" CTKhachO
+HDThuePhong "1" -- "0..*" CTSuDungDV
+DichVu "1" -- "0..*" CTSuDungDV
+HDThuePhong "1" -- "0..1" HoaDon
+NhanVien "1" -- "0..*" HoaDon
+HangHoa "0..1" -- "0..*" DichVu
+NhaCC "1" -- "0..*" PhieuNhap
+NhanVien "1" -- "0..*" PhieuNhap
+PhieuNhap "1" -- "1..*" CTPhieuNhap
+HangHoa "1" -- "0..*" CTPhieuNhap
+
+note as GhiChu
+  Lớp nào có hỏi bàn phím thì tự khai báo Scanner riêng:
+  - {static} sc : Scanner = new Scanner(System.in, "UTF-8")
+  Constructor (không tham số / đầy đủ / sao chép), getter/setter
+  và nhap(), xuat(), toLine() lớp nào cũng có nên không vẽ lại.
+end note
+
+@enduml
+
+@startuml KienTruc
+title Kiến trúc chương trình (các tầng và interface DanhSach<T>)
+
+left to right direction
+skinparam classAttributeIconSize 0
+hide empty members
+
+package app {
+  class Main {
+    - {static} sc : Scanner
+    + {static} main(args : String[]) : void
+  }
+  class DuLieu {
+    + {static} dsPhong : DSPhong
+    + {static} dsKhachHang : DSKhachHang
+    + {static} ... : 13 danh sách
+    - {static} TAT_CA : DanhSach<?>[]
+    + {static} docTatCa() : void
+  }
+}
+
+package menu {
+  class MenuPhong {
+    - {static} sc : Scanner
+    + {static} chay() : void
+  }
+  class MenuKhachHang
+  class MenuThuePhong
+  class MenuDichVu
+  class MenuHoaDon
+  class MenuNhanVien
+  class MenuKho
+  class MenuThongKe
+}
+
+package danhsach {
+  class DSPhong {
+    - {static} sc : Scanner
+    - ds : Phong[]
+    - n : int
+    + them() : void
+    + timTheoMa(ma : String) : Phong
+    + sua(ma : String) : void
+    + xoa(ma : String) : void
+    + sinhMa() : String
+  }
+  class DSKhachHang
+  class DSHDThuePhong
+  class DSCTHopDong
+  class DSCTKhachO
+  class DSDichVu
+  class DSCTSuDungDV
+  class DSHoaDon
+  class DSNhanVien
+  class DSNhaCC
+  class DSHangHoa
+  class DSPhieuNhap
+  class DSCTPhieuNhap
+}
+
+package core {
+  interface DanhSach<T> {
+    + getDs() : T[]
+    + getN() : int
+    + them(x : T) : void
+    + xuat() : void
+    + docFile() : void
+    + ghiFile() : void
+  }
+  interface DoiTuong {
+    + nhap() : void
+    + xuat() : void
+    + toLine() : String
+  }
+  class NhapLieu <<utility>> {
+    + {static} nhapChuoi(sc : Scanner, nhac : String) : String
+    + {static} nhapSoNguyen(sc : Scanner, nhac : String, min : int, max : int) : int
+    + {static} nhapSoThuc(sc : Scanner, nhac : String, min : double) : double
+    + {static} nhapNgay(sc : Scanner, nhac : String) : LocalDate
+    + {static} nhapCoKhong(sc : Scanner, nhac : String) : boolean
+    + {static} nhapSdt(sc : Scanner, nhac : String) : String
+    + {static} chonMenu(sc : Scanner, tieuDe : String, mucKhong : String, cacMuc : String...) : int
+  }
+  class DinhDang <<utility>> {
+    + {static} PHAN_CACH : String
+    + {static} ngay(d : LocalDate) : String
+    + {static} docNgay(s : String) : LocalDate
+    + {static} tien(x : double) : String
+    + {static} dong(truong : Object...) : String
+    + {static} tach(line : String) : String[]
+  }
+  class TepTin <<utility>> {
+    + {static} doc(duongDan : String) : String[][]
+    + {static} ghi(duongDan : String, cacDong : String[]) : void
+  }
+  class TimKiem <<utility>> {
+    + {static} chua(goc : String, tuKhoa : String) : boolean
+    + {static} boDau(s : String) : String
+  }
+}
+
+DanhSach <|.. DSPhong : T = Phong
+DanhSach <|.. DSKhachHang : T = KhachHang
+DanhSach <|.. DSHDThuePhong : T = HDThuePhong
+DanhSach <|.. DSCTHopDong : T = CTHopDong
+DanhSach <|.. DSCTKhachO : T = CTKhachO
+DanhSach <|.. DSDichVu : T = DichVu
+DanhSach <|.. DSCTSuDungDV : T = CTSuDungDV
+DanhSach <|.. DSHoaDon : T = HoaDon
+DanhSach <|.. DSNhanVien : T = NhanVien
+DanhSach <|.. DSNhaCC : T = NhaCC
+DanhSach <|.. DSHangHoa : T = HangHoa
+DanhSach <|.. DSPhieuNhap : T = PhieuNhap
+DanhSach <|.. DSCTPhieuNhap : T = CTPhieuNhap
+
+' vẽ đại diện 1 lớp mỗi tầng cho đỡ rối; các lớp cùng tầng quan hệ giống hệt
+Main ..> DuLieu : docTatCa()
+Main ..> MenuPhong : chay()
+MenuPhong ..> DuLieu : dùng danh sách
+DuLieu "1" *-- "13" DanhSach : TAT_CA
+DSPhong ..> TepTin : docFile() / ghiFile()
+Main ..> NhapLieu : truyền sc
+MenuPhong ..> NhapLieu : truyền sc
+DSPhong ..> NhapLieu : truyền sc
+
+note right of NhapLieu
+  Không giữ Scanner nào.
+  Mỗi lớp gọi tự khởi tạo Scanner riêng
+  rồi truyền vào hàm kiểm tra.
+end note
+
+note as GhiChuTang
+  Main, 8 lớp Menu và 12 lớp DS có hỏi bàn phím
+  đều tự khai báo: - {static} sc : Scanner
+  (DSCTPhieuNhap không hỏi bàn phím nên không có).
+end note
+
+@enduml
