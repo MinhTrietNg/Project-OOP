@@ -1,9 +1,11 @@
 import app.DuLieu;
 import core.DinhDang;
+import java.io.ByteArrayInputStream;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import model.CTHopDong;
 import model.CTSuDungDV;
@@ -13,7 +15,8 @@ import model.HangHoa;
 import model.HoaDon;
 import model.NhanVien;
 
-// kiểm thử tự động các hàm có tham số của module 3 (không cần gõ phím, không đọc/ghi file)
+// kiểm thử tự động module 3 (không cần gõ phím, không đọc/ghi file):
+// lập hóa đơn dùng bàn phím giả lập qua System.in
 // chạy: xem mục "Kiểm thử" trong docs/HUONG_DAN_MUC3.md
 public class KiemThuModule3 {
 
@@ -32,6 +35,12 @@ public class KiemThuModule3 {
 
     public static void main(String[] args) throws UnsupportedEncodingException {
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, "UTF-8"));
+        // bàn phím giả lập cho 3 lần dsHoaDon.them(): phải đặt trước lần đầu dùng NhapLieu
+        String banPhim = String.join("\n",
+                "HDTP001", "NV002",      // lần 1: lập hóa đơn cho HDTP001, NV002 lập
+                "HDTP001",               // lần 2: HDTP001 đã có hóa đơn -> dừng ngay
+                "HDTP002", "NV001") + "\n";
+        System.setIn(new ByteArrayInputStream(banPhim.getBytes(StandardCharsets.UTF_8)));
 
         // ----- dữ liệu mẫu, chỉ nằm trong bộ nhớ -----
         DuLieu.dsNhanVien.them(new NhanVien("NV001", "Nguyễn Văn An", "0901234567", "Lễ tân", 8000000));
@@ -51,7 +60,10 @@ public class KiemThuModule3 {
         CTHopDong p2 = new CTHopDong("HDTP001", "P002", 600000, 1, 0);
         p1.tinhThanhTien(hd1.soNgayThue());
         p2.tinhThanhTien(hd1.soNgayThue());
-        CTHopDong[] cacPhong1 = {p1, p2};
+        DuLieu.dsHDThuePhong.them(hd1);
+        DuLieu.dsHDThuePhong.them(hd2);
+        DuLieu.dsCTHopDong.them(p1);
+        DuLieu.dsCTHopDong.them(p2);
 
         // ----- model -----
         kiemTra("sinhMa dịch vụ = số lớn nhất + 1 (DV001, DV002, DV004 -> DV005)",
@@ -109,9 +121,11 @@ public class KiemThuModule3 {
         kiemTra("đổi giá DV001 thì dòng đã ghi vẫn giữ 15000",
                 DuLieu.dsCTSuDungDV.layTheoHopDong("HDTP001")[0].getDonGia() == 15000);
 
-        // ----- lập hóa đơn -----
-        HoaDon h1 = DuLieu.dsHoaDon.lapHoaDon(hd1, "NV002", cacPhong1);
-        kiemTra("lập hóa đơn trả về hóa đơn mã HDON001", h1 != null && h1.getMaHDon().equals("HDON001"));
+        // ----- lập hóa đơn từ bàn phím -----
+        DuLieu.dsHoaDon.them();
+        HoaDon h1 = DuLieu.dsHoaDon.timTheoMa("HDON001");
+        kiemTra("lập hóa đơn cho HDTP001 ra mã HDON001, NV002 lập",
+                h1 != null && h1.getMaHDong().equals("HDTP001") && h1.getMaNV().equals("NV002"));
         kiemTra("tongTienThue = (300000 + 600000) x 2 ngày = 1.800.000", h1.getTongTienThue() == 1800000);
         kiemTra("tongTienDV = 45000 + 50000 = 95000", h1.getTongTienDV() == 95000);
         kiemTra("tongCong = 1.895.000", h1.getTongCong() == 1895000);
@@ -120,13 +134,17 @@ public class KiemThuModule3 {
         kiemTra("soConPhaiTra = 1.895.000 - cọc 500.000", h1.soConPhaiTra(hd1.getTienCoc()) == 1395000);
         kiemTra("timTheoHopDong HDTP001 ra HDON001, HDTP002 ra null",
                 DuLieu.dsHoaDon.timTheoHopDong("HDTP001") == h1 && DuLieu.dsHoaDon.timTheoHopDong("HDTP002") == null);
-        kiemTra("lập hóa đơn lần 2 cho cùng hợp đồng trả null",
-                DuLieu.dsHoaDon.lapHoaDon(hd1, "NV002", cacPhong1) == null && DuLieu.dsHoaDon.getN() == 1);
+        DuLieu.dsHoaDon.them();
+        kiemTra("lập hóa đơn lần 2 cho cùng hợp đồng bị chặn", DuLieu.dsHoaDon.getN() == 1);
+        kiemTra("DSHoaDon.them trả false khi trùng mã HDON001",
+                !DuLieu.dsHoaDon.them(new HoaDon("HDON001", "HDTP002", "NV001", LocalDate.now(), 0, 0, 0,
+                        HoaDon.CHUA_TT)) && DuLieu.dsHoaDon.getN() == 1);
         kiemTra("hợp đồng đã có hóa đơn thì không ghi dịch vụ được",
                 !DuLieu.dsCTSuDungDV.ghiDichVu(hd1, DuLieu.dsDichVu.timTheoMa("DV002"), LocalDate.of(2026, 11, 17), 1));
-        HoaDon h2 = DuLieu.dsHoaDon.lapHoaDon(hd2, "NV001", new CTHopDong[0]);
+        DuLieu.dsHoaDon.them();
+        HoaDon h2 = DuLieu.dsHoaDon.timTheoMa("HDON002");
         kiemTra("hóa đơn thứ 2 mã HDON002, chỉ có tiền dịch vụ 7 x 15000",
-                h2.getMaHDon().equals("HDON002") && h2.getTongCong() == 105000);
+                h2 != null && h2.getTongCong() == 105000);
 
         // ----- thanh toán -----
         kiemTra("dsChuaThanhToan có 2 hóa đơn", DuLieu.dsHoaDon.dsChuaThanhToan().length == 2);

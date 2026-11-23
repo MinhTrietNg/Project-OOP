@@ -46,10 +46,9 @@ public class KiemThuModule1 {
                 dsP.getDs()[1] instanceof PhongDeluxe && dsP.getDs()[2].getLoaiPhong().equals(Phong.SUITE));
 
         PhongDeluxe ngoai = new PhongDeluxe("P009", "202", 700000, 2, 1, Phong.TRONG, "Phố", false, "Hiện đại");
-        dsP.them(ngoai);
-        ngoai.setView("ĐÃ ĐỔI");
-        kiemTra("them(p) lưu bản sao, sửa bên ngoài không ảnh hưởng",
-                ((PhongDeluxe) dsP.timTheoMa("P009")).getView().equals("Phố"));
+        kiemTra("them(p) mã mới trả true", dsP.them(ngoai));
+        kiemTra("them(p) trùng mã P009 trả false, không thêm",
+                !dsP.them(new PhongThuong("P009", "999", 100000, 1, 1, Phong.TRONG)) && dsP.getN() == 4);
 
         kiemTra("toLine PhongThuong", dsP.timTheoMa("P001").toLine().equals("THUONG|P001|101|300000|2|1|TRONG"));
         kiemTra("toLine PhongDeluxe", dsP.timTheoMa("P002").toLine()

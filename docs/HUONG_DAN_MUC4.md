@@ -16,7 +16,7 @@ Tài liệu đọc kèm code của module 4: có gì, học theo khuôn nào, c�
 | `core/` | `TepTin` | Đọc/ghi file dùng chung cho 5 danh sách |
 | | `TimKiem` | Tìm theo tên không phân biệt dấu |
 | `app/` | `DuLieu` | Khai báo 5 danh sách của module 4 |
-| `test/` | `KiemThuModule4` | 32 ca kiểm thử tự động |
+| `test/` | `KiemThuModule4` | 34 ca kiểm thử tự động |
 
 `model/Nguoi.java` là lớp cha dùng chung với `KhachHang` (module 1).
 
@@ -48,7 +48,8 @@ toLine() : DinhDang.dong(các trường theo đúng thứ tự file)
 ```text
 sc (Scanner riêng của lớp, nếu lớp có hỏi bàn phím), ds (mảng), n (số phần tử), getDs(), getN()
 them()      -> new X(); x.nhap(); (NV: trungSdt(sdt, ""), NCC/HangHoa: trungTen(ten, "") thì báo, return); x.setMa(sinhMa()); them(x)
-them(x)     -> ds = Arrays.copyOf(ds, n + 1); ds[n] = new X(x); n++;
+them(x)     -> trùng mã thì return false; ds = Arrays.copyOf(ds, n + 1); ds[n] = x; n++; return true
+               (DSCTPhieuNhap: trùng cặp (maPN, maH) thì return false)
 timTheoMa() -> nhập mã, gọi timTheoMa(ma); null thì báo "Không tìm thấy...", không thì in
 timTheoMa(ma) -> for, equalsIgnoreCase, return ds[i]; hết vòng return null
 sua(), sua(ma) -> timTheoMa; null thì báo; rồi:
@@ -97,7 +98,7 @@ Khuôn C dùng cho: `timTheoTen`, `dsSapHet`, `locTheoKhoangNgay`, `layTheoPhieu
 2. `model/NhanVien.java` — khuôn A + kế thừa: `super(...)`, `super.nhap()`, `super.xuat()`.
 3. `danhsach/DSNhaCC.java` — khuôn B ngắn nhất.
 4. `danhsach/DSHangHoa.java` — thêm `truKho`, `congKho`, sắp xếp.
-5. `danhsach/DSPhieuNhap.java` — **nghiệp vụ chính**: `them()` → `nhapCacDong()` → `lapPhieu(pn, cacDong)`.
+5. `danhsach/DSPhieuNhap.java` — **nghiệp vụ chính**: `them()` → `nhapCacDong()` → B3 lưu phiếu ở cuối `them()`.
 6. `core/TepTin.java`, `core/TimKiem.java` — 2 lớp tiện ích.
 7. `menu/` — menu chỉ gọi hàm, không có logic.
 
@@ -111,7 +112,7 @@ Trong mỗi lớp `DS...` code được chia bằng dòng `===== CÁC HÀM BẮT
 
 | Hàm | Ở đâu | Ý chính |
 |---|---|---|
-| Lập phiếu qua **mảng tạm**, hủy giữa chừng không hỏng kho | `DSPhieuNhap.them/nhapCacDong/lapPhieu` | Gom đủ, hỏi "Lưu phiếu nhập" rồi mới lưu |
+| Lập phiếu qua **mảng tạm**, hủy giữa chừng không hỏng kho | `DSPhieuNhap.them/nhapCacDong` | Gom đủ, hỏi "Lưu phiếu nhập" rồi mới lưu |
 | Chặn 1 hàng 2 lần trong 1 phiếu | `DSPhieuNhap.daCoTrongPhieu` | Duyệt mảng tạm |
 | Sửa qua **bản tạm** | `DSNhanVien.sua(ma)` | Constructor sao chép |
 | Chặn trùng số điện thoại | `DSNhanVien.trungSdt` | Bỏ qua chính người đang sửa |
@@ -130,7 +131,7 @@ Trong mỗi lớp `DS...` code được chia bằng dòng `===== CÁC HÀM BẮT
 
 `Arrays.copyOf(ds, n + 1)` tạo mảng mới dài hơn 1 ô và chép phần tử cũ sang. Xóa ở vị trí `i`: dời các phần tử sau lên (`ds[j] = ds[j + 1]`) rồi `Arrays.copyOf(ds, n - 1)` để cắt ô cuối.
 
-`them(x)` lưu **bản sao** `new NhanVien(nv)`, để bên ngoài sửa `nv` sau đó không ảnh hưởng dữ liệu trong danh sách.
+`them(x)` cất thẳng `x` vào ô cuối (không tạo bản sao); trùng mã thì không thêm và trả `false`.
 
 ### 5.2 Sinh mã
 
@@ -144,11 +145,11 @@ nhapCacDong()   B2  lặp: chọn hàng (0 = kết thúc) -> trùng thì chọn 
                     -> thêm vào MẢNG TẠM -> hỏi "nhập thêm?"
                     mảng rỗng -> hủy, kho không đổi
                     hỏi "Lưu phiếu nhập": k -> "Đã hủy lập phiếu nhập.", kho không đổi
-lapPhieu(pn, cacDong)  B3  mỗi dòng: congKho, hh = timTheoMa(maH), hh.setDonGia(giá mới), thêm chi tiết
-                    tính tổng tiền -> thêm phiếu
+them() (cuối)   B3  mỗi dòng: congKho, hh = timTheoMa(maH), hh.setDonGia(giá mới), thêm chi tiết
+                    tính tổng tiền -> them(pn)
 ```
 
-Chưa lưu gì cho tới B3. Nếu cộng kho ngay ở B2 mà người dùng hủy thì tồn kho sai. `lapPhieu` là hàm public có tham số (giống `lapHopDong`, `lapHoaDon`) nên kiểm thử gọi thẳng được.
+Chưa lưu gì cho tới B3. Nếu cộng kho ngay ở B2 mà người dùng hủy thì tồn kho sai. Kiểm thử gọi đúng `them()` với bàn phím giả lập (mục 6).
 
 ### 5.4 Tìm không dấu
 
@@ -176,7 +177,7 @@ javac -encoding UTF-8 -d out (Get-ChildItem -Recurse src, test -Filter *.java).F
 java -cp out KiemThuModule4
 ```
 
-Kết quả mong đợi: `Kết quả: 32 đạt, 0 trượt`. Lớp test chỉ dùng dữ liệu trong bộ nhớ, không đọc/ghi thư mục `data/`.
+Kết quả mong đợi: `Kết quả: 34 đạt, 0 trượt`. Lớp test chỉ dùng dữ liệu trong bộ nhớ, không đọc/ghi thư mục `data/`. Lập phiếu gọi đúng `DSPhieuNhap.them()` với **bàn phím giả lập**: ngay đầu `main`, trước lần đầu dùng `NhapLieu` (Scanner chung chỉ tạo 1 lần), test gọi `System.setIn(new ByteArrayInputStream(...))` với chuỗi phím gõ sẵn.
 
 Các ca được kiểm: sinh mã (kể cả danh sách rỗng), trừ/cộng kho (đủ, thiếu, mã sai, **trừ đúng bằng tồn**), trùng sđt, tìm không dấu, sắp xếp (đúng thứ tự, không đổi mảng gốc), hàng sắp hết (kể cả bằng ngưỡng), tính thành tiền / tổng tiền, lọc ngày (lấy cả 2 ngày biên), tổng theo tháng, định dạng dòng file, lập phiếu (cộng kho, cập nhật giá, lưu phiếu + chi tiết).
 

@@ -13,7 +13,7 @@ Tài liệu đọc kèm code của module 1: có gì, học theo khuôn nào, c�
 | `danhsach/` | `DSPhong`, `DSKhachHang` | Mỗi lớp quản lý 1 mảng + đọc/ghi 1 file |
 | `menu/` | `MenuPhong`, `MenuKhachHang` | Chỉ hiện menu và gọi hàm của danh sách |
 | `app/` | `DuLieu` | Khai báo `dsPhong`, `dsKhachHang` |
-| `test/` | `KiemThuModule1` | 27 ca kiểm thử tự động |
+| `test/` | `KiemThuModule1` | 30 ca kiểm thử tự động |
 
 Module 1 còn phụ trách **khung chung** (`core/NhapLieu`, `core/DinhDang`, `core/TepTin`, `core/TimKiem`, `app/Main`, `app/DuLieu`) và **ghép code** của 4 module (mục 7).
 
@@ -59,7 +59,7 @@ LỚP CON (PhongDeluxe, KhachHang...)
 ```text
 sc (Scanner riêng của lớp), ds (mảng), n (số phần tử), getDs(), getN()
 them()        -> tạo đối tượng; x.nhap(); if (trungXxx(giaTri, "")) báo, return; x.setMa(sinhMa()); them(x)
-them(x)       -> ds = Arrays.copyOf(ds, n + 1); ds[n] = BẢN SAO của x; n++;
+them(x)       -> trùng mã (timTheoMa != null) thì return false; ds = Arrays.copyOf(ds, n + 1); ds[n] = x; n++; return true
 timTheoMa()   -> nhập mã, gọi timTheoMa(ma), in
 timTheoMa(ma) -> for, equalsIgnoreCase, return ds[i]; hết vòng return null
 sua(), sua(ma)-> nhập vào BẢN TẠM; if (trungXxx(giaTri, ma)) báo, return; hợp lệ rồi mới thay
@@ -93,7 +93,7 @@ Khuôn C dùng cho: `dsPhongTrong`, `locTheoLoai`, `timTheoTen`. Sắp xếp (`s
 2. `model/Phong.java` — lớp abstract, hằng `TRONG`/`DA_THUE`/`THUONG`/`DELUXE`/`SUITE`, phương thức abstract.
 3. `model/PhongThuong.java` → `PhongDeluxe.java` → `PhongSuite.java` — mỗi lớp con cài `getLoaiPhong()` và thêm phần riêng.
 4. `danhsach/DSKhachHang.java` — khuôn B gần như nguyên mẫu `MO_TA_DO_AN.md` mục 2.9.
-5. `danhsach/DSPhong.java` — khuôn B + **đa hình**: `saoChep()`, `taoTheoLoai()`, `docDong()`.
+5. `danhsach/DSPhong.java` — khuôn B + **đa hình**: `them()` (tạo đúng lớp con theo loại), `saoChep()`, `docDong()`.
 6. `menu/MenuPhong.java`, `menu/MenuKhachHang.java` — chỉ gọi hàm, không có logic.
 
 ## 4. Phần nào thuộc gói nào
@@ -107,7 +107,7 @@ Trong mỗi lớp `DS...` code được chia bằng dòng `===== CÁC HÀM BẮT
 | Hàm | Ở đâu | Ý chính |
 |---|---|---|
 | Mảng chứa lẫn 3 loại phòng (đa hình) | `DSPhong` | `Phong[]`, gọi `xuat()`/`toLine()` thì mỗi loại tự chạy bản của mình |
-| Chép đúng lớp con | `DSPhong.saoChep` | `instanceof` + constructor sao chép |
+| Chép đúng lớp con (bản tạm khi sửa) | `DSPhong.saoChep` | `instanceof` + constructor sao chép |
 | Đọc file ra đúng lớp con | `DSPhong.docDong` | Trường đầu dòng là loại phòng |
 | Sửa qua **bản tạm** | `sua(ma)` cả 2 lớp | Nhập lỗi / trùng thì dữ liệu cũ không hỏng |
 | Chặn trùng số phòng, trùng SĐT | `DSPhong.trungTenP`, `DSKhachHang.trungSdt` | `them()` truyền `""`, `sua(ma)` truyền `ma` để bỏ qua chính đối tượng đang sửa |
@@ -124,10 +124,10 @@ Mảng khai báo kiểu cha `Phong[]` nhưng từng ô chứa `PhongThuong`, `Ph
 
 Chỉ có 2 chỗ bắt buộc phải biết loại, vì **constructor không đa hình** (`new` phải ghi rõ lớp):
 
-- `saoChep(p)`: dùng `instanceof` để gọi đúng `new PhongDeluxe((PhongDeluxe) p)`…
-- `docDong(t)`: đọc `t[0]` (`DELUXE` / `SUITE`, còn lại là `THUONG`) để biết tạo lớp nào và đọc thêm mấy trường. Cùng hình dạng với `saoChep` và `taoTheoLoai`: 2 lệnh `if` rồi `return new PhongThuong(...)`.
+- `saoChep(p)`: dùng `instanceof` để gọi đúng `new PhongDeluxe((PhongDeluxe) p)`… Chỉ `sua()` dùng, để tạo bản tạm (mục 5.2).
+- `docDong(t)`: đọc `t[0]` (`DELUXE` / `SUITE`, còn lại là `THUONG`) để biết tạo lớp nào và đọc thêm mấy trường. Cùng hình dạng với `saoChep`: 2 lệnh `if` rồi `return new PhongThuong(...)`.
 
-`taoTheoLoai()` cũng tạo lớp theo lựa chọn của người dùng, rồi mới gọi `p.nhap()` (đa hình: hỏi đúng phần riêng của loại đó).
+`them()` cũng tạo lớp theo lựa chọn của người dùng ngay trong hàm (`if (loai == 1) p = new PhongThuong(); else if ...`), rồi mới gọi `p.nhap()` (đa hình: hỏi đúng phần riêng của loại đó).
 
 ### 5.2 Sửa phòng qua bản tạm
 
@@ -171,9 +171,9 @@ javac -encoding UTF-8 -d out (Get-ChildItem -Recurse src, test -Filter *.java).F
 java -cp out KiemThuModule1
 ```
 
-Kết quả mong đợi: `Kết quả: 27 đạt, 0 trượt`. *(Lưu ý: test ghi `data/phong.txt` và `data/khachhang.txt` để kiểm tra đọc/ghi file; sao lưu trước nếu đang có dữ liệu thật.)*
+Kết quả mong đợi: `Kết quả: 30 đạt, 0 trượt`. *(Lưu ý: test ghi `data/phong.txt` và `data/khachhang.txt` để kiểm tra đọc/ghi file; sao lưu trước nếu đang có dữ liệu thật.)*
 
-Các ca được kiểm: sinh mã (kể cả danh sách rỗng, mã không liên tục), `them(p)` giữ mã và lưu bản sao, mảng chứa đúng lớp con, `toLine()` của 3 loại phòng và khách hàng, phòng trống, đổi tình trạng, trùng số phòng (kể cả bỏ qua chính phòng đang sửa), lọc theo loại, sắp xếp (đúng thứ tự, không đổi mảng gốc), ghi rồi đọc lại file (đúng lớp con), tìm theo SĐT / tên không dấu, xóa bị chặn khi đã có hợp đồng và xóa được khi chưa dùng.
+Các ca được kiểm: sinh mã (kể cả danh sách rỗng, mã không liên tục), `them(p)` giữ mã, trả `true` khi thêm được và `false` khi trùng mã, mảng chứa đúng lớp con, `toLine()` của 3 loại phòng và khách hàng, phòng trống, đổi tình trạng, trùng số phòng (kể cả bỏ qua chính phòng đang sửa), lọc theo loại, sắp xếp (đúng thứ tự, không đổi mảng gốc), ghi rồi đọc lại file (đúng lớp con), tìm theo SĐT / tên không dấu, xóa bị chặn khi đã có hợp đồng và xóa được khi chưa dùng.
 
 ### Chạy chương trình
 
@@ -187,7 +187,7 @@ Thử nhanh: menu 6 thêm nhân viên → menu 1 thêm 3 phòng (mỗi loại 1 
 
 | Vấn đề tìm ra | Hậu quả | Xử lý |
 |---|---|---|
-| Module 2 thêm khách mới rồi lấy **khách cuối mảng**, trong khi `them()` có thể từ chối vì trùng SĐT | Hợp đồng gắn nhầm khách khác | `chonHoacThemKhach` so `getN()` trước/sau, không tăng thì trả `null` |
+| Module 2 thêm khách mới rồi lấy **khách cuối mảng**, trong khi `them()` có thể từ chối vì trùng SĐT | Hợp đồng gắn nhầm khách khác | `chonHoacThemKhach` tự tạo `KhachHang moi`, kiểm tra `trungSdt` trước (trùng thì trả `null`), rồi `them(moi)` và trả đúng `moi` |
 | Sửa giá phòng khi phòng đang thuê | Có thể lo hợp đồng cũ bị đổi tiền | Không ảnh hưởng: `CTHopDong` đã chép `donGia` lúc thuê |
 | Dòng file thiếu trường hoặc sai số | Chương trình dừng khi đọc | `docFile()` bắt lỗi, bỏ qua dòng đó. File do chương trình tự ghi nên mã luôn đúng dạng; không sửa tay file `data/` |
 | Trùng số phòng / SĐT chỉ báo sau khi nhập hết các ô | Bất tiện, không sai dữ liệu | Giữ nguyên cho code đơn giản (giống module 4) |
@@ -210,8 +210,9 @@ Các hàm module 1 cung cấp cho module khác (`MO_TA_DO_AN.md` mục 6.6): `ds
 - **Phương thức abstract dùng làm gì?** `getLoaiPhong()` bắt mọi lớp con tự khai báo mình là loại nào; `toLine()` và thống kê dùng nó mà không cần `instanceof`.
 - **Đa hình ở đâu?** Mảng `Phong[]` chứa 3 loại; `ds[i].xuat()` chạy bản của lớp con. `nhap()`, `xuat()`, `toLine()` đều `@Override`.
 - **Kế thừa ở đâu?** `PhongThuong`/`PhongDeluxe`/`PhongSuite` `extends Phong`; `KhachHang`, `NhanVien` `extends Nguoi`. Còn `Phong` và `Nguoi` `implements DoiTuong` (cài interface, không phải kế thừa lớp).
-- **Vì sao vẫn phải dùng `instanceof`?** Constructor không đa hình: muốn tạo bản sao đúng loại thì phải biết lớp cụ thể.
-- **Vì sao `them(x)` lưu bản sao?** Bên ngoài sửa `x` sau đó không làm đổi dữ liệu trong danh sách (đóng gói).
+- **Vì sao vẫn phải dùng `instanceof`?** Constructor không đa hình: `sua()` muốn tạo bản tạm đúng loại (`saoChep`) thì phải biết lớp cụ thể.
+- **Vì sao mỗi danh sách có 2 hàm `them`?** Đối tượng đến từ 2 nguồn: gõ bàn phím (`them()`: nhập, kiểm tra, sinh mã) hoặc đã có sẵn (`them(x)`: đọc file, do module khác tạo ra). `docFile()` phải dùng `them(x)` vì hàm này không hỏi phím, không sinh mã mới, không đổi dữ liệu nào khác. Đây là nạp chồng (overloading); `them()` cuối cùng gọi lại `them(x)` nên code nới mảng chỉ nằm 1 chỗ.
+- **`them(x)` trả `boolean` để làm gì?** Trùng mã thì không thêm và trả `false`, nên danh sách không có 2 phần tử cùng mã. `them(x)` cất thẳng `x` vào mảng, không tạo bản sao.
 - **Vì sao bỏ thuộc tính doanh thu của phòng?** Tính được từ hóa đơn; lưu sẵn thì mỗi lần lập / thanh toán hóa đơn phải nhớ cập nhật, quên là lệch số.
 - **Ai ghi file khi `capNhatTinhTrang` đổi tình trạng phòng?** Menu đã gọi nghiệp vụ đó (`MenuThuePhong`, `MenuHoaDon`) gọi `DuLieu.dsPhong.ghiFile()`, đúng quy tắc chung "menu ghi file".
 - **Vì sao xóa phòng / khách phải kiểm tra trước?** Hợp đồng, chi tiết khách ở đang giữ mã; xóa thì chứng từ trỏ tới thứ không còn tồn tại.

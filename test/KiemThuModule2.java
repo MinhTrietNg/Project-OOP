@@ -1,15 +1,19 @@
 import app.DuLieu;
+import core.DinhDang;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import model.CTHopDong;
 import model.CTKhachO;
 import model.HDThuePhong;
 import model.HoaDon;
 import model.KhachHang;
+import model.NhanVien;
 import model.Phong;
 import model.PhongDeluxe;
 import model.PhongThuong;
 
-// kiểm thử tự động các hàm có tham số của module 2 (không cần gõ phím)
+// kiểm thử tự động module 2 (không cần gõ phím): lập hợp đồng dùng bàn phím giả lập qua System.in
 // chạy: xem mục "Chạy kiểm thử" trong docs/HUONG_DAN_MUC2.md
 public class KiemThuModule2 {
 
@@ -27,7 +31,24 @@ public class KiemThuModule2 {
     }
 
     public static void main(String[] args) {
+        // bàn phím giả lập cho dsHDThuePhong.them(): phải đặt trước lần đầu dùng NhapLieu
+        // (Scanner toàn cục của NhapLieu được tạo 1 lần, đọc từ System.in lúc đó)
+        String nhan = DinhDang.ngay(LocalDate.now());
+        String tra = DinhDang.ngay(LocalDate.now().plusDays(2));
+        String banPhim = String.join("\n",
+                "KH001",                 // khách đứng tên
+                "NV001",                 // nhân viên lập
+                nhan, tra, "400000",     // ngày nhận, ngày trả (2 ngày), tiền cọc
+                "P001", "2",             // phòng P001, 2 người
+                "KH001", "c", "KH002",   // 2 khách ở P001
+                "P002", "1",             // phòng P002, 1 người
+                "0909999999",            // khách ở P002 chưa có -> thêm mới ngay tại chỗ
+                "Lê Văn Mới", "0909999999", "Huế",
+                "0") + "\n";             // kết thúc chọn phòng
+        System.setIn(new ByteArrayInputStream(banPhim.getBytes(StandardCharsets.UTF_8)));
+
         // ----- dữ liệu mẫu, chỉ nằm trong bộ nhớ -----
+        DuLieu.dsNhanVien.them(new NhanVien("NV001", "Nguyễn Văn An", "0901234567", "Lễ tân", 8000000));
         KhachHang kh1 = new KhachHang();
         kh1.setMaKH("KH001");
         kh1.setHoTen("Nguyễn Văn Minh");
@@ -98,44 +119,40 @@ public class KiemThuModule2 {
                 LocalDate.of(2026, 11, 20), LocalDate.of(2026, 11, 21), 0);
         kiemTra("soNgayThue thuê qua 1 đêm = 1 ngày", hd1Dem.soNgayThue() == 1);
 
-        // ----- lập hợp đồng (giao dịch liên bảng) -----
-        HDThuePhong hd4 = new HDThuePhong("HDTP004", "KH001", "NV001",
-                LocalDate.of(2026, 11, 19), 400000,
-                LocalDate.of(2026, 11, 19), LocalDate.of(2026, 11, 21), 0);
-        CTHopDong ct1 = new CTHopDong("HDTP004", "P001", 300000, 2, 600000);
-        CTHopDong ct2 = new CTHopDong("HDTP004", "P002", 600000, 1, 1200000);
-        CTKhachO ko1 = new CTKhachO("HDTP004", "P001", "KH001");
-        CTKhachO ko2 = new CTKhachO("HDTP004", "P001", "KH002");
-        CTKhachO ko3 = new CTKhachO("HDTP004", "P002", "KH001");
+        // ----- lập hợp đồng từ bàn phím (giao dịch liên bảng) -----
+        DuLieu.dsHDThuePhong.them();
+        System.out.println();
 
-        DuLieu.dsHDThuePhong.lapHopDong(hd4, new CTHopDong[]{ct1, ct2}, new CTKhachO[]{ko1, ko2, ko3});
-
-        kiemTra("lapHopDong lưu thành công hợp đồng HDTP004",
-                DuLieu.dsHDThuePhong.timTheoMa("HDTP004") != null);
-        kiemTra("lapHopDong tính tongTien = 600000 + 1200000 = 1.800.000",
-                DuLieu.dsHDThuePhong.timTheoMa("HDTP004").getTongTien() == 1800000);
-        kiemTra("lapHopDong lưu đủ 2 chi tiết phòng cho HDTP004",
+        HDThuePhong hd4 = DuLieu.dsHDThuePhong.timTheoMa("HDTP004");
+        kiemTra("them() lưu thành công hợp đồng HDTP004", hd4 != null);
+        kiemTra("them() tính tongTien = 300000 x 2 + 600000 x 2 = 1.800.000", hd4.getTongTien() == 1800000);
+        kiemTra("them() lưu đủ 2 chi tiết phòng cho HDTP004",
                 DuLieu.dsCTHopDong.layTheoHopDong("HDTP004").length == 2);
-        kiemTra("lapHopDong lưu đủ 2 khách ở phòng P001 của HDTP004",
+        kiemTra("them() lưu đủ 2 khách ở phòng P001 của HDTP004",
                 DuLieu.dsCTKhachO.layTheoPhong("HDTP004", "P001").length == 2);
-        kiemTra("lapHopDong lưu đủ 3 lượt khách ở trong toàn bộ HDTP004",
+        kiemTra("them() lưu đủ 3 lượt khách ở trong toàn bộ HDTP004",
                 DuLieu.dsCTKhachO.layTheoHopDong("HDTP004").length == 3);
-        kiemTra("lapHopDong đổi trạng thái P001, P002 sang DA_THUE",
+        kiemTra("them() đổi trạng thái P001, P002 sang DA_THUE",
                 DuLieu.dsPhong.timTheoMa("P001").getTinhTrang().equals(Phong.DA_THUE)
                 && DuLieu.dsPhong.timTheoMa("P002").getTinhTrang().equals(Phong.DA_THUE));
         kiemTra("... phòng P003 không thuê vẫn giữ TRONG",
                 DuLieu.dsPhong.timTheoMa("P003").getTinhTrang().equals(Phong.TRONG));
+        kiemTra("khách mới nhập ngay khi lập hợp đồng được thêm với mã KH003",
+                DuLieu.dsKhachHang.timTheoMa("KH003") != null
+                && DuLieu.dsKhachHang.timTheoMa("KH003").getHoTen().equals("Lê Văn Mới"));
+        kiemTra("... và được ghi là khách ở phòng P002",
+                DuLieu.dsCTKhachO.timTheoKhoa("HDTP004", "P002", "KH003") != null);
 
-        // ----- chống trùng khóa chính ở 2 bảng chi tiết -----
-        int soCTTruoc = DuLieu.dsCTHopDong.getN();
-        DuLieu.dsCTHopDong.them(new CTHopDong("HDTP004", "P001", 300000, 1, 600000));
-        kiemTra("DSCTHopDong chặn trùng cặp khóa (HDTP004, P001)",
-                DuLieu.dsCTHopDong.getN() == soCTTruoc);
-
-        int soKOTruoc = DuLieu.dsCTKhachO.getN();
-        DuLieu.dsCTKhachO.them(new CTKhachO("HDTP004", "P001", "KH001"));
-        kiemTra("DSCTKhachO chặn trùng bộ 3 khóa (HDTP004, P001, KH001)",
-                DuLieu.dsCTKhachO.getN() == soKOTruoc);
+        // ----- chống trùng khóa ở them(T) -----
+        kiemTra("DSCTHopDong.them trả false khi trùng cặp khóa (HDTP004, P001)",
+                !DuLieu.dsCTHopDong.them(new CTHopDong("HDTP004", "P001", 300000, 1, 600000))
+                && DuLieu.dsCTHopDong.layTheoHopDong("HDTP004").length == 2);
+        kiemTra("DSCTKhachO.them trả false khi trùng bộ 3 khóa (HDTP004, P001, KH001)",
+                !DuLieu.dsCTKhachO.them(new CTKhachO("HDTP004", "P001", "KH001"))
+                && DuLieu.dsCTKhachO.layTheoHopDong("HDTP004").length == 3);
+        kiemTra("DSHDThuePhong.them trả false khi trùng mã HDTP001",
+                !DuLieu.dsHDThuePhong.them(new HDThuePhong("HDTP001", "KH002", "NV001",
+                        LocalDate.of(2026, 1, 1), 0, LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 2), 0)));
 
         // ----- tra cứu theo khóa, theo phòng & theo hợp đồng -----
         kiemTra("timTheoKhoa (HDTP004, P002) tìm đúng chi tiết phòng",
@@ -168,9 +185,9 @@ public class KiemThuModule2 {
         kiemTra("toLine HDThuePhong đúng thứ tự trường và ngày dd/MM/yyyy",
                 hd1.toLine().equals("HDTP001|KH001|NV001|10/11/2026|500000|10/11/2026|13/11/2026|0"));
         kiemTra("toLine CTHopDong đúng thứ tự trường",
-                ct1.toLine().equals("HDTP004|P001|300000|2|600000"));
+                DuLieu.dsCTHopDong.timTheoKhoa("HDTP004", "P001").toLine().equals("HDTP004|P001|300000|2|600000"));
         kiemTra("toLine CTKhachO đúng thứ tự trường",
-                ko1.toLine().equals("HDTP004|P001|KH001"));
+                DuLieu.dsCTKhachO.timTheoKhoa("HDTP004", "P001", "KH001").toLine().equals("HDTP004|P001|KH001"));
 
         System.out.println();
         System.out.println("Kết quả: " + dat + " đạt, " + truot + " trượt");

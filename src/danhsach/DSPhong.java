@@ -31,9 +31,18 @@ public class DSPhong implements DanhSach<Phong> {
 
     // ================= CÁC HÀM BẮT BUỘC (gói 50%) =================
 
-    // Thêm (không tham số): chọn loại phòng, nhập, tự sinh mã
+    // Thêm (không tham số): chọn loại phòng, tạo đúng lớp con, nhập, tự sinh mã
     public void them() {
-        Phong p = taoTheoLoai();
+        System.out.println("  1. Thường   2. Deluxe   3. Suite");
+        int loai = NhapLieu.nhapSoNguyen("Chọn loại phòng", 1, 3);
+        Phong p;
+        if (loai == 1) {
+            p = new PhongThuong();
+        } else if (loai == 2) {
+            p = new PhongDeluxe();
+        } else {
+            p = new PhongSuite();
+        }
         p.nhap();
         // thêm mới: chưa có mã nên không bỏ qua ai
         if (trungTenP(p.getTenP(), "")) {
@@ -46,12 +55,16 @@ public class DSPhong implements DanhSach<Phong> {
         System.out.println("Đã thêm phòng " + p.getMaP());
     }
 
-    // Thêm (có tham số): nới mảng ra 1 rồi đặt BẢN SAO vào cuối
+    // Thêm (có tham số): đối tượng đã có sẵn (đọc file, kiểm thử); trùng mã thì không thêm
     @Override
-    public void them(Phong p) {
+    public boolean them(Phong p) {
+        if (timTheoMa(p.getMaP()) != null) {
+            return false;
+        }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = saoChep(p);
+        ds[n] = p;
         n++;
+        return true;
     }
 
     public void timTheoMa() {
@@ -255,20 +268,8 @@ public class DSPhong implements DanhSach<Phong> {
 
     // ================= HÀM PHỤ =================
 
-    // hỏi loại rồi tạo đúng lớp con (chưa nhập gì)
-    private Phong taoTheoLoai() {
-        System.out.println("  1. Thường   2. Deluxe   3. Suite");
-        int chon = NhapLieu.nhapSoNguyen("Chọn loại phòng", 1, 3);
-        if (chon == 2) {
-            return new PhongDeluxe();
-        }
-        if (chon == 3) {
-            return new PhongSuite();
-        }
-        return new PhongThuong();
-    }
-
-    // chép bằng constructor sao chép của đúng lớp con (instanceof để biết p thật sự là loại nào)
+    // sua() nhập vào bản tạm: chép bằng constructor sao chép của đúng lớp con
+    // (instanceof để biết p thật sự là loại nào)
     private Phong saoChep(Phong p) {
         if (p instanceof PhongDeluxe) {
             return new PhongDeluxe((PhongDeluxe) p);

@@ -44,12 +44,16 @@ public class DSNhanVien implements DanhSach<NhanVien> {
         System.out.println("Đã thêm nhân viên " + nv.getMaNV());
     }
 
-    // Thêm (có tham số): nới mảng ra 1 rồi đặt BẢN SAO vào cuối
+    // Thêm (có tham số): đối tượng đã có sẵn (đọc file, kiểm thử); trùng mã thì không thêm
     @Override
-    public void them(NhanVien nv) {
+    public boolean them(NhanVien nv) {
+        if (timTheoMa(nv.getMaNV()) != null) {
+            return false;
+        }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new NhanVien(nv);
+        ds[n] = nv;
         n++;
+        return true;
     }
 
     public void timTheoMa() {

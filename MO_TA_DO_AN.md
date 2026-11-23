@@ -158,6 +158,8 @@ Các hàm bắt buộc:
 
 Sáu hàm chung của mọi danh sách (`getDs()`, `getN()`, `them(x)`, `xuat()`, `docFile()`, `ghiFile()`) được khai báo trong interface `core.DanhSach<T>`. Mỗi lớp danh sách `implements DanhSach<X>` (ví dụ `DSKhachHang implements DanhSach<KhachHang>`) và ghi `@Override` trên 6 hàm đó.
 
+Vì sao có 2 hàm `them`: đối tượng đến từ 2 nguồn. `them()` cho đối tượng gõ từ bàn phím (nhập, kiểm tra, sinh mã, rồi cuối cùng gọi `them(x)`); `them(x)` cho đối tượng đã có sẵn (đọc file, do nghiệp vụ của module khác tạo ra). `docFile()` phải dùng `them(x)` vì hàm này không làm gì thêm ngoài cất vào mảng; nếu đọc file mà chạy cả nghiệp vụ thì sẽ cộng kho lại, đổi tình trạng phòng lại. `them(x)` trả `boolean`: trùng khóa (mã, hoặc bộ khóa của danh sách chi tiết) thì không thêm và trả `false`; riêng `DSCTSuDungDV` không chặn vì 1 hợp đồng được dùng cùng dịch vụ nhiều lần.
+
 Mẫu đầy đủ (`DSKhachHang`):
 
 ```java
@@ -195,11 +197,16 @@ public class DSKhachHang implements DanhSach<KhachHang> {
         System.out.println("Đã thêm khách hàng " + kh.getMaKH());
     }
 
-    // Thêm (có tham số)
+    // Thêm (có tham số): đối tượng đã có sẵn (đọc file, module khác tạo); trùng mã thì không thêm
     @Override
-    public void them(KhachHang kh) {
+    public boolean them(KhachHang kh) {
+        if (timTheoMa(kh.getMaKH()) != null) {
+            return false;
+        }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n++] = new KhachHang(kh);
+        ds[n] = kh;
+        n++;
+        return true;
     }
 
     // Tìm theo mã (không tham số): nhập mã rồi in kết quả
@@ -315,18 +322,7 @@ public class DSKhachHang implements DanhSach<KhachHang> {
 Với lớp có lớp con (`DSPhong`):
 
 - `them()` hỏi loại phòng trước, tạo đúng lớp con rồi mới gọi `nhap()`.
-- `them(Phong p)` chép bằng constructor sao chép của đúng lớp con:
-
-  ```java
-  ds = Arrays.copyOf(ds, n + 1);
-  if (p instanceof PhongDeluxe) {
-      ds[n++] = new PhongDeluxe((PhongDeluxe) p);
-  } else if (p instanceof PhongSuite) {
-      ds[n++] = new PhongSuite((PhongSuite) p);
-  } else {
-      ds[n++] = new PhongThuong((PhongThuong) p);
-  }
-  ```
+- `them(Phong p)` giống `them(KhachHang kh)`: cất thẳng `p` vào mảng `Phong[]` (chứa được mọi lớp con), trùng mã thì trả `false`.
 
 - `docFile()` đọc trường đầu (`t[0]` là `THUONG` / `DELUXE` / `SUITE`) để biết tạo lớp con nào.
 

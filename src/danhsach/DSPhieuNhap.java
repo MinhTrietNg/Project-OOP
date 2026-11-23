@@ -33,7 +33,7 @@ public class DSPhieuNhap implements DanhSach<PhieuNhap> {
     // ================= LẬP PHIẾU NHẬP (nghiệp vụ mục 6.4) =================
     //   B1. them()        : chọn nhà cung cấp, nhân viên; tạo đầu phiếu
     //   B2. nhapCacDong() : nhập từng mặt hàng vào MẢNG TẠM, chưa đụng tới kho
-    //   B3. lapPhieu(...) : cộng kho, cập nhật giá nhập, lưu chi tiết và phiếu
+    //   B3. chốt          : cộng kho, cập nhật giá nhập, lưu chi tiết và phiếu
     // Hủy ở B1, B2 hoặc trả lời "k" khi hỏi lưu thì chưa có gì bị lưu, nên kho không bị cộng sai.
     // Menu gọi xong thì ghi 3 file: phiếu nhập, chi tiết phiếu nhập, hàng hóa.
 
@@ -74,8 +74,15 @@ public class DSPhieuNhap implements DanhSach<PhieuNhap> {
             return;
         }
 
-        // ----- B3 -----
-        lapPhieu(pn, cacDong);
+        // ----- B3 ----- tới đây dữ liệu đã đầy đủ, mới thật sự thay đổi kho
+        for (CTPhieuNhap ct : cacDong) {
+            DuLieu.dsHangHoa.congKho(ct.getMaH(), ct.getSl());
+            HangHoa hh = DuLieu.dsHangHoa.timTheoMa(ct.getMaH());
+            hh.setDonGia(ct.getDonGiaNhap());
+            DuLieu.dsCTPhieuNhap.them(ct);
+        }
+        pn.tinhTongTien(cacDong);
+        them(pn);
         System.out.println("Đã lập phiếu nhập " + pn.getMaPN() + ":");
         xuatChiTiet(pn.getMaPN());
     }
@@ -118,24 +125,16 @@ public class DSPhieuNhap implements DanhSach<PhieuNhap> {
         return false;
     }
 
-    // B3 (có tham số, module khác / kiểm thử gọi được):
-    // tới đây dữ liệu đã đầy đủ, mới thật sự thay đổi kho
-    public void lapPhieu(PhieuNhap pn, CTPhieuNhap[] cacDong) {
-        for (CTPhieuNhap ct : cacDong) {
-            DuLieu.dsHangHoa.congKho(ct.getMaH(), ct.getSl());
-            HangHoa hh = DuLieu.dsHangHoa.timTheoMa(ct.getMaH());
-            hh.setDonGia(ct.getDonGiaNhap());
-            DuLieu.dsCTPhieuNhap.them(ct);
-        }
-        pn.tinhTongTien(cacDong);
-        them(pn);
-    }
-
+    // Thêm (có tham số): đối tượng đã có sẵn (đọc file, kiểm thử); trùng mã thì không thêm
     @Override
-    public void them(PhieuNhap pn) {
+    public boolean them(PhieuNhap pn) {
+        if (timTheoMa(pn.getMaPN()) != null) {
+            return false;
+        }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new PhieuNhap(pn);
+        ds[n] = pn;
         n++;
+        return true;
     }
 
     // ================= CÁC HÀM BẮT BUỘC KHÁC (gói 50%) =================

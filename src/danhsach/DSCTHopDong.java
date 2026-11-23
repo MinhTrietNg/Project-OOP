@@ -24,17 +24,17 @@ public class DSCTHopDong implements DanhSach<CTHopDong> {
 
     // ================= CÁC HÀM BẮT BUỘC (Danh sách chi tiết - mục 2.9) =================
 
-    // Thêm (có tham số): chỉ có bản có tham số
-    // Kiểm tra tránh trùng cặp khóa (maHDong, maP) trước khi nới mảng thêm vào cuối.
+    // Thêm (có tham số): chỉ có bản có tham số, chi tiết được tạo trong DSHDThuePhong.them()
+    // trùng cặp khóa (maHDong, maP) thì không thêm, trả false
     @Override
-    public void them(CTHopDong ct) {
+    public boolean them(CTHopDong ct) {
         if (timTheoKhoa(ct.getMaHDong(), ct.getMaP()) != null) {
-            System.out.println("Phòng " + ct.getMaP() + " đã có trong hợp đồng " + ct.getMaHDong());
-            return;
+            return false;
         }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new CTHopDong(ct);
+        ds[n] = ct;
         n++;
+        return true;
     }
 
     // Sửa & Xóa (không tham số & có tham số):

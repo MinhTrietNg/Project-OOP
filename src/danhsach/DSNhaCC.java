@@ -40,11 +40,16 @@ public class DSNhaCC implements DanhSach<NhaCC> {
         System.out.println("Đã thêm nhà cung cấp " + ncc.getMaNCC());
     }
 
+    // Thêm (có tham số): đối tượng đã có sẵn (đọc file, kiểm thử); trùng mã thì không thêm
     @Override
-    public void them(NhaCC ncc) {
+    public boolean them(NhaCC ncc) {
+        if (timTheoMa(ncc.getMaNCC()) != null) {
+            return false;
+        }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new NhaCC(ncc);
+        ds[n] = ncc;
         n++;
+        return true;
     }
 
     public void timTheoMa() {

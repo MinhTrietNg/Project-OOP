@@ -36,8 +36,8 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
     //   B1. them()     : tìm/thêm khách đứng tên, chọn NV, nhập ngày nhận/trả, tiền cọc
     //   B2. Chọn phòng : chọn >= 1 phòng TRONG, nhập slNguoi, chốt donGia và thanhTien
     //   B3. nhapKhachO : mỗi phòng chọn 1..slNguoi khách ở (chưa có thì thêm mới)
-    //   B4. lapHopDong(hd, dsCT, dsKO): lưu hợp đồng, chi tiết HĐ, chi tiết khách ở và đổi phòng -> DA_THUE
-    // Gõ 0 ở bất kỳ bước nào thì hủy, các danh sách giữ nguyên.
+    //   B4. Chốt       : lưu hợp đồng, chi tiết HĐ, chi tiết khách ở và đổi phòng -> DA_THUE
+    // Gõ 0 ở bất kỳ bước nào thì hủy; tới B4 mới đụng vào các danh sách nên hủy giữa chừng không lưu gì.
     // Menu gọi xong thì ghi file: hdthuephong, cthopdong, ctkhacho, khachhang, phong.
 
     // Thêm (không tham số): lập hợp đồng thuê phòng từ bàn phím
@@ -105,8 +105,13 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
                 continue;
             }
 
-            // Nhập chi tiết thuê cho phòng p
-            CTHopDong ct = taoCTHopDong(hd, p, soNgay);
+            // Tạo chi tiết thuê cho phòng p: giá chép từ phòng, nhập số người, tính thành tiền
+            CTHopDong ct = new CTHopDong();
+            ct.setMaHDong(hd.getMaHDong());
+            ct.setMaP(p.getMaP());
+            ct.setDonGia(p.getDonGia());
+            ct.nhap(p.getSoNguoiToiDa());
+            ct.tinhThanhTien(soNgay);
             dsCT = Arrays.copyOf(dsCT, dsCT.length + 1);
             dsCT[dsCT.length - 1] = ct;
 
@@ -118,8 +123,16 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
             }
         }
 
-        // 7. Chốt dữ liệu vào các danh sách
-        lapHopDong(hd, dsCT, dsKO);
+        // 7. Chốt: tính tổng tiền, lưu hợp đồng, chi tiết phòng, khách ở; đổi phòng sang DA_THUE
+        hd.tinhTongTien(dsCT);
+        them(hd);
+        for (CTHopDong ct : dsCT) {
+            DuLieu.dsCTHopDong.them(ct);
+            DuLieu.dsPhong.capNhatTinhTrang(ct.getMaP(), Phong.DA_THUE);
+        }
+        for (CTKhachO ko : dsKO) {
+            DuLieu.dsCTKhachO.them(ko);
+        }
         System.out.println("Đã lập hợp đồng " + hd.getMaHDong() + " thành công!");
     }
 
@@ -146,20 +159,6 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
         return dsKO;
     }
 
-    // Hàm có tham số: tính tổng tiền, lưu hợp đồng, các chi tiết phòng, khách ở
-    // và đổi tình trạng phòng sang DA_THUE
-    public void lapHopDong(HDThuePhong hd, CTHopDong[] dsCT, CTKhachO[] dsKO) {
-        hd.tinhTongTien(dsCT);   // tính trước khi them() vì them() lưu bản sao
-        them(hd);
-        for (CTHopDong ct : dsCT) {
-            DuLieu.dsCTHopDong.them(ct);
-            DuLieu.dsPhong.capNhatTinhTrang(ct.getMaP(), Phong.DA_THUE);
-        }
-        for (CTKhachO ko : dsKO) {
-            DuLieu.dsCTKhachO.them(ko);
-        }
-    }
-
     // Hàm phụ trợ: phòng maP đã có trong mảng chi tiết đang lập chưa
     private boolean daChonPhong(CTHopDong[] dsCT, String maP) {
         for (CTHopDong ct : dsCT) {
@@ -180,17 +179,6 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
         return false;
     }
 
-    // Hàm phụ trợ: tạo chi tiết thuê cho phòng p (giá chép từ phòng, nhập số người, tính thành tiền)
-    private CTHopDong taoCTHopDong(HDThuePhong hd, Phong p, long soNgay) {
-        CTHopDong ct = new CTHopDong();
-        ct.setMaHDong(hd.getMaHDong());
-        ct.setMaP(p.getMaP());
-        ct.setDonGia(p.getDonGia());
-        ct.nhap(p.getSoNguoiToiDa());
-        ct.tinhThanhTien(soNgay);
-        return ct;
-    }
-
     // Hàm phụ trợ: tìm khách theo mã hoặc SĐT, nếu chưa có thì cho thêm mới ngay tại chỗ
     private KhachHang chonHoacThemKhach(String vaiTro) {
         String tuKhoa = NhapLieu.nhapChuoi("Nhập mã KH hoặc SĐT của " + vaiTro + " (0 để hủy)");
@@ -205,25 +193,31 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
             System.out.println("  -> Đã chọn khách: " + kh.getMaKH() + " - " + kh.getHoTen());
             return kh;
         }
-        System.out.println("  Chưa có khách hàng này, tiến hành thêm khách mới:");
-        int truoc = DuLieu.dsKhachHang.getN();
-        DuLieu.dsKhachHang.them();
-        // them() có thể từ chối (trùng SĐT), khi đó không được lấy nhầm khách cuối mảng
-        if (DuLieu.dsKhachHang.getN() == truoc) {
+        System.out.println("  Chưa có khách hàng này, nhập thông tin khách mới:");
+        KhachHang moi = new KhachHang();
+        moi.nhap();
+        if (DuLieu.dsKhachHang.trungSdt(moi.getSdt(), "")) {
+            System.out.println("  Số điện thoại đã có khách khác dùng, không thêm.");
             return null;
         }
-        KhachHang[] dsKH = DuLieu.dsKhachHang.getDs();
-        return dsKH[dsKH.length - 1];
+        moi.setMaKH(DuLieu.dsKhachHang.sinhMa());
+        DuLieu.dsKhachHang.them(moi);
+        System.out.println("  -> Đã thêm khách: " + moi.getMaKH() + " - " + moi.getHoTen());
+        return moi;
     }
 
     // ================= CÁC HÀM BẮT BUỘC (gói 50%) =================
 
-    // Thêm (có tham số): nới mảng ds thêm 1 phần tử và sao chép đối tượng hd vào cuối mảng
+    // Thêm (có tham số): đối tượng đã có sẵn (đọc file, kiểm thử); trùng mã thì không thêm
     @Override
-    public void them(HDThuePhong hd) {
+    public boolean them(HDThuePhong hd) {
+        if (timTheoMa(hd.getMaHDong()) != null) {
+            return false;
+        }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new HDThuePhong(hd);
+        ds[n] = hd;
         n++;
+        return true;
     }
 
     // Tìm theo mã (không tham số): nhập mã từ bàn phím rồi in kết quả ra màn hình

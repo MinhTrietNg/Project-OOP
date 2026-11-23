@@ -22,12 +22,19 @@ public class DSCTPhieuNhap implements DanhSach<CTPhieuNhap> {
         return n;
     }
 
-    // chỉ có bản có tham số: chi tiết được tạo bên trong DSPhieuNhap.lapPhieu()
+    // chỉ có bản có tham số: chi tiết được tạo bên trong DSPhieuNhap.them()
+    // 1 phiếu không có 2 dòng cùng mặt hàng: trùng cặp (maPN, maH) thì không thêm, trả false
     @Override
-    public void them(CTPhieuNhap ct) {
+    public boolean them(CTPhieuNhap ct) {
+        for (int i = 0; i < n; i++) {
+            if (ds[i].getMaPN().equalsIgnoreCase(ct.getMaPN()) && ds[i].getMaH().equalsIgnoreCase(ct.getMaH())) {
+                return false;
+            }
+        }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new CTPhieuNhap(ct);
+        ds[n] = ct;
         n++;
+        return true;
     }
 
     // lấy các mặt hàng của 1 phiếu (mục 6.6)

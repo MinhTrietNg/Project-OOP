@@ -24,17 +24,17 @@ public class DSCTKhachO implements DanhSach<CTKhachO> {
 
     // ================= CÁC HÀM BẮT BUỘC (Danh sách chi tiết - mục 2.9) =================
 
-    // Thêm (có tham số):
-    // Kiểm tra tránh trùng bộ 3 khóa (maHDong, maP, maKH) trước khi nới mảng thêm vào cuối.
+    // Thêm (có tham số): chỉ có bản có tham số, chi tiết được tạo trong DSHDThuePhong.them()
+    // trùng bộ 3 khóa (maHDong, maP, maKH) thì không thêm, trả false
     @Override
-    public void them(CTKhachO ct) {
+    public boolean them(CTKhachO ct) {
         if (timTheoKhoa(ct.getMaHDong(), ct.getMaP(), ct.getMaKH()) != null) {
-            System.out.println("Khách " + ct.getMaKH() + " đã được ghi nhận ở phòng " + ct.getMaP() + " trong hợp đồng này.");
-            return;
+            return false;
         }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new CTKhachO(ct);
+        ds[n] = ct;
         n++;
+        return true;
     }
 
     // Sửa & Xóa (không tham số & có tham số):

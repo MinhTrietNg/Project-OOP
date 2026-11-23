@@ -22,7 +22,8 @@ public class MenuThongKe {
                     "Nhập hàng theo nhà cung cấp",
                     "Phiếu nhập theo nhân viên",
                     "Nhân viên theo chức vụ",
-                    "Doanh thu theo dịch vụ");
+                    "Doanh thu theo dịch vụ",
+                    "Thu chi theo quý");
             switch (chon) {
                 case 1: doanhThuTheoThangNam(); break;
                 case 2: tinhTrangPhongTheoLoai(); break;
@@ -34,6 +35,7 @@ public class MenuThongKe {
                 case 8: DuLieu.dsPhieuNhap.thongKeTheoNhanVien(); break;
                 case 9: DuLieu.dsNhanVien.thongKeTheoChucVu(); break;
                 case 10: DuLieu.dsCTSuDungDV.thongKeTheoDichVu(); break;
+                case 11: thuChiTheoQuy(); break;
                 default:
                     return;
             }
@@ -57,6 +59,29 @@ public class MenuThongKe {
             }
         }
         System.out.println("Doanh thu: " + DinhDang.tien(tong));
+    }
+
+    // tổng thu (hóa đơn) và tổng chi (phiếu nhập) theo từng quý của 1 năm, kèm lợi nhuận
+    // quý của tháng m: (m - 1) / 3 -> 0..3, vd tháng 7 -> (7 - 1) / 3 = 2 -> Q3
+    private static void thuChiTheoQuy() {
+        int nam = NhapLieu.nhapSoNguyen("Năm", 2000, 2100);
+        double[] thu = new double[4];
+        double[] chi = new double[4];
+
+        // TODO(human): cộng dồn vào thu[] và chi[] theo quý
+
+        double tongThu = 0;
+        double tongChi = 0;
+        System.out.println("----- THU CHI NĂM " + nam + " -----");
+        System.out.println(String.format("%-6s | %18s | %18s | %18s", "Quý", "Tổng thu", "Tổng chi", "Lợi nhuận"));
+        for (int q = 0; q < 4; q++) {
+            System.out.println(String.format("%-6s | %18s | %18s | %18s", "Q" + (q + 1),
+                    DinhDang.tien(thu[q]), DinhDang.tien(chi[q]), DinhDang.tien(thu[q] - chi[q])));
+            tongThu += thu[q];
+            tongChi += chi[q];
+        }
+        System.out.println(String.format("%-6s | %18s | %18s | %18s", "Cả năm",
+                DinhDang.tien(tongThu), DinhDang.tien(tongChi), DinhDang.tien(tongThu - tongChi)));
     }
 
     // đếm số phòng TRONG / DA_THUE của từng loại (mục 6.4)

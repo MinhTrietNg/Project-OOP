@@ -10,8 +10,8 @@ public interface DanhSach<T> {
     // số phần tử
     int getN();
 
-    // thêm 1 phần tử (lưu bản sao), dùng khi đọc file và khi module khác thêm vào
-    void them(T x);
+    // thêm 1 phần tử đã có sẵn (đọc file, module khác tạo ra); trùng khóa thì không thêm, trả false
+    boolean them(T x);
 
     // in toàn bộ danh sách, mỗi phần tử 1 dòng
     void xuat();

@@ -54,10 +54,10 @@ Thư mục `test/` có 4 lớp kiểm thử tự động, mỗi lớp ứng vớ
 
 ```powershell
 javac -encoding UTF-8 -d out (Get-ChildItem -Recurse src, test -Filter *.java).FullName
-java -cp out KiemThuModule1   # 29 ca
-java -cp out KiemThuModule2   # 25 ca
-java -cp out KiemThuModule3   # 49 ca
-java -cp out KiemThuModule4   # 32 ca
+java -cp out KiemThuModule1   # 30 ca
+java -cp out KiemThuModule2   # 28 ca
+java -cp out KiemThuModule3   # 50 ca
+java -cp out KiemThuModule4   # 34 ca
 ```
 
 Dòng cuối của mỗi lớp in ra `Kết quả: x đạt, 0 trượt`.

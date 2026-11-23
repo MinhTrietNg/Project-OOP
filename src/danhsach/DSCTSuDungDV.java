@@ -31,11 +31,13 @@ public class DSCTSuDungDV implements DanhSach<CTSuDungDV> {
 
     // ================= CÁC HÀM BẮT BUỘC (gói 50%) =================
 
+    // không chặn trùng: 1 hợp đồng được dùng cùng 1 dịch vụ nhiều lần, nhiều ngày khác nhau
     @Override
-    public void them(CTSuDungDV ct) {
+    public boolean them(CTSuDungDV ct) {
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new CTSuDungDV(ct);
+        ds[n] = ct;
         n++;
+        return true;
     }
 
     // lấy các lần dùng dịch vụ của 1 hợp đồng (mục 6.6)

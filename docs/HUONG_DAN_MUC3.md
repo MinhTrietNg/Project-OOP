@@ -16,7 +16,7 @@ Module 3 viết theo đúng 3 khuôn của module 4 (`HUONG_DAN_MUC4.md` mục 2
 | | `DSHoaDon` | Chứng từ + **nghiệp vụ trả phòng / lập hóa đơn / thanh toán** |
 | `menu/` | `MenuDichVu`, `MenuHoaDon` | Chỉ hiện menu và gọi hàm của danh sách |
 | `app/` | `DuLieu` | Khai báo 3 danh sách của module 3 |
-| `test/` | `KiemThuModule3` | 49 ca kiểm thử tự động |
+| `test/` | `KiemThuModule3` | 50 ca kiểm thử tự động |
 
 3 lớp model đều `implements DoiTuong` (interface trong `core/`), nên đều phải có `nhap()`, `xuat()`, `toLine()`.
 
@@ -79,7 +79,8 @@ Phần **luôn giống nhau** ở cả 3 lớp:
 ```text
 sc = new Scanner(System.in, "UTF-8") (Scanner riêng của lớp);  FILE = "data/xxx.txt";
 X[] ds = new X[0];  int n = 0;  getDs(), getN()
-them(x)   -> ds = Arrays.copyOf(ds, n + 1); ds[n] = new X(x); n++;      (lưu BẢN SAO)
+them(x)   -> trùng mã thì return false; ds = Arrays.copyOf(ds, n + 1); ds[n] = x; n++; return true
+             (DSCTSuDungDV không chặn trùng: 1 hợp đồng dùng cùng dịch vụ nhiều lần, nhiều ngày)
 xuat()    -> rỗng thì "Danh sách trống." rồi return; không thì for in từng phần tử
 docFile() -> ds rỗng, n = 0; for (String[] t : TepTin.doc(FILE)) { try { them(new X(t[0], ...)); }
              catch (Exception e) { in "Bỏ qua 1 dòng lỗi" } }
@@ -136,24 +137,23 @@ for (DichVu dv : DuLieu.dsDichVu.getDs()) {     // vòng ngoài: từng dịch v
 
 ### Khuôn D — nghiệp vụ 2 tầng (hàm hỏi + hàm làm)
 
-Mỗi nghiệp vụ có **cặp hàm cùng tên**, giống `lapHopDong` (module 2) và `lapPhieu` (module 4):
+Ghi dịch vụ và thanh toán có **cặp hàm cùng tên** (nạp chồng):
 
 ```text
 hàm KHÔNG tham số (hỏi)          hàm CÓ tham số (làm)
 -------------------------------  ------------------------------------------------
 nhập mã, tìm, kiểm tra, chọn     kiểm tra lại các điều kiện quan trọng
-gặp sai thì báo rồi return       sai thì báo và trả false / null, KHÔNG đổi gì
-đủ thứ rồi mới gọi hàm làm  -->  đổi dữ liệu (trừ kho, thêm chi tiết, đổi phòng...)
-in kết quả                       trả true / đối tượng vừa tạo
+gặp sai thì báo rồi return       sai thì báo và trả false, KHÔNG đổi gì
+đủ thứ rồi mới gọi hàm làm  -->  đổi dữ liệu (trừ kho, thêm chi tiết, đổi trạng thái...)
+in kết quả                       trả true
 ```
 
 | Nghiệp vụ | Hàm hỏi | Hàm làm |
 |---|---|---|
 | Ghi dịch vụ | `DSCTSuDungDV.ghiDichVu()` | `ghiDichVu(hd, dv, ngaySD, sl)` → `boolean` |
-| Trả phòng, lập hóa đơn | `DSHoaDon.them()` | `lapHoaDon(hd, maNV, cacPhong)` → `HoaDon` hoặc `null` |
 | Thanh toán | `DSHoaDon.thanhToan()` | `thanhToan(ma)` → `boolean` |
 
-Hàm làm không gõ phím nên **kiểm thử gọi thẳng được** (đó là toàn bộ `KiemThuModule3`).
+Hàm làm không gõ phím nên **kiểm thử gọi thẳng được**. Trả phòng, lập hóa đơn thì không tách: cả quy trình nằm trong `DSHoaDon.them()` (mục 4.2), giống `DSHDThuePhong.them()` (module 2) và `DSPhieuNhap.them()` (module 4).
 
 ## 3. Đọc code theo thứ tự này
 
@@ -162,10 +162,10 @@ Hàm làm không gõ phím nên **kiểm thử gọi thẳng được** (đó l�
 3. `model/HoaDon.java` — hằng `CHUA_TT`/`DA_TT`, `tinhTien(cacPhong, cacDV)`, `soConPhaiTra(tienCoc)`.
 4. `danhsach/DSDichVu.java` — khuôn B dạng danh mục, gần như nguyên mẫu `DSKhachHang` trong `MO_TA_DO_AN.md` mục 2.9; thêm `chonMaHang()` và `xoa` có kiểm tra tham chiếu.
 5. `danhsach/DSCTSuDungDV.java` — **nghiệp vụ ghi dịch vụ**: `ghiDichVu()` → `tam.nhap(tu, den)` → `ghiDichVu(hd, dv, ngaySD, sl)`.
-6. `danhsach/DSHoaDon.java` — **nghiệp vụ trả phòng**: `them()` → `lapHoaDon(...)`; rồi `thanhToan()` → `thanhToan(ma)`; rồi `xuatChiTiet(maHDon)`.
+6. `danhsach/DSHoaDon.java` — **nghiệp vụ trả phòng**: `them()` (B1 → B3); rồi `thanhToan()` → `thanhToan(ma)`; rồi `xuatChiTiet(maHDon)`.
 7. `danhsach/DSHangHoa.java` hàm `truKho` (module 4) và `danhsach/DSPhong.java` hàm `capNhatTinhTrang` (module 1) — 2 hàm module 3 gọi sang.
 8. `menu/MenuDichVu.java`, `menu/MenuHoaDon.java` — chỉ gọi hàm và `ghiFile()`, không có logic.
-9. `test/KiemThuModule3.java` — đọc để thấy từng hàm có tham số được gọi thế nào.
+9. `test/KiemThuModule3.java` — đọc để thấy từng hàm có tham số được gọi thế nào, và `them()` chạy với bàn phím giả lập.
 
 ## 4. Nghiệp vụ
 
@@ -188,14 +188,15 @@ Trừ kho **trước** rồi mới lưu chi tiết. `truKho` không trừ gì kh
 B1  nhập mã hợp đồng -> phải tồn tại và CHƯA có hóa đơn
     hôm nay còn trước ngày trả trong hợp đồng -> nhắc sửa ngày trả bên Thuê phòng trước (có thể bỏ qua)
     chọn nhân viên lập (0 = hủy)
-B2  lapHoaDon(hd, maNV, cacPhong):
+B2  hdon = new HoaDon(); set mã, mã hợp đồng, mã NV; hdon.tinhTien(cacPhong, cacDV); them(hdon)
       tongTienThue = cộng thanhTien các CTHopDong
       tongTienDV   = cộng thanhTien các CTSuDungDV của hợp đồng
       tongCong     = tongTienThue + tongTienDV, trạng thái CHUA_TT, ngày lập = hôm nay
-B3  (trong lapHoaDon) trả mọi phòng của hợp đồng về TRONG: DuLieu.dsPhong.capNhatTinhTrang(maP, Phong.TRONG)
+B3  trả mọi phòng của hợp đồng về TRONG: DuLieu.dsPhong.capNhatTinhTrang(maP, Phong.TRONG)
+    rồi in hóa đơn vừa lập: xuatChiTiet(maHDon)
 ```
 
-Lưu ý tên hàm: `them()` (không tham số) là **cả quy trình trả phòng** ở trên; `them(HoaDon x)` (có tham số) chỉ **nới mảng ra 1 rồi đặt bản sao vào cuối**, dùng trong `lapHoaDon` và `docFile`. Menu ghi 2 file: `hoadon.txt` và `phong.txt`.
+Lưu ý tên hàm: `them()` (không tham số) là **cả quy trình trả phòng** ở trên; `them(HoaDon x)` (có tham số) chỉ **nới mảng ra 1 rồi đặt `x` vào cuối** (trùng mã thì trả `false`), dùng ở B2 và trong `docFile`. Menu ghi 2 file: `hoadon.txt` và `phong.txt`.
 
 In hóa đơn (`xuatChiTiet`) hiện từng phòng, từng dịch vụ, tổng cộng, tiền cọc và **còn phải trả** = `tongCong − tienCoc`. Số này không lưu vào file (mục 7 của mô tả đồ án).
 
@@ -207,7 +208,7 @@ In hóa đơn, hỏi xác nhận, đổi `CHUA_TT` → `DA_TT` (trả lời `k` 
 
 | Ràng buộc | Ở đâu |
 |---|---|
-| Hợp đồng đã có hóa đơn thì không ghi dịch vụ, không lập hóa đơn lần 2 | `ghiDichVu`, `lapHoaDon` (dùng `timTheoHopDong`) |
+| Hợp đồng đã có hóa đơn thì không ghi dịch vụ, không lập hóa đơn lần 2 | `ghiDichVu`, `DSHoaDon.them` (dùng `timTheoHopDong`) |
 | Ngày dùng dịch vụ trong khoảng nhận – trả | `CTSuDungDV.nhap(tu, den)` + kiểm tra lại trong `ghiDichVu` |
 | Không đủ hàng thì không ghi dịch vụ | `ghiDichVu` + `DSHangHoa.truKho` |
 | Đổi giá dịch vụ không làm đổi tiền đã ghi | `CTSuDungDV.donGia` chép lúc dùng |
@@ -251,17 +252,17 @@ them(ct);
 - Nếu làm ngược (thêm chi tiết trước, trừ kho sau) thì khi thiếu hàng phải **xóa dòng vừa thêm**, trong khi danh sách chi tiết không có hàm xóa.
 - Đúng bằng số tồn vẫn ghi được (`7 < 7` là sai nên không bị chặn), kho về 0. Có ca kiểm thử riêng cho chỗ này.
 
-### 6.2 `lapHoaDon` trả về `ds[n - 1]`, không trả `hdon`
+### 6.2 `them(x)` cất thẳng đối tượng, không chép
 
 ```java
 HoaDon hdon = new HoaDon();   // ngày lập = hôm nay, CHUA_TT (constructor không tham số đã gán)
 ...
-them(hdon);                   // them(x) lưu BẢN SAO: ds[n] = new HoaDon(hdon)
+them(hdon);                   // ds[n] = hdon: mảng giữ đúng đối tượng này
 ...
-return ds[n - 1];             // trả đúng đối tượng đang nằm trong mảng
+xuatChiTiet(hdon.getMaHDon());
 ```
 
-`them(x)` cất **bản sao**, nên `hdon` và `ds[n - 1]` là 2 đối tượng khác nhau. Nếu trả `hdon` thì bên gọi sửa vào bản ngoài mảng, danh sách không thấy. Trả `ds[n - 1]` (phần tử vừa thêm, luôn ở cuối) thì đổi gì cũng đổi đúng hóa đơn đã lưu. `ghiDichVu()` cũng in `ds[n - 1]` vì lý do tương tự.
+`them(x)` không tạo bản sao, nên `hdon` và phần tử cuối mảng là **cùng 1 đối tượng**; thêm xong vẫn dùng `hdon` được. `ghiDichVu()` in `ds[n - 1]` chỉ vì đó là phần tử vừa thêm (luôn ở cuối mảng).
 
 ### 6.3 Đơn giá và tiền được "chốt" lúc lập
 
@@ -291,7 +292,7 @@ Mỗi hợp đồng có tối đa 1 hóa đơn. `DuLieu.dsHoaDon.timTheoHopDong(
 | Chỗ gọi | Đã có hóa đơn thì |
 |---|---|
 | `DSCTSuDungDV.ghiDichVu` (cả 2 bản) | Không ghi thêm dịch vụ |
-| `DSHoaDon.them`, `lapHoaDon` | Không lập hóa đơn lần 2 |
+| `DSHoaDon.them` | Không lập hóa đơn lần 2 |
 | Module 2, sửa ngày trả phòng | Không cho sửa |
 | `thongKeTheoDichVu` | Lấy hóa đơn ra xem đã `DA_TT` chưa |
 
@@ -337,7 +338,7 @@ javac -encoding UTF-8 -d out (Get-ChildItem -Recurse src, test -Filter *.java).F
 java -cp out KiemThuModule3
 ```
 
-Kết quả mong đợi: `Kết quả: 49 đạt, 0 trượt`. Lớp test chỉ dùng dữ liệu trong bộ nhớ (không đọc/ghi file), tự tạo `HDThuePhong`, `CTHopDong` bằng constructor rồi truyền vào hàm có tham số.
+Kết quả mong đợi: `Kết quả: 50 đạt, 0 trượt`. Lớp test chỉ dùng dữ liệu trong bộ nhớ (không đọc/ghi file), tự tạo `HDThuePhong`, `CTHopDong` bằng constructor. Ghi dịch vụ, thanh toán gọi thẳng hàm có tham số; lập hóa đơn gọi đúng `DSHoaDon.them()` với **bàn phím giả lập**: ngay đầu `main`, trước lần đầu dùng `NhapLieu` (Scanner chung chỉ tạo 1 lần), test gọi `System.setIn(new ByteArrayInputStream(...))` với chuỗi phím gõ sẵn.
 
 Các ca được kiểm:
 
@@ -397,7 +398,7 @@ Module 3 gọi thẳng danh sách của module khác qua `DuLieu`, không có h�
 |---|---|
 | `DuLieu.dsHDThuePhong.timTheoMa(maHDong)` | `DSCTSuDungDV.ghiDichVu()`, `DSHoaDon.them()`, `DSHoaDon.xuatChiTiet` (lấy tiền cọc) |
 | `DuLieu.dsCTHopDong.layTheoHopDong(maHDong)` | `DSHoaDon.them()`, `DSHoaDon.xuatChiTiet` |
-| `DuLieu.dsPhong.capNhatTinhTrang(maP, Phong.TRONG)` | `DSHoaDon.lapHoaDon` (trả phòng) |
+| `DuLieu.dsPhong.capNhatTinhTrang(maP, Phong.TRONG)` | `DSHoaDon.them()` (trả phòng) |
 | `DuLieu.dsHangHoa.truKho(maH, sl)` | `DSCTSuDungDV.ghiDichVu(hd, dv, ngaySD, sl)` |
 | `DuLieu.dsHangHoa.chon()` | `DSDichVu.chonMaHang()` (gắn hàng tiêu hao cho dịch vụ) |
 | `DuLieu.dsNhanVien.chon()`, `timTheoMa(maNV)` | `DSHoaDon.them()`, `DSHoaDon.xuatChiTiet` |
@@ -415,12 +416,12 @@ Module khác dùng từ module 3:
 - **Vì sao lưu `tongTienThue`, `tongCong` vào file mà không tính lại?** Hóa đơn là chứng từ, chốt số tiền lúc lập (mục 7 mô tả đồ án).
 - **Vì sao "còn phải trả" không lưu?** Tính được từ `tongCong` và `tienCoc`; lưu thêm thì có 2 chỗ giữ cùng 1 con số, dễ lệch.
 - **Vì sao trừ kho trước rồi mới lưu chi tiết?** `truKho` tự kiểm tra đủ hàng; thiếu thì trả `false` và không đổi gì, nên dừng lại là sạch, không phải hoàn tác.
-- **Vì sao `ghiDichVu`, `lapHoaDon` có bản có tham số?** Để kiểm thử tự động và để module khác gọi được mà không phải gõ phím.
+- **Vì sao `ghiDichVu`, `thanhToan` có bản có tham số?** Để kiểm thử tự động và để module khác gọi được mà không phải gõ phím.
 - **Hàm có tham số đã kiểm tra rồi, sao bản không tham số còn kiểm tra?** Bản không tham số kiểm tra **sớm** để không bắt người dùng gõ hết rồi mới báo lỗi; bản có tham số kiểm tra **lại** vì có thể bị gọi thẳng.
 - **Đa hình ở đâu?** 3 lớp model cài interface `DoiTuong` và `@Override` `nhap`, `xuat`, `toLine`. `CTSuDungDV` có 2 hàm `nhap` (nạp chồng): `nhap()` và `nhap(tu, den)`.
 - **`static` ở đâu trong module 3?** Hằng `HoaDon.CHUA_TT`, `HoaDon.DA_TT`; hàm `CTSuDungDV.trongKhoang` (không dùng thuộc tính nào); 3 danh sách `DuLieu.dsDichVu`, `dsCTSuDungDV`, `dsHoaDon`.
 - **Vì sao hóa đơn không có hàm sửa, hàm xóa?** Là chứng từ: sửa hoặc xóa thì doanh thu cũ bị đổi. Thao tác duy nhất là thanh toán (`CHUA_TT` → `DA_TT`).
 - **`HoaDon.nhap()` không hỏi gì thì viết ra làm gì?** Interface `DoiTuong` bắt buộc có. Mọi trường của hóa đơn đều tự sinh, tự chọn hoặc tự tính, nên `nhap()` chỉ gán ngày lập là hôm nay.
 - **Dịch vụ không dùng hàng lưu file thế nào?** `maH = ""`, dòng kết thúc bằng `|` (vd `DV004|Giặt ủi|50000|`); `TepTin.doc` vẫn tách ra đủ 4 trường, trường cuối rỗng.
-- **Trả phòng thì phòng về `TRONG` ở đâu?** Cuối `lapHoaDon`: duyệt các `CTHopDong` của hợp đồng, gọi `DuLieu.dsPhong.capNhatTinhTrang(maP, Phong.TRONG)`; `MenuHoaDon` ghi thêm `phong.txt`.
+- **Trả phòng thì phòng về `TRONG` ở đâu?** B3 cuối `DSHoaDon.them()`: duyệt các `CTHopDong` của hợp đồng, gọi `DuLieu.dsPhong.capNhatTinhTrang(maP, Phong.TRONG)`; `MenuHoaDon` ghi thêm `phong.txt`.
 - **Khách dùng dịch vụ ngay ngày nhận phòng có được không?** Được: `trongKhoang` tính cả 2 ngày biên.

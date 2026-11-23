@@ -1,12 +1,16 @@
 import app.DuLieu;
 import core.TimKiem;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import model.CTPhieuNhap;
 import model.HangHoa;
+import model.NhaCC;
 import model.NhanVien;
 import model.PhieuNhap;
 
-// kiểm thử tự động các hàm có tham số của module 4 (không cần gõ phím, không đọc/ghi file)
+// kiểm thử tự động module 4 (không cần gõ phím, không đọc/ghi file):
+// lập phiếu nhập dùng bàn phím giả lập qua System.in
 // chạy: xem mục "Chạy kiểm thử" trong docs/HUONG_DAN_MUC4.md
 public class KiemThuModule4 {
 
@@ -24,7 +28,16 @@ public class KiemThuModule4 {
     }
 
     public static void main(String[] args) {
+        // bàn phím giả lập cho dsPhieuNhap.them(): phải đặt trước lần đầu dùng NhapLieu
+        String banPhim = String.join("\n",
+                "NCC001", "NV001",       // nhà cung cấp, nhân viên lập
+                "HH003", "10", "3500",   // 10 bàn chải giá 3500
+                "k",                     // không nhập thêm mặt hàng
+                "c") + "\n";             // lưu phiếu
+        System.setIn(new ByteArrayInputStream(banPhim.getBytes(StandardCharsets.UTF_8)));
+
         // ----- dữ liệu mẫu, chỉ nằm trong bộ nhớ -----
+        DuLieu.dsNhaCC.them(new NhaCC("NCC001", "Công ty Nước Sạch", "TP.HCM", "0281234567"));
         DuLieu.dsNhanVien.them(new NhanVien("NV001", "Nguyễn Văn An", "0901234567", "Lễ tân", 8000000));
         DuLieu.dsNhanVien.them(new NhanVien("NV003", "Lê Đức Cường", "0987654321", "Bảo vệ", 6000000));
         DuLieu.dsNhanVien.them(new NhanVien("NV002", "Trần Thị Bình", "0912345678", "Quản lý", 15000000));
@@ -106,18 +119,24 @@ public class KiemThuModule4 {
         kiemTra("truKho đúng bằng số tồn (5/5) trả true", DuLieu.dsHangHoa.truKho("HH003", 5));
         kiemTra("... và tồn về 0", DuLieu.dsHangHoa.timTheoMa("HH003").getSlTon() == 0);
 
-        // ----- lập phiếu nhập (B3): cộng kho, cập nhật giá, lưu phiếu + chi tiết -----
-        PhieuNhap pnMoi = new PhieuNhap("PN004", "NCC001", "NV001", LocalDate.of(2027, 1, 5), 0);
-        CTPhieuNhap ctMoi = new CTPhieuNhap("PN004", "HH003", 10, 3500, 0);
-        ctMoi.tinhThanhTien();
-        DuLieu.dsPhieuNhap.lapPhieu(pnMoi, new CTPhieuNhap[] {ctMoi});
-        kiemTra("lapPhieu cộng kho HH003: 0 + 10 = 10", DuLieu.dsHangHoa.timTheoMa("HH003").getSlTon() == 10);
-        kiemTra("lapPhieu cập nhật giá nhập HH003 = 3500",
+        // ----- lập phiếu nhập từ bàn phím: cộng kho, cập nhật giá, lưu phiếu + chi tiết -----
+        DuLieu.dsPhieuNhap.them();
+        System.out.println();
+        kiemTra("them() cộng kho HH003: 0 + 10 = 10", DuLieu.dsHangHoa.timTheoMa("HH003").getSlTon() == 10);
+        kiemTra("them() cập nhật giá nhập HH003 = 3500",
                 DuLieu.dsHangHoa.timTheoMa("HH003").getDonGia() == 3500);
-        kiemTra("lapPhieu lưu phiếu PN004 (tổng 35000) và 1 dòng chi tiết",
+        kiemTra("them() lưu phiếu PN004 (tổng 35000, ngày hôm nay) và 1 dòng chi tiết",
                 DuLieu.dsPhieuNhap.timTheoMa("PN004") != null
                 && DuLieu.dsPhieuNhap.timTheoMa("PN004").getTongTien() == 35000
+                && DuLieu.dsPhieuNhap.timTheoMa("PN004").getNgayNhap().equals(LocalDate.now())
                 && DuLieu.dsCTPhieuNhap.layTheoPhieu("PN004").length == 1);
+
+        // ----- chống trùng khóa ở them(T) -----
+        kiemTra("DSCTPhieuNhap.them trả false khi trùng cặp (PN004, HH003)",
+                !DuLieu.dsCTPhieuNhap.them(new CTPhieuNhap("PN004", "HH003", 1, 1000, 1000))
+                && DuLieu.dsCTPhieuNhap.layTheoPhieu("PN004").length == 1);
+        kiemTra("DSNhanVien.them trả false khi trùng mã NV001",
+                !DuLieu.dsNhanVien.them(new NhanVien("NV001", "Người Khác", "0999999999", "Lễ tân", 1)));
 
         System.out.println();
         System.out.println("Kết quả: " + dat + " đạt, " + truot + " trượt");

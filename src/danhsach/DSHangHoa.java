@@ -43,11 +43,16 @@ public class DSHangHoa implements DanhSach<HangHoa> {
         System.out.println("Đã thêm hàng " + hh.getMaH() + " (tồn kho = 0, hãy lập phiếu nhập)");
     }
 
+    // Thêm (có tham số): đối tượng đã có sẵn (đọc file, kiểm thử); trùng mã thì không thêm
     @Override
-    public void them(HangHoa hh) {
+    public boolean them(HangHoa hh) {
+        if (timTheoMa(hh.getMaH()) != null) {
+            return false;
+        }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new HangHoa(hh);
+        ds[n] = hh;
         n++;
+        return true;
     }
 
     public void timTheoMa() {

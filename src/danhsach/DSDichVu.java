@@ -43,12 +43,16 @@ public class DSDichVu implements DanhSach<DichVu> {
         System.out.println("Đã thêm dịch vụ " + dv.getMaDV());
     }
 
-    // Thêm (có tham số): nới mảng ra 1 rồi đặt BẢN SAO vào cuối
+    // Thêm (có tham số): đối tượng đã có sẵn (đọc file, kiểm thử); trùng mã thì không thêm
     @Override
-    public void them(DichVu dv) {
+    public boolean them(DichVu dv) {
+        if (timTheoMa(dv.getMaDV()) != null) {
+            return false;
+        }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new DichVu(dv);
+        ds[n] = dv;
         n++;
+        return true;
     }
 
     public void timTheoMa() {

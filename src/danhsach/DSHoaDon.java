@@ -33,9 +33,9 @@ public class DSHoaDon implements DanhSach<HoaDon> {
     }
 
     // ================= TRẢ PHÒNG & LẬP HÓA ĐƠN (nghiệp vụ mục 6.3) =================
-    //   B1. them()     : nhập mã hợp đồng (chưa có hóa đơn), chọn nhân viên lập
-    //   B2. lapHoaDon(): lấy các phòng + các lần dùng dịch vụ, tính tiền, lưu hóa đơn CHUA_TT
-    //   B3.              trả mọi phòng của hợp đồng về TRONG
+    //   B1. nhập mã hợp đồng (chưa có hóa đơn), chọn nhân viên lập
+    //   B2. lấy các phòng + các lần dùng dịch vụ, tính tiền, lưu hóa đơn CHUA_TT
+    //   B3. trả mọi phòng của hợp đồng về TRONG
     // Menu gọi xong thì ghi file hóa đơn và file phòng.
 
     public void them() {
@@ -72,42 +72,34 @@ public class DSHoaDon implements DanhSach<HoaDon> {
             return;
         }
 
-        // ----- B2, B3 -----
-        HoaDon hdon = lapHoaDon(hd, nv.getMaNV(), DuLieu.dsCTHopDong.layTheoHopDong(hd.getMaHDong()));
-        if (hdon != null) {
-            System.out.println("Đã lập hóa đơn " + hdon.getMaHDon() + ":");
-            xuatChiTiet(hdon.getMaHDon());
-        }
-    }
-
-    // bản có tham số: tính tiền, lưu hóa đơn, trả phòng; hợp đồng đã có hóa đơn thì trả null
-    // cacPhong = các CTHopDong của hợp đồng
-    public HoaDon lapHoaDon(HDThuePhong hd, String maNV, CTHopDong[] cacPhong) {
-        if (timTheoHopDong(hd.getMaHDong()) != null) {
-            System.out.println("Hợp đồng này đã có hóa đơn.");
-            return null;
-        }
+        // ----- B2 -----
+        CTHopDong[] cacPhong = DuLieu.dsCTHopDong.layTheoHopDong(hd.getMaHDong());
         CTSuDungDV[] cacDV = DuLieu.dsCTSuDungDV.layTheoHopDong(hd.getMaHDong());
-
         HoaDon hdon = new HoaDon();          // constructor đã gán ngày lập = hôm nay, trạng thái CHUA_TT
         hdon.setMaHDon(sinhMa());
         hdon.setMaHDong(hd.getMaHDong());
-        hdon.setMaNV(maNV);
+        hdon.setMaNV(nv.getMaNV());
         hdon.tinhTien(cacPhong, cacDV);
         them(hdon);
 
-        // trả phòng: mọi phòng của hợp đồng về TRONG (bước 3 mục 6.3)
+        // ----- B3 ----- trả phòng: mọi phòng của hợp đồng về TRONG
         for (CTHopDong ct : cacPhong) {
             DuLieu.dsPhong.capNhatTinhTrang(ct.getMaP(), Phong.TRONG);
         }
-        return ds[n - 1];
+        System.out.println("Đã lập hóa đơn " + hdon.getMaHDon() + ":");
+        xuatChiTiet(hdon.getMaHDon());
     }
 
+    // Thêm (có tham số): đối tượng đã có sẵn (đọc file, kiểm thử); trùng mã thì không thêm
     @Override
-    public void them(HoaDon hdon) {
+    public boolean them(HoaDon hdon) {
+        if (timTheoMa(hdon.getMaHDon()) != null) {
+            return false;
+        }
         ds = Arrays.copyOf(ds, n + 1);
-        ds[n] = new HoaDon(hdon);
+        ds[n] = hdon;
         n++;
+        return true;
     }
 
     // ================= THANH TOÁN =================
