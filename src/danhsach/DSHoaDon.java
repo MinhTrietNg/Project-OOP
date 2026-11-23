@@ -197,8 +197,11 @@ public class DSHoaDon implements DanhSach<HoaDon> {
             return;
         }
         NhanVien nv = DuLieu.dsNhanVien.timTheoMa(hdon.getMaNV());
+        HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(hdon.getMaHDong());
         System.out.println("----- HÓA ĐƠN " + hdon.getMaHDon() + " -----");
         System.out.println("Hợp đồng    : " + hdon.getMaHDong());
+        System.out.println("Nhận phòng  : " + DinhDang.ngay(hd.getNgayNhanPhong()));
+        System.out.println("Trả phòng   : " + DinhDang.ngay(hd.getNgayTraPhong()));
         System.out.println("Ngày lập    : " + DinhDang.ngay(hdon.getNgayLapHD()));
         System.out.println("Nhân viên   : " + nv.getHoTen());
 
@@ -217,8 +220,7 @@ public class DSHoaDon implements DanhSach<HoaDon> {
         System.out.println("  Cộng tiền dịch vụ: " + DinhDang.tien(hdon.getTongTienDV()));
 
         System.out.println("TỔNG CỘNG   : " + DinhDang.tien(hdon.getTongCong()));
-        HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(hdon.getMaHDong());
-        System.out.println("Đã cọc      : " + DinhDang.tien(hd.getTienCoc()));
+        System.out.println("Đã cọc    : " + DinhDang.tien(hd.getTienCoc()));
         // cọc nhiều hơn tổng tiền thì khách sạn trả lại phần dư, không in số âm
         double conLai = hdon.soConPhaiTra(hd.getTienCoc());
         if (conLai >= 0) {

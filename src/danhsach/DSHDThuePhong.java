@@ -238,6 +238,12 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
             System.out.println("Không tìm thấy hợp đồng có mã: " + ma);
         } else {
             hd.xuat();
+            System.out.println("Tiền phòng:");
+            for (CTHopDong ct : DuLieu.dsCTHopDong.layTheoHopDong(hd.getMaHDong())) {
+                System.out.println("  Phòng " + ct.getMaP() + ": " + DinhDang.tien(ct.getDonGia()) + " x "
+                        + hd.soNgayThue() + " ngày = " + DinhDang.tien(ct.getThanhTien()));
+            }
+            System.out.println("Tổng tiền hợp đồng: " + DinhDang.tien(hd.getTongTien()));
         }
     }
 

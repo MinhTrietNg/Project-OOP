@@ -1,6 +1,3 @@
-# dữ liệu chạy thử, mỗi người tự sinh khi test
-data/
-
 # file biên dịch
 *.class
 out/

@@ -1,0 +1,10 @@
+NCC001|Công ty Nước giải khát Sài Gòn|12 Lê Lợi, Quận 1, TP.HCM|0281234567
+NCC002|Công ty Thực phẩm Minh Phát|45 Nguyễn Trãi, Quận 5, TP.HCM|0287654321
+NCC003|Công ty Bia Phương Nam|210 Võ Văn Kiệt, Quận 1, TP.HCM|0283456789
+NCC004|Công ty Giấy Hòa Bình|78 Lũy Bán Bích, Tân Phú, TP.HCM|0289876543
+NCC005|Công ty Cà phê Cao Nguyên|15 Phan Bội Châu, Buôn Ma Thuột, Đắk Lắk|0262381234
+NCC006|Công ty Hóa mỹ phẩm Thiên Ân|33 Kinh Dương Vương, Bình Tân, TP.HCM|0287771234
+NCC007|Công ty Bánh kẹo Bình An|120 Trường Chinh, Tân Bình, TP.HCM|0283811222
+NCC008|Công ty Trà Tân Cương|5 Lương Ngọc Quyến, TP. Thái Nguyên|0208385123
+NCC009|Cửa hàng Tạp hóa Thành Đạt|64 Lê Văn Sỹ, Quận 3, TP.HCM|0283933444
+NCC010|Công ty Thương mại Đông Á|9 Cộng Hòa, Tân Bình, TP.HCM|0283812555
