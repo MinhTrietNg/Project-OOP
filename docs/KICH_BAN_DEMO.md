@@ -113,13 +113,13 @@ Chạy **liên tục theo thứ tự** từ dữ liệu mẫu vừa nạp (mục
 
 | # | Gõ | Thấy |
 |---|---|---|
-| b | `3 → 4` (tất cả) | HDTP001–HDTP023, mỗi HĐ 1 dòng, có số ngày và tiền cọc |
+| b | `3 → 4` (tất cả) | HDTP001–HDTP023, mỗi HĐ 1 dòng, có số ngày, tiền cọc và tổng tiền |
 | c | `3 → 5` (chưa thanh toán) | HDTP022, HDTP023 |
-| d | `3 → 3` → "HDTP023" · `3 → 6` → "bao" | `HDTP023 \| KH: KH005 \| NV: NV001 \| Lập: <hôm nay> \| Nhận: 25/11/2026 \| Trả: 27/11/2026 (2 ngày) \| Cọc: 500.000 đ` |
+| d | `3 → 3` → "HDTP023" · `3 → 6` → "bao" | `HDTP023 \| KH: KH005 \| NV: NV001 \| Lập: <hôm nay> \| Nhận: 25/11/2026 \| Trả: 27/11/2026 (2 ngày) \| Cọc: 500.000 đ \| Tổng tiền: 4.400.000 đ` |
 | e | `3 → 7` → "HDTP023" | `Phòng P005 \| Đơn giá: 700.000 đ \| Số người: 2 \| Thành tiền: 1.400.000 đ` và `Phòng P008 … Thành tiền: 3.000.000 đ` |
 | f | `3 → 8` → "HDTP023" → "P005" | `HĐ HDTP023 \| Phòng P005 \| Khách KH005` và `… Khách KH021` |
 | g | `3 → 2` → "HDTP023" → "28/11/2026" (khách ở thêm 1 ngày) | `Đã cập nhật ngày trả phòng cho hợp đồng HDTP023` |
-| h | `3 → 7` → "HDTP023" | Thành tiền tự tính lại: P005 `2.100.000 đ`, P008 `4.500.000 đ` |
+| h | `3 → 7` → "HDTP023" · `3 → 3` → "HDTP023" | Thành tiền tự tính lại: P005 `2.100.000 đ`, P008 `4.500.000 đ`; hợp đồng `Tổng tiền: 6.600.000 đ` |
 
 ### 3.4 Menu 4 — Dịch vụ
 

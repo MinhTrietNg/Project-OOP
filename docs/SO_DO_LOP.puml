@@ -69,7 +69,9 @@ package model {
     - tienCoc : double
     - ngayNhanPhong : LocalDate
     - ngayTraPhong : LocalDate
+    - tongTien : double
     + soNgayThue() : long
+    + tinhTongTien(cacPhong : CTHopDong[]) : void
     + nhapNgayTra() : void
   }
   class CTHopDong {

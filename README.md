@@ -50,12 +50,12 @@ Khi chạy, mỗi lần chỉ gõ **một dòng rồi Enter**. Không dán nhi�
 
 ## Kiểm thử
 
-Thư mục `test/` có 4 lớp kiểm thử tự động, mỗi lớp ứng với một module, tổng cộng 134 ca. Các lớp này chỉ dùng dữ liệu trong bộ nhớ, không đọc hay ghi `data/`.
+Thư mục `test/` có 4 lớp kiểm thử tự động, mỗi lớp ứng với một module, tổng cộng 135 ca. Các lớp này chỉ dùng dữ liệu trong bộ nhớ, không đọc hay ghi `data/`.
 
 ```powershell
 javac -encoding UTF-8 -d out (Get-ChildItem -Recurse src, test -Filter *.java).FullName
 java -cp out KiemThuModule1   # 29 ca
-java -cp out KiemThuModule2   # 24 ca
+java -cp out KiemThuModule2   # 25 ca
 java -cp out KiemThuModule3   # 49 ca
 java -cp out KiemThuModule4   # 32 ca
 ```

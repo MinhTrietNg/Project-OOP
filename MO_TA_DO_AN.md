@@ -416,7 +416,9 @@ classDiagram
         -double tienCoc
         -LocalDate ngayNhanPhong
         -LocalDate ngayTraPhong
+        -double tongTien
         +soNgayThue() long
+        +tinhTongTien(CTHopDong[]) void
     }
     class CTHopDong {
         -String maHDong
@@ -610,10 +612,12 @@ Hợp đồng thuê phòng của một khách đứng tên.
 | `tienCoc` | `double` | Tiền đặt cọc, ≥ 0 |
 | `ngayNhanPhong` | `LocalDate` | Ngày nhận phòng, chung cho mọi phòng trong hợp đồng |
 | `ngayTraPhong` | `LocalDate` | Ngày trả phòng, chung cho mọi phòng trong hợp đồng, sau `ngayNhanPhong` |
+| `tongTien` | `double` | Tổng `thanhTien` của các `CTHopDong` thuộc hợp đồng (tiền phòng, chưa gồm dịch vụ) |
 
 | Phương thức | Ý nghĩa |
 |---|---|
 | `soNgayThue()` | Số ngày giữa `ngayNhanPhong` và `ngayTraPhong` |
+| `tinhTongTien(CTHopDong[])` | Cộng `thanhTien` các phòng của hợp đồng vào `tongTien` |
 
 #### `CTHopDong`
 
@@ -734,7 +738,7 @@ Mỗi danh sách một file trong `data/`, mỗi dòng một đối tượng, c�
 | `phong.txt` | `loai\|maP\|tenP\|donGia\|soNguoiToiDa\|slGiuong\|tinhTrang` + phần riêng: Deluxe `\|view\|banCong\|loaiNoiThat`, Suite `\|phongKhachRieng\|slPhong` |
 | `khachhang.txt` | `maKH\|hoTen\|sdt\|diaChi` |
 | `nhanvien.txt` | `maNV\|hoTen\|sdt\|chucVu\|luongCB` |
-| `hdthuephong.txt` | `maHDong\|maKH\|maNV\|ngayLapHD\|tienCoc\|ngayNhanPhong\|ngayTraPhong` |
+| `hdthuephong.txt` | `maHDong\|maKH\|maNV\|ngayLapHD\|tienCoc\|ngayNhanPhong\|ngayTraPhong\|tongTien` |
 | `cthopdong.txt` | `maHDong\|maP\|donGia\|slNguoi\|thanhTien` |
 | `ctkhacho.txt` | `maHDong\|maP\|maKH` |
 | `dichvu.txt` | `maDV\|tenDV\|donGia\|maH` |
@@ -758,7 +762,7 @@ DV001|Nước suối|15000|HH001
 DV002|Giặt ủi|50000|
 
 hdthuephong.txt
-HDTP001|KH001|NV001|16/11/2026|500000|16/11/2026|18/11/2026
+HDTP001|KH001|NV001|16/11/2026|500000|16/11/2026|18/11/2026|600000
 ```
 
 ## 6. Nghiệp vụ và ràng buộc
@@ -777,9 +781,10 @@ Lập hợp đồng:
 2. Chọn nhân viên lập, nhập `ngayNhanPhong`, `ngayTraPhong`, `tienCoc`. `ngayLapHD` là ngày hiện tại, `ngayNhanPhong` không trước `ngayLapHD`.
 3. Chọn từ 1 phòng trở lên trong danh sách phòng `TRONG`. Với mỗi phòng: nhập `slNguoi`, chép `donGia` từ phòng, tính `thanhTien`.
 4. Với mỗi phòng, ghi khách ở (`CTKhachO`): từ 1 tới `slNguoi` khách, chưa có thì thêm khách mới.
-5. Mọi phòng đã chọn chuyển sang `DA_THUE` ngay khi lập hợp đồng. Chương trình không xử lý đặt phòng trước theo lịch.
+5. Tính `tongTien` của hợp đồng = tổng `thanhTien` các phòng đã chọn.
+6. Mọi phòng đã chọn chuyển sang `DA_THUE` ngay khi lập hợp đồng. Chương trình không xử lý đặt phòng trước theo lịch.
 
-Khi hợp đồng **chưa có hóa đơn**, được sửa `ngayTraPhong` (khách trả sớm hoặc ở thêm); sửa xong thì tính lại `thanhTien` của các `CTHopDong` thuộc hợp đồng. Khi đã có hóa đơn thì hợp đồng không sửa được nữa.
+Khi hợp đồng **chưa có hóa đơn**, được sửa `ngayTraPhong` (khách trả sớm hoặc ở thêm); sửa xong thì tính lại `thanhTien` của các `CTHopDong` thuộc hợp đồng và `tongTien` của hợp đồng. Khi đã có hóa đơn thì hợp đồng không sửa được nữa.
 
 ### 6.3 Dịch vụ & Thanh toán
 
