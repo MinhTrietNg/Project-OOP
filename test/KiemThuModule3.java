@@ -44,9 +44,9 @@ public class KiemThuModule3 {
 
         // hợp đồng 16/11 -> 18/11/2026 (2 ngày), cọc 500.000, thuê 2 phòng
         HDThuePhong hd1 = new HDThuePhong("HDTP001", "KH001", "NV001", LocalDate.of(2026, 11, 16),
-                500000, LocalDate.of(2026, 11, 16), LocalDate.of(2026, 11, 18));
+                500000, LocalDate.of(2026, 11, 16), LocalDate.of(2026, 11, 18), 0);
         HDThuePhong hd2 = new HDThuePhong("HDTP002", "KH002", "NV001", LocalDate.of(2026, 11, 16),
-                0, LocalDate.of(2026, 11, 20), LocalDate.of(2026, 11, 21));
+                0, LocalDate.of(2026, 11, 20), LocalDate.of(2026, 11, 21), 0);
         CTHopDong p1 = new CTHopDong("HDTP001", "P001", 300000, 2, 0);
         CTHopDong p2 = new CTHopDong("HDTP001", "P002", 600000, 1, 0);
         p1.tinhThanhTien(hd1.soNgayThue());

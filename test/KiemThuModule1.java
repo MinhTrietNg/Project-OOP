@@ -106,7 +106,7 @@ public class KiemThuModule1 {
         kiemTra("ghi/đọc file khách hàng", khDocLai.getN() == 2 && khDocLai.timTheoMa("KH003") != null);
 
         DuLieu.dsHDThuePhong.them(new HDThuePhong("HDTP001", "KH001", "NV001", LocalDate.of(2026, 11, 16),
-                500000, LocalDate.of(2026, 11, 16), LocalDate.of(2026, 11, 18)));
+                500000, LocalDate.of(2026, 11, 16), LocalDate.of(2026, 11, 18), 0));
         dsKH.xoa("KH001");
         kiemTra("không xóa khách đã đứng tên hợp đồng", dsKH.timTheoMa("KH001") != null);
         dsKH.xoa("KH003");

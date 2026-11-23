@@ -150,8 +150,10 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
         return dsKO;
     }
 
-    // Hàm có tham số: lưu hợp đồng, các chi tiết phòng, khách ở và đổi tình trạng phòng sang DA_THUE
+    // Hàm có tham số: tính tổng tiền, lưu hợp đồng, các chi tiết phòng, khách ở
+    // và đổi tình trạng phòng sang DA_THUE
     public void lapHopDong(HDThuePhong hd, CTHopDong[] dsCT, CTKhachO[] dsKO) {
+        hd.tinhTongTien(dsCT);   // tính trước khi them() vì them() lưu bản sao
         them(hd);
         for (CTHopDong ct : dsCT) {
             DuLieu.dsCTHopDong.them(ct);
@@ -257,7 +259,8 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
 
     // Sửa (có tham số): xử lý nghiệp vụ sửa hợp đồng theo mã truyền vào (mục 6.2).
     // - Chỉ được sửa ngayTraPhong khi hợp đồng CHƯA lập hóa đơn (nếu đã có hóa đơn thì chặn sửa).
-    // - Sau khi đổi ngày trả, tự động tính lại thanhTien = donGia * soNgayThue() cho toàn bộ CTHopDong thuộc hợp đồng này.
+    // - Sau khi đổi ngày trả, tự động tính lại thanhTien = donGia * soNgayThue() cho toàn bộ CTHopDong thuộc hợp đồng này,
+    //   rồi tính lại tongTien của hợp đồng.
     public void sua(String ma) {
         HDThuePhong hd = timTheoMa(ma);
         if (hd == null) {
@@ -282,9 +285,11 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
         }
 
         long soNgay = hd.soNgayThue();
-        for (CTHopDong ct : DuLieu.dsCTHopDong.layTheoHopDong(hd.getMaHDong())) {
+        CTHopDong[] cacPhong = DuLieu.dsCTHopDong.layTheoHopDong(hd.getMaHDong());
+        for (CTHopDong ct : cacPhong) {
             ct.tinhThanhTien(soNgay);
         }
+        hd.tinhTongTien(cacPhong);
         System.out.println("Đã cập nhật ngày trả phòng cho hợp đồng " + hd.getMaHDong());
     }
 
@@ -366,7 +371,7 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
 
     // ================= ĐỌC / GHI FILE =================
 
-    // hdthuephong.txt: maHDong|maKH|maNV|ngayLapHD|tienCoc|ngayNhanPhong|ngayTraPhong
+    // hdthuephong.txt: maHDong|maKH|maNV|ngayLapHD|tienCoc|ngayNhanPhong|ngayTraPhong|tongTien
     @Override
     public void docFile() {
         ds = new HDThuePhong[0];
@@ -380,7 +385,8 @@ public class DSHDThuePhong implements DanhSach<HDThuePhong> {
                         DinhDang.docNgay(t[3]),
                         Double.parseDouble(t[4]),
                         DinhDang.docNgay(t[5]),
-                        DinhDang.docNgay(t[6])
+                        DinhDang.docNgay(t[6]),
+                        Double.parseDouble(t[7])
                 ));
             } catch (Exception e) {
                 System.out.println("Bỏ qua 1 dòng lỗi trong " + FILE);

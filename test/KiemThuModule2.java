@@ -73,10 +73,10 @@ public class KiemThuModule2 {
 
         HDThuePhong hd1 = new HDThuePhong("HDTP001", "KH001", "NV001",
                 LocalDate.of(2026, 11, 10), 500000,
-                LocalDate.of(2026, 11, 10), LocalDate.of(2026, 11, 13));
+                LocalDate.of(2026, 11, 10), LocalDate.of(2026, 11, 13), 0);
         HDThuePhong hd3 = new HDThuePhong("HDTP003", "KH002", "NV001",
                 LocalDate.of(2026, 11, 15), 200000,
-                LocalDate.of(2026, 11, 15), LocalDate.of(2026, 11, 17));
+                LocalDate.of(2026, 11, 15), LocalDate.of(2026, 11, 17), 0);
         DuLieu.dsHDThuePhong.them(hd1);
         DuLieu.dsHDThuePhong.them(hd3);
 
@@ -95,13 +95,13 @@ public class KiemThuModule2 {
         // ----- ca biên: thuê 1 đêm (hôm nay nhận, ngày mai trả) -----
         HDThuePhong hd1Dem = new HDThuePhong("HDTP099", "KH001", "NV001",
                 LocalDate.of(2026, 11, 20), 0,
-                LocalDate.of(2026, 11, 20), LocalDate.of(2026, 11, 21));
+                LocalDate.of(2026, 11, 20), LocalDate.of(2026, 11, 21), 0);
         kiemTra("soNgayThue thuê qua 1 đêm = 1 ngày", hd1Dem.soNgayThue() == 1);
 
         // ----- lập hợp đồng (giao dịch liên bảng) -----
         HDThuePhong hd4 = new HDThuePhong("HDTP004", "KH001", "NV001",
                 LocalDate.of(2026, 11, 19), 400000,
-                LocalDate.of(2026, 11, 19), LocalDate.of(2026, 11, 21));
+                LocalDate.of(2026, 11, 19), LocalDate.of(2026, 11, 21), 0);
         CTHopDong ct1 = new CTHopDong("HDTP004", "P001", 300000, 2, 600000);
         CTHopDong ct2 = new CTHopDong("HDTP004", "P002", 600000, 1, 1200000);
         CTKhachO ko1 = new CTKhachO("HDTP004", "P001", "KH001");
@@ -112,6 +112,8 @@ public class KiemThuModule2 {
 
         kiemTra("lapHopDong lưu thành công hợp đồng HDTP004",
                 DuLieu.dsHDThuePhong.timTheoMa("HDTP004") != null);
+        kiemTra("lapHopDong tính tongTien = 600000 + 1200000 = 1.800.000",
+                DuLieu.dsHDThuePhong.timTheoMa("HDTP004").getTongTien() == 1800000);
         kiemTra("lapHopDong lưu đủ 2 chi tiết phòng cho HDTP004",
                 DuLieu.dsCTHopDong.layTheoHopDong("HDTP004").length == 2);
         kiemTra("lapHopDong lưu đủ 2 khách ở phòng P001 của HDTP004",
@@ -164,7 +166,7 @@ public class KiemThuModule2 {
 
         // ----- định dạng dòng file (toLine) -----
         kiemTra("toLine HDThuePhong đúng thứ tự trường và ngày dd/MM/yyyy",
-                hd1.toLine().equals("HDTP001|KH001|NV001|10/11/2026|500000|10/11/2026|13/11/2026"));
+                hd1.toLine().equals("HDTP001|KH001|NV001|10/11/2026|500000|10/11/2026|13/11/2026|0"));
         kiemTra("toLine CTHopDong đúng thứ tự trường",
                 ct1.toLine().equals("HDTP004|P001|300000|2|600000"));
         kiemTra("toLine CTKhachO đúng thứ tự trường",

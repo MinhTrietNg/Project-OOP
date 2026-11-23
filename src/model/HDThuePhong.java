@@ -20,6 +20,7 @@ public class HDThuePhong implements DoiTuong {
     private double tienCoc;
     private LocalDate ngayNhanPhong;
     private LocalDate ngayTraPhong;
+    private double tongTien;    // tổng thanhTien các CTHopDong của hợp đồng (tiền phòng)
 
     // Constructor không tham số
     public HDThuePhong() {
@@ -27,7 +28,8 @@ public class HDThuePhong implements DoiTuong {
 
     // Constructor đầy đủ tham số
     public HDThuePhong(String maHDong, String maKH, String maNV, LocalDate ngayLapHD,
-                       double tienCoc, LocalDate ngayNhanPhong, LocalDate ngayTraPhong) {
+                       double tienCoc, LocalDate ngayNhanPhong, LocalDate ngayTraPhong,
+                       double tongTien) {
         this.maHDong = maHDong;
         this.maKH = maKH;
         this.maNV = maNV;
@@ -35,6 +37,7 @@ public class HDThuePhong implements DoiTuong {
         this.tienCoc = tienCoc;
         this.ngayNhanPhong = ngayNhanPhong;
         this.ngayTraPhong = ngayTraPhong;
+        this.tongTien = tongTien;
     }
 
     // Constructor sao chép
@@ -46,11 +49,20 @@ public class HDThuePhong implements DoiTuong {
         this.tienCoc = x.tienCoc;
         this.ngayNhanPhong = x.ngayNhanPhong;
         this.ngayTraPhong = x.ngayTraPhong;
+        this.tongTien = x.tongTien;
     }
 
     // Số ngày giữa ngày nhận và ngày trả
     public long soNgayThue() {
         return ChronoUnit.DAYS.between(ngayNhanPhong, ngayTraPhong);
+    }
+
+    // Tổng tiền hợp đồng = cộng thanhTien của các phòng (CTHopDong) thuộc hợp đồng
+    public void tinhTongTien(CTHopDong[] cacPhong) {
+        tongTien = 0;
+        for (CTHopDong ct : cacPhong) {
+            tongTien += ct.getThanhTien();
+        }
     }
 
     // Nhập ngày nhận, ngày trả, tiền cọc.
@@ -82,15 +94,18 @@ public class HDThuePhong implements DoiTuong {
 
     @Override
     public void xuat() {
-        System.out.println(String.format("%s | KH: %s | NV: %s | Lập: %s | Nhận: %s | Trả: %s (%d ngày) | Cọc: %s",
+        System.out.println(String.format(
+                "%s | KH: %s | NV: %s | Lập: %s | Nhận: %s | Trả: %s (%d ngày) | Cọc: %s | Tổng tiền: %s",
                 maHDong, maKH, maNV, DinhDang.ngay(ngayLapHD), DinhDang.ngay(ngayNhanPhong),
-                DinhDang.ngay(ngayTraPhong), soNgayThue(), DinhDang.tien(tienCoc)));
+                DinhDang.ngay(ngayTraPhong), soNgayThue(), DinhDang.tien(tienCoc),
+                DinhDang.tien(tongTien)));
     }
 
-    // maHDong|maKH|maNV|ngayLapHD|tienCoc|ngayNhanPhong|ngayTraPhong
+    // maHDong|maKH|maNV|ngayLapHD|tienCoc|ngayNhanPhong|ngayTraPhong|tongTien
     @Override
     public String toLine() {
-        return DinhDang.dong(maHDong, maKH, maNV, ngayLapHD, tienCoc, ngayNhanPhong, ngayTraPhong);
+        return DinhDang.dong(maHDong, maKH, maNV, ngayLapHD, tienCoc, ngayNhanPhong, ngayTraPhong,
+                tongTien);
     }
 
     public String getMaHDong() {
@@ -147,5 +162,13 @@ public class HDThuePhong implements DoiTuong {
 
     public void setNgayTraPhong(LocalDate ngayTraPhong) {
         this.ngayTraPhong = ngayTraPhong;
+    }
+
+    public double getTongTien() {
+        return tongTien;
+    }
+
+    public void setTongTien(double tongTien) {
+        this.tongTien = tongTien;
     }
 }
