@@ -5,17 +5,19 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 // các hàm kiểm tra dữ liệu nhập, nhập sai thì hỏi lại chứ không văng lỗi
-// lớp này KHÔNG giữ Scanner: lớp nào cần nhập thì tự khởi tạo Scanner riêng rồi truyền vào, vd
-//     private static final Scanner sc = new Scanner(System.in, "UTF-8");
-//     String ten = NhapLieu.nhapChuoi(sc, "Họ tên");
+// cả chương trình dùng chung 1 Scanner toàn cục ở đây, lớp khác gọi thẳng, vd
+//     String ten = NhapLieu.nhapChuoi("Họ tên");
 public final class NhapLieu {
+
+    // Scanner toàn cục duy nhất; không close() vì sẽ đóng luôn System.in
+    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private NhapLieu() {
     }
 
-    public static String nhapChuoi(Scanner sc, String nhac) {
+    public static String nhapChuoi(String nhac) {
         while (true) {
-            String s = docDong(sc, nhac);
+            String s = docDong(nhac);
             if (s.isEmpty()) {
                 System.out.println("  Không được để trống.");
             } else if (s.contains(DinhDang.PHAN_CACH)) {
@@ -26,9 +28,9 @@ public final class NhapLieu {
         }
     }
 
-    public static int nhapSoNguyen(Scanner sc, String nhac, int min, int max) {
+    public static int nhapSoNguyen(String nhac, int min, int max) {
         while (true) {
-            String s = docDong(sc, nhac);
+            String s = docDong(nhac);
             try {
                 int x = Integer.parseInt(s);
                 if (x >= min && x <= max) {
@@ -41,9 +43,9 @@ public final class NhapLieu {
         }
     }
 
-    public static double nhapSoThuc(Scanner sc, String nhac, double min) {
+    public static double nhapSoThuc(String nhac, double min) {
         while (true) {
-            String s = docDong(sc, nhac);
+            String s = docDong(nhac);
             try {
                 double x = Double.parseDouble(s);
                 // chặn "Infinity" / "1e400", không thì lúc ghi file sẽ văng lỗi
@@ -57,9 +59,9 @@ public final class NhapLieu {
         }
     }
 
-    public static LocalDate nhapNgay(Scanner sc, String nhac) {
+    public static LocalDate nhapNgay(String nhac) {
         while (true) {
-            String s = docDong(sc, nhac + " (dd/MM/yyyy)");
+            String s = docDong(nhac + " (dd/MM/yyyy)");
             try {
                 return DinhDang.docNgay(s);
             } catch (DateTimeParseException e) {
@@ -68,9 +70,9 @@ public final class NhapLieu {
         }
     }
 
-    public static boolean nhapCoKhong(Scanner sc, String nhac) {
+    public static boolean nhapCoKhong(String nhac) {
         while (true) {
-            String s = docDong(sc, nhac + " (c/k)").toLowerCase();
+            String s = docDong(nhac + " (c/k)").toLowerCase();
             if (s.equals("c")) {
                 return true;
             }
@@ -81,9 +83,9 @@ public final class NhapLieu {
         }
     }
 
-    public static String nhapSdt(Scanner sc, String nhac) {
+    public static String nhapSdt(String nhac) {
         while (true) {
-            String s = docDong(sc, nhac);
+            String s = docDong(nhac);
             if (s.matches("0\\d{9}")) {
                 return s;
             }
@@ -91,19 +93,19 @@ public final class NhapLieu {
         }
     }
 
-    // vd chonMenu(sc, "QUẢN LÝ PHÒNG", "Quay lại", "Thêm phòng", "Xem tất cả")
-    public static int chonMenu(Scanner sc, String tieuDe, String mucKhong, String... cacMuc) {
+    // vd chonMenu("QUẢN LÝ PHÒNG", "Quay lại", "Thêm phòng", "Xem tất cả")
+    public static int chonMenu(String tieuDe, String mucKhong, String... cacMuc) {
         System.out.println();
         System.out.println("===== " + tieuDe + " =====");
         for (int i = 0; i < cacMuc.length; i++) {
             System.out.println((i + 1) + ". " + cacMuc[i]);
         }
         System.out.println("0. " + mucKhong);
-        return nhapSoNguyen(sc, "Chọn", 0, cacMuc.length);
+        return nhapSoNguyen("Chọn", 0, cacMuc.length);
     }
 
     // đọc cả dòng rồi tự parse, dùng nextInt() sẽ bị trôi lệnh nextLine() phía sau
-    private static String docDong(Scanner sc, String nhac) {
+    private static String docDong(String nhac) {
         System.out.print(nhac + ": ");
         if (!sc.hasNextLine()) {
             System.out.println();

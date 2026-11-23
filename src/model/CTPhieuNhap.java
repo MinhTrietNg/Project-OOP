@@ -3,13 +3,9 @@ package model;
 import core.DinhDang;
 import core.DoiTuong;
 import core.NhapLieu;
-import java.util.Scanner;
 
 // 1 mặt hàng trong phiếu nhập, cặp (maPN, maH) không trùng
 public class CTPhieuNhap implements DoiTuong {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private String maPN;        // -> PhieuNhap
     private String maH;         // -> HangHoa
@@ -89,8 +85,8 @@ public class CTPhieuNhap implements DoiTuong {
     @Override
     public void nhap() {
         // chặn trên để slTon (kiểu int) cộng dồn không bị tràn số thành số âm
-        sl = NhapLieu.nhapSoNguyen(sc, "Số lượng nhập", 1, 100000);
-        donGiaNhap = NhapLieu.nhapSoThuc(sc, "Đơn giá nhập", 1);
+        sl = NhapLieu.nhapSoNguyen("Số lượng nhập", 1, 100000);
+        donGiaNhap = NhapLieu.nhapSoThuc("Đơn giá nhập", 1);
         tinhThanhTien();
     }
 

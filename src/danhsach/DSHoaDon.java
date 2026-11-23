@@ -7,7 +7,6 @@ import core.NhapLieu;
 import core.TepTin;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Scanner;
 import model.CTHopDong;
 import model.CTSuDungDV;
 import model.DichVu;
@@ -18,9 +17,6 @@ import model.Phong;
 
 // hóa đơn là chứng từ: chỉ lập mới, thanh toán và xem; không sửa tiền, không xóa (mục 6.5)
 public class DSHoaDon implements DanhSach<HoaDon> {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/hoadon.txt";
     private HoaDon[] ds = new HoaDon[0];
@@ -49,7 +45,7 @@ public class DSHoaDon implements DanhSach<HoaDon> {
         }
 
         // ----- B1 -----
-        String maHDong = NhapLieu.nhapChuoi(sc, "Nhập mã hợp đồng trả phòng");
+        String maHDong = NhapLieu.nhapChuoi("Nhập mã hợp đồng trả phòng");
         HDThuePhong hd = DuLieu.dsHDThuePhong.timTheoMa(maHDong);
         if (hd == null) {
             System.out.println("Không tìm thấy hợp đồng có mã: " + maHDong);
@@ -64,7 +60,7 @@ public class DSHoaDon implements DanhSach<HoaDon> {
         if (LocalDate.now().isBefore(hd.getNgayTraPhong())) {
             System.out.println("  Lưu ý: ngày trả trong hợp đồng là " + DinhDang.ngay(hd.getNgayTraPhong())
                     + ". Nếu khách trả sớm, hãy sửa ngày trả ở menu Thuê phòng trước.");
-            if (!NhapLieu.nhapCoKhong(sc, "Vẫn lập hóa đơn theo ngày trong hợp đồng")) {
+            if (!NhapLieu.nhapCoKhong("Vẫn lập hóa đơn theo ngày trong hợp đồng")) {
                 System.out.println("Đã hủy lập hóa đơn.");
                 return;
             }
@@ -118,7 +114,7 @@ public class DSHoaDon implements DanhSach<HoaDon> {
     // hóa đơn không sửa tay; "sửa" duy nhất là đổi trạng thái CHUA_TT -> DA_TT
 
     public void thanhToan() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã hóa đơn cần thanh toán");
+        String ma = NhapLieu.nhapChuoi("Nhập mã hóa đơn cần thanh toán");
         HoaDon hdon = timTheoMa(ma);
         if (hdon == null) {
             System.out.println("Không tìm thấy hóa đơn có mã: " + ma);
@@ -129,7 +125,7 @@ public class DSHoaDon implements DanhSach<HoaDon> {
             return;
         }
         xuatChiTiet(hdon.getMaHDon());
-        if (NhapLieu.nhapCoKhong(sc, "Xác nhận khách đã thanh toán")) {
+        if (NhapLieu.nhapCoKhong("Xác nhận khách đã thanh toán")) {
             thanhToan(hdon.getMaHDon());
             System.out.println("Đã thanh toán hóa đơn " + hdon.getMaHDon());
         } else {
@@ -151,7 +147,7 @@ public class DSHoaDon implements DanhSach<HoaDon> {
 
     // tìm theo mã thì in luôn chi tiết hóa đơn
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã hóa đơn");
+        String ma = NhapLieu.nhapChuoi("Nhập mã hóa đơn");
         xuatChiTiet(ma);
     }
 
@@ -271,8 +267,8 @@ public class DSHoaDon implements DanhSach<HoaDon> {
     }
 
     public void locTheoKhoangNgay() {
-        LocalDate tu = NhapLieu.nhapNgay(sc, "Từ ngày");
-        LocalDate den = NhapLieu.nhapNgay(sc, "Đến ngày");
+        LocalDate tu = NhapLieu.nhapNgay("Từ ngày");
+        LocalDate den = NhapLieu.nhapNgay("Đến ngày");
         if (den.isBefore(tu)) {
             System.out.println("Ngày kết thúc phải sau ngày bắt đầu.");
             return;

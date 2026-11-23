@@ -2,16 +2,12 @@ package menu;
 
 import app.DuLieu;
 import core.NhapLieu;
-import java.util.Scanner;
 
 public class MenuDichVu {
 
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
-
     public static void chay() {
         while (true) {
-            int chon = NhapLieu.chonMenu(sc, "DỊCH VỤ", "Quay lại",
+            int chon = NhapLieu.chonMenu("DỊCH VỤ", "Quay lại",
                     "Thêm dịch vụ",
                     "Sửa dịch vụ",
                     "Xóa dịch vụ",

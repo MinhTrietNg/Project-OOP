@@ -6,7 +6,6 @@ import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
 import java.util.Arrays;
-import java.util.Scanner;
 import model.CTHopDong;
 import model.Phong;
 import model.PhongDeluxe;
@@ -15,9 +14,6 @@ import model.PhongThuong;
 
 // mảng Phong[] chứa lẫn cả 3 loại phòng (đa hình): gọi xuat() thì mỗi loại tự in phần riêng
 public class DSPhong implements DanhSach<Phong> {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/phong.txt";
     private Phong[] ds = new Phong[0];
@@ -59,7 +55,7 @@ public class DSPhong implements DanhSach<Phong> {
     }
 
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã phòng cần tìm");
+        String ma = NhapLieu.nhapChuoi("Nhập mã phòng cần tìm");
         Phong p = timTheoMa(ma);
         if (p == null) {
             System.out.println("Không tìm thấy phòng có mã: " + ma);
@@ -79,7 +75,7 @@ public class DSPhong implements DanhSach<Phong> {
     }
 
     public void sua() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã phòng cần sửa");
+        String ma = NhapLieu.nhapChuoi("Nhập mã phòng cần sửa");
         sua(ma);
     }
 
@@ -102,7 +98,7 @@ public class DSPhong implements DanhSach<Phong> {
     }
 
     public void xoa() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã phòng cần xóa");
+        String ma = NhapLieu.nhapChuoi("Nhập mã phòng cần xóa");
         xoa(ma);
     }
 
@@ -196,7 +192,7 @@ public class DSPhong implements DanhSach<Phong> {
 
     // tên phòng là số phòng, vd gõ "10" ra 101, 102...
     public void timTheoTen() {
-        String tuKhoa = NhapLieu.nhapChuoi(sc, "Nhập tên (số) phòng cần tìm");
+        String tuKhoa = NhapLieu.nhapChuoi("Nhập tên (số) phòng cần tìm");
         xuat(timTheoTen(tuKhoa));
     }
 
@@ -214,7 +210,7 @@ public class DSPhong implements DanhSach<Phong> {
 
     public void locTheoLoai() {
         System.out.println("  1. Thường   2. Deluxe   3. Suite");
-        int chon = NhapLieu.nhapSoNguyen(sc, "Chọn loại phòng", 1, 3);
+        int chon = NhapLieu.nhapSoNguyen("Chọn loại phòng", 1, 3);
         String loai = Phong.THUONG;
         if (chon == 2) {
             loai = Phong.DELUXE;
@@ -262,7 +258,7 @@ public class DSPhong implements DanhSach<Phong> {
     // hỏi loại rồi tạo đúng lớp con (chưa nhập gì)
     private Phong taoTheoLoai() {
         System.out.println("  1. Thường   2. Deluxe   3. Suite");
-        int chon = NhapLieu.nhapSoNguyen(sc, "Chọn loại phòng", 1, 3);
+        int chon = NhapLieu.nhapSoNguyen("Chọn loại phòng", 1, 3);
         if (chon == 2) {
             return new PhongDeluxe();
         }

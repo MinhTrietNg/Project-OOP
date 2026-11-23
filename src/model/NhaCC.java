@@ -3,13 +3,9 @@ package model;
 import core.DinhDang;
 import core.DoiTuong;
 import core.NhapLieu;
-import java.util.Scanner;
 
 // nhà cung cấp hàng hóa cho kho
 public class NhaCC implements DoiTuong {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private String maNCC;
     private String tenNCC;
@@ -71,9 +67,9 @@ public class NhaCC implements DoiTuong {
 
     @Override
     public void nhap() {
-        tenNCC = NhapLieu.nhapChuoi(sc, "Tên nhà cung cấp");
-        diaChi = NhapLieu.nhapChuoi(sc, "Địa chỉ");
-        sdt = NhapLieu.nhapSdt(sc, "Số điện thoại");
+        tenNCC = NhapLieu.nhapChuoi("Tên nhà cung cấp");
+        diaChi = NhapLieu.nhapChuoi("Địa chỉ");
+        sdt = NhapLieu.nhapSdt("Số điện thoại");
     }
 
     // vd: NCC001 | Công ty ABC | 12 Lê Lợi | 0281234567

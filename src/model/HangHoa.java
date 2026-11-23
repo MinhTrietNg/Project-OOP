@@ -3,13 +3,9 @@ package model;
 import core.DinhDang;
 import core.DoiTuong;
 import core.NhapLieu;
-import java.util.Scanner;
 
 // hàng trong kho, dùng cho dịch vụ (vd nước suối cho dịch vụ "Nước suối")
 public class HangHoa implements DoiTuong {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private String maH;
     private String tenH;
@@ -77,8 +73,8 @@ public class HangHoa implements DoiTuong {
     // chỉ nhập tên và giá; slTon không nhập: hàng mới = 0, sau đó chỉ đổi khi nhập kho / dùng dịch vụ
     @Override
     public void nhap() {
-        tenH = NhapLieu.nhapChuoi(sc, "Tên hàng");
-        donGia = NhapLieu.nhapSoThuc(sc, "Đơn giá nhập", 0);
+        tenH = NhapLieu.nhapChuoi("Tên hàng");
+        donGia = NhapLieu.nhapSoThuc("Đơn giá nhập", 0);
     }
 
     // vd: HH001 | Nước suối | giá nhập 4.500 đ | tồn 100

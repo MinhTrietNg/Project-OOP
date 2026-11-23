@@ -3,13 +3,9 @@ package model;
 import core.DinhDang;
 import core.DoiTuong;
 import core.NhapLieu;
-import java.util.Scanner;
 
 // Một phòng được thuê trong hợp đồng. Cặp (maHDong, maP) không trùng.
 public class CTHopDong implements DoiTuong {
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
-
     private String maHDong;
     private String maP;
     private double donGia;      // giá phòng tại lúc thuê, chép từ Phong.donGia
@@ -51,7 +47,7 @@ public class CTHopDong implements DoiTuong {
 
     // Như nhap() nhưng giới hạn theo sức chứa của phòng (Phong.soNguoiToiDa), dùng khi lập hợp đồng
     public void nhap(int soNguoiToiDa) {
-        slNguoi = NhapLieu.nhapSoNguyen(sc, "Số người ở (1-" + soNguoiToiDa + ")", 1, soNguoiToiDa);
+        slNguoi = NhapLieu.nhapSoNguyen("Số người ở (1-" + soNguoiToiDa + ")", 1, soNguoiToiDa);
     }
 
     @Override

@@ -2,12 +2,8 @@ package model;
 
 import core.DinhDang;
 import core.NhapLieu;
-import java.util.Scanner;
 
 public class PhongDeluxe extends Phong {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private String view;
     private boolean banCong;
@@ -67,9 +63,9 @@ public class PhongDeluxe extends Phong {
     @Override
     public void nhap() {
         super.nhap();
-        view = NhapLieu.nhapChuoi(sc, "View (hướng nhìn)");
-        banCong = NhapLieu.nhapCoKhong(sc, "Có ban công");
-        loaiNoiThat = NhapLieu.nhapChuoi(sc, "Loại nội thất");
+        view = NhapLieu.nhapChuoi("View (hướng nhìn)");
+        banCong = NhapLieu.nhapCoKhong("Có ban công");
+        loaiNoiThat = NhapLieu.nhapChuoi("Loại nội thất");
     }
 
     @Override

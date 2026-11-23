@@ -4,13 +4,9 @@ import core.DinhDang;
 import core.DoiTuong;
 import core.NhapLieu;
 import java.time.LocalDate;
-import java.util.Scanner;
 
 // 1 lần khách dùng dịch vụ trong thời gian thuê phòng
 public class CTSuDungDV implements DoiTuong {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private String maHDong;     // -> HDThuePhong
     private String maDV;        // -> DichVu
@@ -106,14 +102,14 @@ public class CTSuDungDV implements DoiTuong {
     // nhập ngày dùng và số lượng; maHDong, maDV, donGia do DSCTSuDungDV gán, thanhTien tự tính
     @Override
     public void nhap() {
-        ngaySD = NhapLieu.nhapNgay(sc, "Ngày sử dụng");
+        ngaySD = NhapLieu.nhapNgay("Ngày sử dụng");
         nhapSoLuong();
     }
 
     // như nhap() nhưng bắt ngày dùng nằm trong thời gian thuê (ngày nhận -> ngày trả của hợp đồng)
     public void nhap(LocalDate tu, LocalDate den) {
         while (true) {
-            ngaySD = NhapLieu.nhapNgay(sc, "Ngày sử dụng");
+            ngaySD = NhapLieu.nhapNgay("Ngày sử dụng");
             if (trongKhoang(ngaySD, tu, den)) {
                 break;
             }
@@ -124,7 +120,7 @@ public class CTSuDungDV implements DoiTuong {
 
     // chặn trên để sl x donGia và trừ kho không bị số quá lớn
     private void nhapSoLuong() {
-        sl = NhapLieu.nhapSoNguyen(sc, "Số lượng", 1, 1000);
+        sl = NhapLieu.nhapSoNguyen("Số lượng", 1, 1000);
     }
 
     // vd: HDTP001 | DV001 | 17/11/2026 | 2 x 15.000 đ = 30.000 đ

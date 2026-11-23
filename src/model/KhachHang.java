@@ -2,13 +2,9 @@ package model;
 
 import core.DinhDang;
 import core.NhapLieu;
-import java.util.Scanner;
 
 // khách thuê phòng hoặc ở cùng trong phòng
 public class KhachHang extends Nguoi {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private String maKH;
     private String diaChi;
@@ -51,7 +47,7 @@ public class KhachHang extends Nguoi {
     @Override
     public void nhap() {
         super.nhap();
-        diaChi = NhapLieu.nhapChuoi(sc, "Địa chỉ");
+        diaChi = NhapLieu.nhapChuoi("Địa chỉ");
     }
 
     // vd: KH001 | Nguyễn Văn An | 0901234567 | Quận 1, TP.HCM

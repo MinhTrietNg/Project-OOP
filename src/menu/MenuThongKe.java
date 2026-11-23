@@ -4,19 +4,15 @@ import app.DuLieu;
 import core.DinhDang;
 import core.NhapLieu;
 import java.time.LocalDate;
-import java.util.Scanner;
 import model.CTHopDong;
 import model.HoaDon;
 import model.Phong;
 
 public class MenuThongKe {
 
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
-
     public static void chay() {
         while (true) {
-            int chon = NhapLieu.chonMenu(sc, "THỐNG KÊ", "Quay lại",
+            int chon = NhapLieu.chonMenu("THỐNG KÊ", "Quay lại",
                     "Doanh thu theo tháng/năm",
                     "Tình trạng phòng theo loại",
                     "Doanh thu theo phòng",
@@ -48,8 +44,8 @@ public class MenuThongKe {
 
     // tổng tongCong của hóa đơn DA_TT có ngày lập trong tháng/năm (mục 6.4)
     private static void doanhThuTheoThangNam() {
-        int nam = NhapLieu.nhapSoNguyen(sc, "Năm", 2000, 2100);
-        int thang = NhapLieu.nhapSoNguyen(sc, "Tháng (0 = cả năm)", 0, 12);
+        int nam = NhapLieu.nhapSoNguyen("Năm", 2000, 2100);
+        int thang = NhapLieu.nhapSoNguyen("Tháng (0 = cả năm)", 0, 12);
         double tong = 0;
         for (HoaDon hd : DuLieu.dsHoaDon.getDs()) {
             LocalDate d = hd.getNgayLapHD();

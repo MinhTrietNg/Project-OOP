@@ -7,7 +7,6 @@ import core.NhapLieu;
 import core.TepTin;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Scanner;
 import model.CTPhieuNhap;
 import model.HangHoa;
 import model.NhaCC;
@@ -16,9 +15,6 @@ import model.PhieuNhap;
 
 // phiếu nhập là chứng từ: chỉ lập mới và xem, không sửa, không xóa (mục 6.5)
 public class DSPhieuNhap implements DanhSach<PhieuNhap> {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/phieunhap.txt";
     private PhieuNhap[] ds = new PhieuNhap[0];
@@ -73,7 +69,7 @@ public class DSPhieuNhap implements DanhSach<PhieuNhap> {
             System.out.println("Phiếu phải có ít nhất 1 mặt hàng. Đã hủy lập phiếu nhập.");
             return;
         }
-        if (!NhapLieu.nhapCoKhong(sc, "Lưu phiếu nhập")) {
+        if (!NhapLieu.nhapCoKhong("Lưu phiếu nhập")) {
             System.out.println("Đã hủy lập phiếu nhập.");
             return;
         }
@@ -106,7 +102,7 @@ public class DSPhieuNhap implements DanhSach<PhieuNhap> {
             cacDong = Arrays.copyOf(cacDong, cacDong.length + 1);
             cacDong[cacDong.length - 1] = ct;
 
-            if (!NhapLieu.nhapCoKhong(sc, "Nhập thêm mặt hàng khác")) {
+            if (!NhapLieu.nhapCoKhong("Nhập thêm mặt hàng khác")) {
                 return cacDong;
             }
         }
@@ -146,7 +142,7 @@ public class DSPhieuNhap implements DanhSach<PhieuNhap> {
 
     // tìm thấy thì in luôn chi tiết phiếu
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã phiếu nhập cần tìm");
+        String ma = NhapLieu.nhapChuoi("Nhập mã phiếu nhập cần tìm");
         PhieuNhap pn = timTheoMa(ma);
         if (pn == null) {
             System.out.println("Không tìm thấy phiếu nhập có mã: " + ma);
@@ -219,8 +215,8 @@ public class DSPhieuNhap implements DanhSach<PhieuNhap> {
     // ================= HÀM NÂNG CAO (gói 70%) =================
 
     public void locTheoKhoangNgay() {
-        LocalDate tu = NhapLieu.nhapNgay(sc, "Từ ngày");
-        LocalDate den = NhapLieu.nhapNgay(sc, "Đến ngày");
+        LocalDate tu = NhapLieu.nhapNgay("Từ ngày");
+        LocalDate den = NhapLieu.nhapNgay("Đến ngày");
         if (den.isBefore(tu)) {
             System.out.println("Ngày kết thúc phải sau ngày bắt đầu.");
             return;
@@ -258,7 +254,7 @@ public class DSPhieuNhap implements DanhSach<PhieuNhap> {
     // 3 thống kê dưới cùng 1 khuôn: vòng ngoài duyệt nhóm, vòng trong cộng dồn phiếu thuộc nhóm đó
 
     public void thongKeTheoThang() {
-        int nam = NhapLieu.nhapSoNguyen(sc, "Năm", 2000, 2100);
+        int nam = NhapLieu.nhapSoNguyen("Năm", 2000, 2100);
         double tongNam = 0;
         for (int thang = 1; thang <= 12; thang++) {
             double tien = tongTienNhap(thang, nam);

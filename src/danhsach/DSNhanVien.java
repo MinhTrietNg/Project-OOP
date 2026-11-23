@@ -7,16 +7,12 @@ import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
 import java.util.Arrays;
-import java.util.Scanner;
 import model.HDThuePhong;
 import model.HoaDon;
 import model.NhanVien;
 import model.PhieuNhap;
 
 public class DSNhanVien implements DanhSach<NhanVien> {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/nhanvien.txt";
     private NhanVien[] ds = new NhanVien[0];
@@ -57,7 +53,7 @@ public class DSNhanVien implements DanhSach<NhanVien> {
     }
 
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã nhân viên cần tìm");
+        String ma = NhapLieu.nhapChuoi("Nhập mã nhân viên cần tìm");
         NhanVien nv = timTheoMa(ma);
         if (nv == null) {
             System.out.println("Không tìm thấy nhân viên có mã: " + ma);
@@ -77,7 +73,7 @@ public class DSNhanVien implements DanhSach<NhanVien> {
     }
 
     public void sua() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã nhân viên cần sửa");
+        String ma = NhapLieu.nhapChuoi("Nhập mã nhân viên cần sửa");
         sua(ma);
     }
 
@@ -102,7 +98,7 @@ public class DSNhanVien implements DanhSach<NhanVien> {
     }
 
     public void xoa() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã nhân viên cần xóa");
+        String ma = NhapLieu.nhapChuoi("Nhập mã nhân viên cần xóa");
         xoa(ma);
     }
 
@@ -173,7 +169,7 @@ public class DSNhanVien implements DanhSach<NhanVien> {
     // cho chỗ khác chọn 1 nhân viên: hỏi mã tới khi đúng, gõ 0 thì trả null
     public NhanVien chon() {
         while (true) {
-            String ma = NhapLieu.nhapChuoi(sc, "Nhập mã nhân viên (0 để thoát)");
+            String ma = NhapLieu.nhapChuoi("Nhập mã nhân viên (0 để thoát)");
             if (ma.equals("0")) {
                 return null;
             }
@@ -198,7 +194,7 @@ public class DSNhanVien implements DanhSach<NhanVien> {
     }
 
     public void timTheoTen() {
-        String tuKhoa = NhapLieu.nhapChuoi(sc, "Nhập tên (gõ không dấu cũng được)");
+        String tuKhoa = NhapLieu.nhapChuoi("Nhập tên (gõ không dấu cũng được)");
         xuat(timTheoTen(tuKhoa));
     }
 

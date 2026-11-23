@@ -3,14 +3,10 @@ package model;
 import core.DinhDang;
 import core.DoiTuong;
 import core.NhapLieu;
-import java.util.Scanner;
 
 // dịch vụ khách sạn cung cấp (đồ uống, giặt ủi, ăn sáng...)
 // có thể tiêu hao 1 loại hàng trong kho (vd "Nước suối" dùng hàng HH001), không dùng hàng thì maH = ""
 public class DichVu implements DoiTuong {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private String maDV;
     private String tenDV;
@@ -78,8 +74,8 @@ public class DichVu implements DoiTuong {
     // chỉ nhập tên và giá; maH là mã liên kết nên DSDichVu cho chọn rồi gán bằng setter
     @Override
     public void nhap() {
-        tenDV = NhapLieu.nhapChuoi(sc, "Tên dịch vụ");
-        donGia = NhapLieu.nhapSoThuc(sc, "Đơn giá", 1);
+        tenDV = NhapLieu.nhapChuoi("Tên dịch vụ");
+        donGia = NhapLieu.nhapSoThuc("Đơn giá", 1);
     }
 
     // vd: DV001 | Nước suối | 15.000 đ | dùng hàng HH001

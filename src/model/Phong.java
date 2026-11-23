@@ -3,13 +3,9 @@ package model;
 import core.DinhDang;
 import core.DoiTuong;
 import core.NhapLieu;
-import java.util.Scanner;
 
 // phần chung của 3 loại phòng, không tạo trực tiếp mà chỉ tạo qua lớp con
 public abstract class Phong implements DoiTuong {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     public static final String TRONG = "TRONG";
     public static final String DA_THUE = "DA_THUE";
@@ -106,10 +102,10 @@ public abstract class Phong implements DoiTuong {
     // không nhập mã (danh sách tự sinh) và tình trạng (phòng mới luôn TRONG)
     @Override
     public void nhap() {
-        tenP = NhapLieu.nhapChuoi(sc, "Số phòng");
-        donGia = NhapLieu.nhapSoThuc(sc, "Giá thuê 1 ngày", 1);
-        soNguoiToiDa = NhapLieu.nhapSoNguyen(sc, "Số người tối đa", 1, 20);
-        slGiuong = NhapLieu.nhapSoNguyen(sc, "Số giường", 1, 10);
+        tenP = NhapLieu.nhapChuoi("Số phòng");
+        donGia = NhapLieu.nhapSoThuc("Giá thuê 1 ngày", 1);
+        soNguoiToiDa = NhapLieu.nhapSoNguyen("Số người tối đa", 1, 20);
+        slGiuong = NhapLieu.nhapSoNguyen("Số giường", 1, 10);
     }
 
     // in phần chung (chưa xuống dòng), lớp con in tiếp phần riêng rồi mới xuống dòng

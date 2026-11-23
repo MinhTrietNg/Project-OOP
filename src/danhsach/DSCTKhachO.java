@@ -4,13 +4,9 @@ import core.DanhSach;
 import core.NhapLieu;
 import core.TepTin;
 import java.util.Arrays;
-import java.util.Scanner;
 import model.CTKhachO;
 
 public class DSCTKhachO implements DanhSach<CTKhachO> {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/ctkhacho.txt";
     private CTKhachO[] ds = new CTKhachO[0];
@@ -75,8 +71,8 @@ public class DSCTKhachO implements DanhSach<CTKhachO> {
 
     // Lấy khách ở theo phòng trong hợp đồng (không tham số):
     public void layTheoPhong() {
-        String maHDong = NhapLieu.nhapChuoi(sc, "Nhập mã hợp đồng");
-        String maP = NhapLieu.nhapChuoi(sc, "Nhập mã phòng");
+        String maHDong = NhapLieu.nhapChuoi("Nhập mã hợp đồng");
+        String maP = NhapLieu.nhapChuoi("Nhập mã phòng");
         xuat(layTheoPhong(maHDong, maP));
     }
 

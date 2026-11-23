@@ -7,15 +7,11 @@ import core.NhapLieu;
 import core.TepTin;
 import core.TimKiem;
 import java.util.Arrays;
-import java.util.Scanner;
 import model.CTPhieuNhap;
 import model.DichVu;
 import model.HangHoa;
 
 public class DSHangHoa implements DanhSach<HangHoa> {
-
-    // Scanner riêng của lớp này; không close() vì sẽ đóng luôn System.in
-    private static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     private static final String FILE = "data/hanghoa.txt";
     private HangHoa[] ds = new HangHoa[0];
@@ -55,7 +51,7 @@ public class DSHangHoa implements DanhSach<HangHoa> {
     }
 
     public void timTheoMa() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã hàng cần tìm");
+        String ma = NhapLieu.nhapChuoi("Nhập mã hàng cần tìm");
         HangHoa hh = timTheoMa(ma);
         if (hh == null) {
             System.out.println("Không tìm thấy hàng có mã: " + ma);
@@ -74,7 +70,7 @@ public class DSHangHoa implements DanhSach<HangHoa> {
     }
 
     public void sua() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã hàng cần sửa");
+        String ma = NhapLieu.nhapChuoi("Nhập mã hàng cần sửa");
         sua(ma);
     }
 
@@ -85,7 +81,7 @@ public class DSHangHoa implements DanhSach<HangHoa> {
             System.out.println("Không tìm thấy hàng có mã: " + ma);
             return;
         }
-        String ten = NhapLieu.nhapChuoi(sc, "Tên hàng");
+        String ten = NhapLieu.nhapChuoi("Tên hàng");
         if (trungTen(ten, ma)) {
             System.out.println("Tên hàng " + ten + " đã có, không sửa.");
             return;
@@ -95,7 +91,7 @@ public class DSHangHoa implements DanhSach<HangHoa> {
     }
 
     public void xoa() {
-        String ma = NhapLieu.nhapChuoi(sc, "Nhập mã hàng cần xóa");
+        String ma = NhapLieu.nhapChuoi("Nhập mã hàng cần xóa");
         xoa(ma);
     }
 
@@ -157,7 +153,7 @@ public class DSHangHoa implements DanhSach<HangHoa> {
 
     public HangHoa chon() {
         while (true) {
-            String ma = NhapLieu.nhapChuoi(sc, "Nhập mã hàng (0 để thoát)");
+            String ma = NhapLieu.nhapChuoi("Nhập mã hàng (0 để thoát)");
             if (ma.equals("0")) {
                 return null;
             }
@@ -203,7 +199,7 @@ public class DSHangHoa implements DanhSach<HangHoa> {
     }
 
     public void timTheoTen() {
-        String tuKhoa = NhapLieu.nhapChuoi(sc, "Nhập tên hàng (gõ không dấu cũng được)");
+        String tuKhoa = NhapLieu.nhapChuoi("Nhập tên hàng (gõ không dấu cũng được)");
         xuat(timTheoTen(tuKhoa));
     }
 
@@ -219,7 +215,7 @@ public class DSHangHoa implements DanhSach<HangHoa> {
     }
 
     public void xuatSapHet() {
-        int nguong = NhapLieu.nhapSoNguyen(sc, "Ngưỡng cảnh báo (tồn <= ngưỡng)", 0, 100000);
+        int nguong = NhapLieu.nhapSoNguyen("Ngưỡng cảnh báo (tồn <= ngưỡng)", 0, 100000);
         HangHoa[] kq = dsSapHet(nguong);
         System.out.println("Có " + kq.length + " mặt hàng cần nhập thêm:");
         xuat(kq);
